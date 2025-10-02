@@ -19,6 +19,19 @@
 			</dict>
 		</dict>
 	</dict>
+    
+    <!-- Camera (for KYC document upload) -->
+    <key>NSCameraUsageDescription</key>
+    <string>We need camera access to capture your ID documents for verification</string>
+    
+    <!-- Photo Library -->
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>We need access to your photo library to upload ID documents</string>
+    
+    <!-- Face ID / Touch ID -->
+    <key>NSFaceIDUsageDescription</key>
+    <string>Use Face ID to securely access your account</string>
+    
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>remote-notification</string>
