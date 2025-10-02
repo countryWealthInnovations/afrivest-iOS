@@ -6,13 +6,37 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		ABD92E3C2E8D934900808567 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = ABD92E3B2E8D934900808567 /* Alamofire */; };
+		ABD92E412E8D936700808567 /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = ABD92E402E8D936700808567 /* KeychainSwift */; };
+		ABD92E442E8D940F00808567 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = ABD92E432E8D940F00808567 /* FirebaseAnalytics */; };
+		ABD92E462E8D940F00808567 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = ABD92E452E8D940F00808567 /* FirebaseCrashlytics */; };
+		ABD92E482E8D940F00808567 /* FirebaseInAppMessaging-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = ABD92E472E8D940F00808567 /* FirebaseInAppMessaging-Beta */; };
+		ABD92E4A2E8D940F00808567 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = ABD92E492E8D940F00808567 /* FirebaseMessaging */; };
+		ABD92E4D2E8D950A00808567 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = ABD92E4C2E8D950A00808567 /* Kingfisher */; };
+		ABD92E502E8D954900808567 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = ABD92E4F2E8D954900808567 /* Lottie */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		ABD92DB92E8D904700808567 /* AfriVest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AfriVest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		AB879FC82E8DF04B008F9C3C /* Exceptions for "AfriVest" folder in "AfriVest" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = ABD92DB82E8D904700808567 /* AfriVest */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		ABD92DBB2E8D904700808567 /* AfriVest */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				AB879FC82E8DF04B008F9C3C /* Exceptions for "AfriVest" folder in "AfriVest" target */,
+			);
 			path = AfriVest;
 			sourceTree = "<group>";
 		};
@@ -23,6 +47,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ABD92E412E8D936700808567 /* KeychainSwift in Frameworks */,
+				ABD92E3C2E8D934900808567 /* Alamofire in Frameworks */,
+				ABD92E502E8D954900808567 /* Lottie in Frameworks */,
+				ABD92E4A2E8D940F00808567 /* FirebaseMessaging in Frameworks */,
+				ABD92E462E8D940F00808567 /* FirebaseCrashlytics in Frameworks */,
+				ABD92E4D2E8D950A00808567 /* Kingfisher in Frameworks */,
+				ABD92E442E8D940F00808567 /* FirebaseAnalytics in Frameworks */,
+				ABD92E482E8D940F00808567 /* FirebaseInAppMessaging-Beta in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,6 +97,14 @@
 			);
 			name = AfriVest;
 			packageProductDependencies = (
+				ABD92E3B2E8D934900808567 /* Alamofire */,
+				ABD92E402E8D936700808567 /* KeychainSwift */,
+				ABD92E432E8D940F00808567 /* FirebaseAnalytics */,
+				ABD92E452E8D940F00808567 /* FirebaseCrashlytics */,
+				ABD92E472E8D940F00808567 /* FirebaseInAppMessaging-Beta */,
+				ABD92E492E8D940F00808567 /* FirebaseMessaging */,
+				ABD92E4C2E8D950A00808567 /* Kingfisher */,
+				ABD92E4F2E8D954900808567 /* Lottie */,
 			);
 			productName = AfriVest;
 			productReference = ABD92DB92E8D904700808567 /* AfriVest.app */;
@@ -94,6 +134,13 @@
 			);
 			mainGroup = ABD92DB02E8D904600808567;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				ABD92E3A2E8D934900808567 /* XCRemoteSwiftPackageReference "Alamofire" */,
+				ABD92E3F2E8D936700808567 /* XCRemoteSwiftPackageReference "keychain-swift" */,
+				ABD92E422E8D940F00808567 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				ABD92E4B2E8D950A00808567 /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				ABD92E4E2E8D954900808567 /* XCRemoteSwiftPackageReference "lottie-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = ABD92DBA2E8D904700808567 /* Products */;
 			projectDirPath = "";
@@ -246,6 +293,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = AfriVest/AfriVest.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = DXA5M4234Y;
@@ -254,6 +302,11 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AfriVest/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need camera access to capture your ID documents for verification";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Use Face ID to securely access your account";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photo library to upload ID documents";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -264,23 +317,24 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.afrivest.app.AfriVest;
+				PRODUCT_BUNDLE_IDENTIFIER = com.afrivest.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				XROS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Debug;
@@ -290,6 +344,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = AfriVest/AfriVest.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = DXA5M4234Y;
@@ -298,6 +353,11 @@
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AfriVest/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
+				INFOPLIST_KEY_NSCameraUsageDescription = "We need camera access to capture your ID documents for verification";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Use Face ID to securely access your account";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "We need access to your photo library to upload ID documents";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -308,23 +368,24 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.afrivest.app.AfriVest;
+				PRODUCT_BUNDLE_IDENTIFIER = com.afrivest.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SDKROOT = auto;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx xros xrsimulator";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2,7";
+				TARGETED_DEVICE_FAMILY = "1,2";
 				XROS_DEPLOYMENT_TARGET = 26.0;
 			};
 			name = Release;
@@ -351,6 +412,92 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		ABD92E3A2E8D934900808567 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
+		ABD92E3F2E8D936700808567 /* XCRemoteSwiftPackageReference "keychain-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/evgenyneu/keychain-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 24.0.0;
+			};
+		};
+		ABD92E422E8D940F00808567 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.3.0;
+			};
+		};
+		ABD92E4B2E8D950A00808567 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 8.5.0;
+			};
+		};
+		ABD92E4E2E8D954900808567 /* XCRemoteSwiftPackageReference "lottie-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.5.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		ABD92E3B2E8D934900808567 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ABD92E3A2E8D934900808567 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		ABD92E402E8D936700808567 /* KeychainSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ABD92E3F2E8D936700808567 /* XCRemoteSwiftPackageReference "keychain-swift" */;
+			productName = KeychainSwift;
+		};
+		ABD92E432E8D940F00808567 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ABD92E422E8D940F00808567 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		ABD92E452E8D940F00808567 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ABD92E422E8D940F00808567 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
+		ABD92E472E8D940F00808567 /* FirebaseInAppMessaging-Beta */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ABD92E422E8D940F00808567 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseInAppMessaging-Beta";
+		};
+		ABD92E492E8D940F00808567 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ABD92E422E8D940F00808567 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		ABD92E4C2E8D950A00808567 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ABD92E4B2E8D950A00808567 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
+		ABD92E4F2E8D954900808567 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ABD92E4E2E8D954900808567 /* XCRemoteSwiftPackageReference "lottie-ios" */;
+			productName = Lottie;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = ABD92DB12E8D904700808567 /* Project object */;
 }
