@@ -24,17 +24,20 @@ struct ResetPasswordView: View {
             ScrollView {
                 VStack(spacing: Spacing.fieldSpacing) {
                     // Header
-                    VStack(spacing: Spacing.sm) {
+                    VStack(alignment: .leading, spacing: Spacing.sm) {
                         Text("Reset Password")
                             .h1Style()
                         
-                        (Text("Enter the 6-digit code sent to\n")
-                            .foregroundColor(.textSecondary) +
-                        Text(viewModel.email)
-                            .foregroundColor(.primaryGold))
-                            .font(AppFont.bodyRegular())
-                            .multilineTextAlignment(.center)
+                        VStack(alignment: .leading, spacing: 0) {
+                            Text("Enter the 6-digit code sent to")
+                                .font(AppFont.bodyRegular())
+                                .foregroundColor(.textSecondary)
+                            Text(viewModel.email)
+                                .font(AppFont.bodyRegular())
+                                .foregroundColor(.primaryGold)
+                        }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, Spacing.xl)
                     .padding(.bottom, Spacing.lg)
                     

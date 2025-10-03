@@ -30,10 +30,10 @@ struct Spacing {
     static let radiusXLarge: CGFloat = 16
     
     // MARK: - Component Sizes
-    static let buttonHeight: CGFloat = 56
-    static let inputHeight: CGFloat = 56
-    static let otpBoxSize: CGFloat = 48
-    static let iconSize: CGFloat = 24
+    static let buttonHeight: CGFloat = 40
+    static let inputHeight: CGFloat = 40
+    static let otpBoxSize: CGFloat = 40
+    static let iconSize: CGFloat = 12
     static let avatarSize: CGFloat = 80
     
     // MARK: - Border

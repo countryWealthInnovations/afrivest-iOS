@@ -7,15 +7,16 @@
 
 
 import SwiftUI
+import Combine
 
 class OnboardingViewModel: ObservableObject {
     @Published var shouldNavigateToRegister = false
     
-    private let userDefaults = UserDefaults.standard
-    
+    private let userDefaultsManager = UserDefaultsManager.shared
+
     func completeOnboarding() {
-        // Mark onboarding as completed
-        userDefaults.set(true, forKey: "hasCompletedOnboarding")
+        // Mark onboarding as completed (set first launch to false)
+        UserDefaults.standard.set(true, forKey: AppConstants.StorageKeys.isFirstLaunch)
         
         // Navigate to registration/login
         shouldNavigateToRegister = true

@@ -1,3 +1,11 @@
+//
+//  SplashViewModel.swift
+//  AfriVest
+//
+//  Created by Kato Drake Smith on 02/10/2025.
+//
+
+
 import SwiftUI
 import Combine
 
@@ -6,8 +14,8 @@ class SplashViewModel: ObservableObject {
     @Published var navigateTo: NavigationDestination?
     
     private var cancellables = Set<AnyCancellable>()
-    private let authManager = AuthManager.shared
-    private let userDefaults = UserDefaults.standard
+    private let keychainManager = KeychainManager.shared
+    private let userDefaultsManager = UserDefaultsManager.shared
     
     enum NavigationDestination {
         case onboarding
@@ -31,12 +39,12 @@ class SplashViewModel: ObservableObject {
         }
     }
     
-    private func determineNextScreen() {
+    func determineNextScreen() {
         // Check if onboarding has been completed
-        let hasCompletedOnboarding = userDefaults.bool(forKey: "hasCompletedOnboarding")
+        let hasCompletedOnboarding = userDefaultsManager.isFirstLaunch
         
         // Check if user has valid auth token
-        if let token = authManager.getToken(), !token.isEmpty {
+        if let token = keychainManager.getToken(), !token.isEmpty {
             // Validate token with API
             validateToken(token)
         } else {
@@ -60,22 +68,3 @@ class SplashViewModel: ObservableObject {
     }
 }
 
-// MARK: - Auth Manager (Placeholder)
-class AuthManager {
-    static let shared = AuthManager()
-    private let keychainManager = KeychainManager()
-    
-    private init() {}
-    
-    func getToken() -> String? {
-        return keychainManager.get(key: "auth_token")
-    }
-    
-    func saveToken(_ token: String) {
-        keychainManager.save(key: "auth_token", value: token)
-    }
-    
-    func clearToken() {
-        keychainManager.delete(key: "auth_token")
-    }
-}

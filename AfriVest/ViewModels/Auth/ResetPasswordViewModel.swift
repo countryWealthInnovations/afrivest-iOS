@@ -135,10 +135,33 @@ class ResetPasswordViewModel: ObservableObject {
         
         isLoading = true
         
-        // TODO: Call reset password API
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.isLoading = false
-            self.shouldNavigateToLogin = true
+        Task {
+            do {
+                let parameters: [String: Any] = [
+                    "email": email,
+                    "code": code,
+                    "password": password,
+                    "password_confirmation": confirmPassword
+                ]
+                
+                let _: MessageResponse = try await APIClient.shared.request(
+                    APIConstants.Endpoints.resetPassword,
+                    method: .post,
+                    parameters: parameters,
+                    requiresAuth: false
+                )
+                
+                await MainActor.run {
+                    self.isLoading = false
+                    self.shouldNavigateToLogin = true
+                }
+                
+            } catch {
+                await MainActor.run {
+                    self.isLoading = false
+                    self.showError(message: error.localizedDescription)
+                }
+            }
         }
     }
     

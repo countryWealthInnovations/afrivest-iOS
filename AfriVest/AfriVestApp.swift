@@ -6,17 +6,14 @@
 //
 
 import SwiftUI
-import FirebaseCore
 
 @main
-struct AfriVRestApp: App {
-    init() {
-        FirebaseApp.configure()
-    }
+struct AfriVestApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SplashView()
         }
     }
 }

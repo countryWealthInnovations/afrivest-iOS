@@ -71,7 +71,3 @@ struct OTPBox: View {
         }
     }
 }
-
-// Usage:
-// @State private var otpCode = ""
-// OTPBoxes(otpCode: $otpCode)

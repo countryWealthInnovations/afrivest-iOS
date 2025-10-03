@@ -1,3 +1,10 @@
+//
+//  LoginViewModel.swift
+//  AfriVest
+//
+//  Created by Kato Drake Smith on 04/10/2025.
+//
+
 import SwiftUI
 import Combine
 import FirebaseMessaging
@@ -26,7 +33,9 @@ class LoginViewModel: ObservableObject {
     @Published var shouldNavigateToOTP = false
     @Published var shouldNavigateToDashboard = false
     @Published var showForgotPassword = false
+    @Published var shouldPromptBiometricSetup = false
     
+    private var biometricHardwareAvailable = false
     private var cancellables = Set<AnyCancellable>()
     
     var isFormValid: Bool {
@@ -81,17 +90,51 @@ class LoginViewModel: ObservableObject {
             let deviceToken = token ?? ""
             UserDefaultsManager.shared.deviceToken = deviceToken
             
-            // TODO: Call login API
-            // Simulate API call
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                self.isLoading = false
-                // Check if email verified
-                let emailVerified = true // From API response
-                
-                if emailVerified {
-                    self.shouldNavigateToDashboard = true
-                } else {
-                    self.shouldNavigateToOTP = true
+            Task {
+                do {
+                    let parameters: [String: Any] = [
+                        "email": self.email,
+                        "password": self.password,
+                        "device_token": deviceToken,
+                        "device_type": "ios",
+                        "device_name": UIDevice.current.name
+                    ]
+                    
+                    let response: AuthResponse = try await APIClient.shared.request(
+                        APIConstants.Endpoints.login,
+                        method: .post,
+                        parameters: parameters,
+                        requiresAuth: false
+                    )
+                    
+                    await MainActor.run {
+                        self.isLoading = false
+                        
+                        // Save credentials
+                        KeychainManager.shared.saveToken(response.token)
+                        UserDefaultsManager.shared.userEmail = self.email
+                        UserDefaultsManager.shared.userId = String(response.user.id)
+                        
+                        let emailVerified = response.user.emailVerifiedAt != nil
+                        
+                        // Navigate based on verification status
+                        if emailVerified {
+                            // User is verified, check for biometric setup
+                            if self.biometricHardwareAvailable && !UserDefaultsManager.shared.biometricEnabled {
+                                self.shouldPromptBiometricSetup = true
+                            }
+                            self.shouldNavigateToDashboard = true
+                        } else {
+                            // User needs to verify email first
+                            self.shouldNavigateToOTP = true
+                        }
+                    }
+                    
+                } catch {
+                    await MainActor.run {
+                        self.isLoading = false
+                        self.showError(message: error.localizedDescription)
+                    }
                 }
             }
         }
@@ -102,8 +145,22 @@ class LoginViewModel: ObservableObject {
         let context = LAContext()
         var error: NSError?
         
-        biometricAvailable = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
-            && UserDefaultsManager.shared.biometricEnabled
+        // Check if device has biometric hardware
+        biometricHardwareAvailable = context.canEvaluatePolicy(.deviceOwnerAuthenticationWithBiometrics, error: &error)
+        
+        // Show button only if hardware exists AND user has enabled it
+        biometricAvailable = biometricHardwareAvailable && UserDefaultsManager.shared.biometricEnabled
+    }
+    
+    func enableBiometric() {
+        UserDefaultsManager.shared.biometricEnabled = true
+        // Update button visibility
+        biometricAvailable = biometricHardwareAvailable && UserDefaultsManager.shared.biometricEnabled
+        shouldPromptBiometricSetup = false
+    }
+    
+    func skipBiometric() {
+        shouldPromptBiometricSetup = false
     }
     
     func loginWithBiometric() {
@@ -116,7 +173,9 @@ class LoginViewModel: ObservableObject {
                     // Get saved credentials and login
                     if let savedEmail = UserDefaultsManager.shared.userEmail {
                         self.email = savedEmail
-                        // In production, retrieve password from keychain or use token-based auth
+                        // Enable biometric for future use
+                        UserDefaultsManager.shared.biometricEnabled = true
+                        // In production, use token-based auth instead of calling login()
                         self.login()
                     }
                 } else {

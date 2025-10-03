@@ -5,12 +5,14 @@
 //  Created by Kato Drake Smith on 02/10/2025.
 //
 
-
 import SwiftUI
 
 struct OnboardingView: View {
     @StateObject private var viewModel = OnboardingViewModel()
     @State private var currentPage = 0
+    @State private var autoSlideTimer: Timer?
+    
+    private let autoSlideDelay: TimeInterval = 5.0 // 5 seconds
     
     var body: some View {
         ZStack {
@@ -22,8 +24,15 @@ struct OnboardingView: View {
                     description: "Transform every remittance into a wealth-building opportunity in real estate and portfolio growth.",
                     currentPage: $currentPage,
                     totalPages: 3,
-                    onSkip: { viewModel.skipOnboarding() },
-                    onNext: { withAnimation { currentPage = 1 } }
+                    onSkip: {
+                        stopAutoSlide()
+                        viewModel.skipOnboarding()
+                    },
+                    onNext: {
+                        stopAutoSlide()
+                        withAnimation { currentPage = 1 }
+                        startAutoSlide()
+                    }
                 )
                 .tag(0)
                 
@@ -33,26 +42,71 @@ struct OnboardingView: View {
                     description: "Secure your family's health with tailored insurance coverage for both home and abroad.",
                     currentPage: $currentPage,
                     totalPages: 3,
-                    onSkip: { viewModel.skipOnboarding() },
-                    onNext: { withAnimation { currentPage = 2 } }
+                    onSkip: {
+                        stopAutoSlide()
+                        viewModel.skipOnboarding()
+                    },
+                    onNext: {
+                        stopAutoSlide()
+                        withAnimation { currentPage = 2 }
+                        startAutoSlide()
+                    }
                 )
                 .tag(1)
                 
                 OnboardingPageView(
                     imageName: "onboarding_gold",
-                    title: "Gold Marketplace",
+                    title: "Gold & Crypto Marketplace",
                     description: "Turn remittances into tangible assets that hedge against inflation and preserve long-term value.",
                     currentPage: $currentPage,
                     totalPages: 3,
-                    onSkip: { viewModel.skipOnboarding() },
-                    onNext: { viewModel.completeOnboarding() },
+                    onSkip: {
+                        stopAutoSlide()
+                        viewModel.skipOnboarding()
+                    },
+                    onNext: {
+                        stopAutoSlide()
+                        viewModel.completeOnboarding()
+                    },
                     isLastPage: true
                 )
                 .tag(2)
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .ignoresSafeArea()
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
         }
+        .ignoresSafeArea(.all, edges: .all)
+        .onAppear {
+            startAutoSlide()
+        }
+        .onDisappear {
+            stopAutoSlide()
+        }
+        .onChange(of: currentPage) { _ in
+            stopAutoSlide()
+            if currentPage < 2 {
+                startAutoSlide()
+            }
+        }
+    }
+    
+    private func startAutoSlide() {
+        stopAutoSlide() // Clear existing
+        autoSlideTimer = Timer.scheduledTimer(withTimeInterval: autoSlideDelay, repeats: true) { _ in
+            DispatchQueue.main.async {
+                if currentPage < 2 {
+                    currentPage += 1
+                } else {
+                    stopAutoSlide()
+                    viewModel.completeOnboarding()
+                }
+            }
+        }
+    }
+
+    
+    private func stopAutoSlide() {
+        autoSlideTimer?.invalidate()
+        autoSlideTimer = nil
     }
 }
 
@@ -68,84 +122,95 @@ struct OnboardingPageView: View {
     var isLastPage: Bool = false
     
     var body: some View {
-        ZStack {
-            // Hero Image
-            Image(imageName)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .ignoresSafeArea()
-            
-            // Glassmorphism Gradient Overlay
-            LinearGradient(
-                gradient: Gradient(stops: [
-                    .init(color: .clear, location: 0.0),
-                    .init(color: .glassmorphismOverlay, location: 0.5),
-                    .init(color: .overlayDark, location: 1.0)
-                ]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .blur(radius: 10)
-            .ignoresSafeArea()
-            
-            VStack {
-                // Skip Button
-                HStack {
-                    Spacer()
-                    if !isLastPage {
-                        Button(action: onSkip) {
-                            Text("Skip")
-                                .font(AppFont.bodyRegular())
-                                .foregroundColor(.primaryGold)
-                                .padding(.horizontal, Spacing.md)
-                                .padding(.vertical, Spacing.sm)
+        GeometryReader { geometry in
+            ZStack(alignment: .top) {
+                // Hero Image - Full Screen
+                Image(imageName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .clipped()
+                    .ignoresSafeArea(.all, edges: .all)
+                
+                // Glassmorphism Gradient Overlay
+                LinearGradient(
+                    gradient: Gradient(stops: [
+                        .init(color: .clear, location: 0.0),
+                        .init(color: .glassmorphismOverlay, location: 0.5),
+                        .init(color: .overlayDark, location: 1.0)
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .blur(radius: 10)
+                .ignoresSafeArea(.all, edges: .all)
+                
+                VStack {
+                    // Skip Button
+                    HStack {
+                        Spacer()
+                        if !isLastPage {
+                            Button(action: onSkip) {
+                                Text("Skip")
+                                    .font(AppFont.bodyRegular())
+                                    .foregroundColor(.primaryGold)
+                                    .padding(.horizontal, Spacing.md)
+                                    .padding(.vertical, Spacing.sm)
+                                    .background(Color.black.opacity(0.6))
+                                    .cornerRadius(Spacing.radiusMedium)
+                            }
                         }
                     }
-                }
-                .padding(.top, 50)
-                .padding(.horizontal, Spacing.screenHorizontal)
-                
-                Spacer()
-                
-                // Content
-                VStack(spacing: Spacing.md) {
-                    // Page Indicators
-                    HStack(spacing: Spacing.sm) {
-                        ForEach(0..<totalPages, id: \.self) { index in
-                            Circle()
-                                .fill(currentPage == index ? Color.primaryGold : Color.white.opacity(0.3))
-                                .frame(width: 8, height: 8)
-                        }
-                    }
-                    .padding(.bottom, Spacing.md)
-                    
-                    // Title
-                    Text(title)
-                        .font(.system(size: 28, weight: .bold))
-                        .foregroundColor(.primaryGold)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, Spacing.screenHorizontal)
-                    
-                    // Description
-                    Text(description)
-                        .font(AppFont.bodyLarge())
-                        .foregroundColor(.textPrimary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, Spacing.screenHorizontal)
-                    
-                    // CTA Button
-                    PrimaryButton(
-                        title: isLastPage ? "Get Started" : "Next",
-                        action: onNext,
-                        isEnabled: true
-                    )
+                    .padding(.top, 50)
                     .padding(.horizontal, Spacing.screenHorizontal)
-                    .padding(.top, Spacing.lg)
+                    
+                    Spacer()
+                    
+                    // Content - Aligned to leading with horizontal padding
+                    VStack(alignment: .leading, spacing: Spacing.md) {
+                        // Page Indicators - on the right
+                        HStack {
+                            Spacer()
+                            HStack(spacing: Spacing.sm) {
+                                ForEach(0..<totalPages, id: \.self) { index in
+                                    Circle()
+                                        .fill(currentPage == index ? Color.primaryGold : Color.white.opacity(0.3))
+                                        .frame(width: 8, height: 8)
+                                }
+                            }
+                        }
+                        .padding(.bottom, Spacing.md)
+                        
+                        // Title - Left aligned
+                        Text(title)
+                            .font(.system(size: 28, weight: .bold))
+                            .foregroundColor(.primaryGold)
+                            .multilineTextAlignment(.leading)
+                            .padding(.horizontal, Spacing.xs)
+                        
+                        // Description - Left aligned
+                        Text(description)
+                            .font(AppFont.bodyLarge())
+                            .foregroundColor(.textPrimary)
+                            .multilineTextAlignment(.leading)
+                            .padding(.horizontal, Spacing.xs)
+                        
+                        // CTA Button - Full width
+                        PrimaryButton(
+                            title: isLastPage ? "Get Started" : "Next",
+                            action: onNext,
+                            isEnabled: true
+                        )
+                        .padding(.top, Spacing.lg)
+                        .padding(.horizontal, Spacing.md)
+                    }
+                    .padding(.horizontal, 3)
+                    .padding(.bottom, Spacing.lg)
                 }
-                .padding(.bottom, Spacing.xxl)
+                .frame(width: geometry.size.width, height: geometry.size.height)
             }
         }
+        .ignoresSafeArea(.all, edges: .all)
     }
 }
 

@@ -1,3 +1,11 @@
+//
+//  OTPViewModel.swift
+//  AfriVest
+//
+//  Created by Kato Drake Smith on 04/10/2025.
+//
+
+
 import SwiftUI
 import Combine
 
@@ -40,29 +48,71 @@ class OTPViewModel: ObservableObject {
     }
     
     func verifyOTP() {
-        guard otpCode.count == 6 else { return }
+        let code = otpCode
+        if code.count != 6 { return }
         
         isLoading = true
         
-        // TODO: Call verify OTP API
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            self.isLoading = false
-            self.shouldNavigateToDashboard = true
+        Task {
+            do {
+                let parameters = ["code": code]
+                
+                let response: OTPResponse = try await APIClient.shared.request(
+                    APIConstants.Endpoints.verifyOTP,
+                    method: .post,
+                    parameters: parameters,
+                    requiresAuth: true
+                )
+                
+                await MainActor.run {
+                    self.isLoading = false
+                    
+                    // Update user verification status if returned
+                    if let user = response.user, let emailVerified = response.emailVerified {
+                        if emailVerified {
+                            self.shouldNavigateToDashboard = true
+                        }
+                    } else {
+                        self.shouldNavigateToDashboard = true
+                    }
+                }
+                
+            } catch {
+                await MainActor.run {
+                    self.isLoading = false
+                    self.showError(message: error.localizedDescription)
+                }
+            }
         }
     }
-    
+
     func resendOTP() {
         guard canResend else { return }
         
         isLoading = true
         
-        // TODO: Call resend OTP API
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            self.isLoading = false
-            self.timeRemaining = 600
-            self.canResend = false
-            self.otpCode = ""
-            self.startTimer()
+        Task {
+            do {
+                let response: OTPResponse = try await APIClient.shared.request(
+                    APIConstants.Endpoints.resendOTP,
+                    method: .post,
+                    requiresAuth: true
+                )
+                
+                await MainActor.run {
+                    self.isLoading = false
+                    self.timeRemaining = 600
+                    self.canResend = false
+                    self.otpCode = ""
+                    self.startTimer()
+                }
+                
+            } catch {
+                await MainActor.run {
+                    self.isLoading = false
+                    self.showError(message: error.localizedDescription)
+                }
+            }
         }
     }
     

@@ -22,8 +22,8 @@ struct AppTheme {
     static var buttonGradient: LinearGradient {
         LinearGradient(
             gradient: Gradient(colors: [
-                Color(hex: "FFEAAF"),
-                Color(hex: "C58D30")
+                Color("FFEAAF"),
+                Color("C58D30")
             ]),
             startPoint: .leading,
             endPoint: .trailing

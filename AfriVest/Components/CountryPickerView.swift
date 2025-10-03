@@ -1,3 +1,11 @@
+//
+//  CountryPickerView.swift
+//  AfriVest
+//
+//  Created by Kato Drake Smith on 03/10/2025.
+//
+
+import SwiftUI
 
 struct CountryPickerView: View {
     @Binding var selectedCountry: Country

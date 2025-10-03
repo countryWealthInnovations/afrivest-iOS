@@ -8,6 +8,7 @@
 
 import SwiftUI
 import Combine
+import FirebaseMessaging
 
 class RegisterViewModel: ObservableObject {
     // Form Fields
@@ -195,32 +196,67 @@ class RegisterViewModel: ObservableObject {
         
         isLoading = true
         
-        // Prepare phone number
-        let fullPhone = selectedCountry.dialCode.replacingOccurrences(of: "+", with: "") + phoneNumber
-        
-        // TODO: Get device token from Firebase
-        let deviceToken = UserDefaultsManager.shared.getDeviceToken() ?? ""
-        
-        let request = RegisterRequest(
-            name: fullName,
-            email: email,
-            phoneNumber: fullPhone,
-            password: password,
-            passwordConfirmation: confirmPassword,
-            deviceToken: deviceToken,
-            deviceType: "ios",
-            deviceName: UIDevice.current.name,
-            appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
-        )
-        
-        // TODO: Call API
-        // For now, simulate API call
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
-            self?.isLoading = false
-            // On success:
-            self?.shouldNavigateToOTP = true
-            // On error:
-            // self?.showError(message: "Registration failed")
+        // Get FCM token
+        Messaging.messaging().token { token, error in
+            if let error = error {
+                print("Error fetching FCM token: \(error)")
+                self.isLoading = false
+                self.showError(message: "Failed to get device token. Please try again.")
+                return
+            }
+            
+            guard let deviceToken = token else {
+                self.isLoading = false
+                self.showError(message: "Failed to get device token. Please try again.")
+                return
+            }
+            
+            // Save token locally
+            UserDefaultsManager.shared.deviceToken = deviceToken
+            
+            // Prepare phone number
+            let fullPhone = self.selectedCountry.dialCode.replacingOccurrences(of: "+", with: "") + self.phoneNumber
+            
+            Task {
+                do {
+                    let parameters: [String: Any] = [
+                        "name": self.fullName,
+                        "email": self.email,
+                        "phone_number": fullPhone,
+                        "password": self.password,
+                        "password_confirmation": self.confirmPassword,
+                        "device_token": deviceToken,
+                        "device_type": "ios",
+                        "device_name": UIDevice.current.name,
+                        "app_version": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+                    ]
+                    
+                    let response: AuthResponse = try await APIClient.shared.request(
+                        APIConstants.Endpoints.register,
+                        method: .post,
+                        parameters: parameters,
+                        requiresAuth: false
+                    )
+                    
+                    await MainActor.run {
+                        self.isLoading = false
+                        
+                        // Save credentials
+                        KeychainManager.shared.saveToken(response.token)
+                        UserDefaultsManager.shared.userEmail = self.email
+                        UserDefaultsManager.shared.userId = String(response.user.id)
+                        
+                        // Navigate to OTP
+                        self.shouldNavigateToOTP = true
+                    }
+                    
+                } catch {
+                    await MainActor.run {
+                        self.isLoading = false
+                        self.showError(message: error.localizedDescription)
+                    }
+                }
+            }
         }
     }
     

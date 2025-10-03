@@ -12,7 +12,9 @@ struct BiometricButton: View {
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button {
+            action()
+        } label: {
             Image(systemName: "faceid")
                 .font(.system(size: 24))
                 .foregroundColor(.primaryGold)
