@@ -35,6 +35,8 @@ class LoginViewModel: ObservableObject {
     @Published var shouldNavigateToDashboard = false
     @Published var showForgotPassword = false
     @Published var shouldPromptBiometricSetup = false
+    @Published var showEmailVerificationAlert = false
+    @Published var verificationAlertMessage = ""
     
     private var biometricHardwareAvailable = false
     private var cancellables = Set<AnyCancellable>()
@@ -107,7 +109,7 @@ class LoginViewModel: ObservableObject {
                         parameters: parameters,
                         requiresAuth: false
                     )
-                    
+
                     await MainActor.run {
                         self.isLoading = false
                         
@@ -116,18 +118,16 @@ class LoginViewModel: ObservableObject {
                         UserDefaultsManager.shared.userEmail = self.email
                         UserDefaultsManager.shared.userId = String(response.user.id)
                         
-                        let emailVerified = response.user.emailVerifiedAt != nil
+                        // Save verification status
+                        UserDefaultsManager.shared.emailVerified = response.user.emailVerified
+                        UserDefaultsManager.shared.kycVerified = response.user.kycVerified
                         
-                        // Navigate based on verification status
-                        if emailVerified {
-                            // User is verified, check for biometric setup
-                            if self.biometricHardwareAvailable && !UserDefaultsManager.shared.biometricEnabled {
-                                self.shouldPromptBiometricSetup = true
-                            }
-                            self.shouldNavigateToDashboard = true
+                        // Check email verification (Option 1: Auto-send OTP)
+                        if !response.user.emailVerified {
+                            self.verificationAlertMessage = "Please verify your email to unlock all features. A verification code will be sent to your email."
+                            self.showEmailVerificationAlert = true
                         } else {
-                            // User needs to verify email first
-                            self.shouldNavigateToOTP = true
+                            self.shouldNavigateToDashboard = true
                         }
                     }
                     
@@ -189,5 +189,32 @@ class LoginViewModel: ObservableObject {
     private func showError(message: String) {
         errorMessage = message
         showError = true
+    }
+    
+    // MARK: - Email Verification Alert Handler
+    func proceedToEmailVerification() {
+        isLoading = true
+        
+        Task {
+            do {
+                // Auto-send OTP
+                let _: OTPResponse = try await APIClient.shared.request(
+                    APIConstants.Endpoints.resendOTP,
+                    method: .post,
+                    requiresAuth: true
+                )
+                
+                await MainActor.run {
+                    self.isLoading = false
+                    self.shouldNavigateToOTP = true
+                }
+                
+            } catch {
+                await MainActor.run {
+                    self.isLoading = false
+                    self.showError(message: "Failed to send verification code. Please try again.")
+                }
+            }
+        }
     }
 }

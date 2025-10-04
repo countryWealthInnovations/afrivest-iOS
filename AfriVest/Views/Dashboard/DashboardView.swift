@@ -48,16 +48,19 @@ struct DashboardView: View {
             }
             
             // Floating Action Button
-            VStack {
-                Spacer()
-                
-                HStack {
+            if selectedTab == 0 {
+                VStack {
                     Spacer()
                     
-                    FloatingActionButton(isExpanded: $isFABExpanded)
-                        .padding(.trailing, Spacing.md)
-                        .padding(.bottom, 90)
+                    HStack {
+                        Spacer()
+                        
+                        FloatingActionButton(isExpanded: $isFABExpanded)
+                            .padding(.trailing, Spacing.md)
+                            .padding(.bottom, 90)
+                    }
                 }
+                .transition(.opacity)
             }
         }
         .navigationBarHidden(true)

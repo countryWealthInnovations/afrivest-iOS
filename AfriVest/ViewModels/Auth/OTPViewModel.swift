@@ -67,14 +67,10 @@ class OTPViewModel: ObservableObject {
                 await MainActor.run {
                     self.isLoading = false
                     
-                    // Update user verification status if returned
-                    if let user = response.user, let emailVerified = response.emailVerified {
-                        if emailVerified {
-                            self.shouldNavigateToDashboard = true
-                        }
-                    } else {
-                        self.shouldNavigateToDashboard = true
-                    }
+                    // Update email verification status
+                    UserDefaultsManager.shared.emailVerified = true
+                    
+                    self.shouldNavigateToDashboard = true
                 }
                 
             } catch {

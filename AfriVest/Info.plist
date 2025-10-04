@@ -2,6 +2,21 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string></string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.517362311917-mkh8e05h9c1nhqq2jf4k69q27nrf9trt</string>
+			</array>
+		</dict>
+	</array>
+	<key>FirebaseInAppMessagingAutomaticDataCollectionEnabled</key>
+	<false/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -23,7 +38,7 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
-    <key>FirebaseInAppMessagingAutomaticDataCollectionEnabled</key>
-    <false/>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<true/>
 </dict>
 </plist>

@@ -128,5 +128,16 @@ struct LoginView: View {
         .fullScreenCover(isPresented: $viewModel.shouldNavigateToDashboard) {
             DashboardView()
         }
+        .alert("Email Verification Required", isPresented: $viewModel.showEmailVerificationAlert) {
+            Button("Verify Now") {
+                viewModel.proceedToEmailVerification()
+            }
+            Button("Later", role: .cancel) {
+                // User skips, but will see KYC banner on dashboard
+                viewModel.shouldNavigateToDashboard = true
+            }
+        } message: {
+            Text(viewModel.verificationAlertMessage)
+        }
     }
 }

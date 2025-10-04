@@ -77,5 +77,16 @@ class UserDefaultsManager {
         get { defaults.object(forKey: AppConstants.StorageKeys.lastSyncDate) as? Date }
         set { set(newValue, forKey: AppConstants.StorageKeys.lastSyncDate) }
     }
+    
+    // MARK: - Verification Status
+    var emailVerified: Bool {
+        get { bool(forKey: "email_verified") }
+        set { set(newValue, forKey: "email_verified") }
+    }
+    
+    var kycVerified: Bool {
+        get { bool(forKey: "kyc_verified") }
+        set { set(newValue, forKey: "kyc_verified") }
+    }
 }
 

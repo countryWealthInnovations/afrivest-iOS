@@ -12,7 +12,7 @@ struct OnboardingView: View {
     @State private var currentPage = 0
     @State private var autoSlideTimer: Timer?
     
-    private let autoSlideDelay: TimeInterval = 5.0 // 5 seconds
+    private let autoSlideDelay: TimeInterval = 5.0
     
     var body: some View {
         ZStack {
@@ -75,6 +75,9 @@ struct OnboardingView: View {
             .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
         }
         .ignoresSafeArea(.all, edges: .all)
+        .fullScreenCover(isPresented: $viewModel.shouldNavigateToRegister) {
+            LoginView()
+        }
         .onAppear {
             startAutoSlide()
         }
@@ -90,7 +93,7 @@ struct OnboardingView: View {
     }
     
     private func startAutoSlide() {
-        stopAutoSlide() // Clear existing
+        stopAutoSlide()
         autoSlideTimer = Timer.scheduledTimer(withTimeInterval: autoSlideDelay, repeats: true) { _ in
             DispatchQueue.main.async {
                 if currentPage < 2 {
@@ -102,7 +105,6 @@ struct OnboardingView: View {
             }
         }
     }
-
     
     private func stopAutoSlide() {
         autoSlideTimer?.invalidate()

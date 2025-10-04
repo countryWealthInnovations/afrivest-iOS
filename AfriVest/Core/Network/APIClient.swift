@@ -54,16 +54,29 @@ class APIClient: @unchecked Sendable {
                 )
                 .validate()
                 .responseDecodable(of: APIResponse<T>.self) { response in
+                    // Log raw response for debugging
+                    if let data = response.data {
+                        if let json = String(data: data, encoding: .utf8) {
+                            print("📦 API Response [\(endpoint)]: \(json)")
+                        }
+                    }
+                    
                     switch response.result {
                     case .success(let apiResponse):
                         if apiResponse.success {
+                            print("✅ Success: \(endpoint)")
                             continuation.resume(returning: apiResponse.data)
                         } else {
+                            print("❌ API Error: \(apiResponse.message ?? "Unknown error")")
                             let error = APIError.serverError(apiResponse.message ?? "Unknown error")
                             continuation.resume(throwing: error)
                         }
                         
                     case .failure(let error):
+                        print("❌ Network Error: \(error.localizedDescription)")
+                        if let statusCode = response.response?.statusCode {
+                            print("📍 Status Code: \(statusCode)")
+                        }
                         continuation.resume(throwing: self.handleError(error, response: response.response))
                     }
                 }
@@ -118,16 +131,29 @@ class APIClient: @unchecked Sendable {
                 )
                 .validate()
                 .responseDecodable(of: APIResponse<T>.self) { response in
+                    // Log raw response
+                    if let data = response.data {
+                        if let json = String(data: data, encoding: .utf8) {
+                            print("📦 Upload Response [\(endpoint)]: \(json)")
+                        }
+                    }
+                    
                     switch response.result {
                     case .success(let apiResponse):
                         if apiResponse.success {
+                            print("✅ Upload Success: \(endpoint)")
                             continuation.resume(returning: apiResponse.data)
                         } else {
+                            print("❌ Upload Error: \(apiResponse.message ?? "Upload failed")")
                             let error = APIError.serverError(apiResponse.message ?? "Upload failed")
                             continuation.resume(throwing: error)
                         }
                         
                     case .failure(let error):
+                        print("❌ Upload Network Error: \(error.localizedDescription)")
+                        if let statusCode = response.response?.statusCode {
+                            print("📍 Status Code: \(statusCode)")
+                        }
                         continuation.resume(throwing: self.handleError(error, response: response.response))
                     }
                 }
@@ -138,6 +164,7 @@ class APIClient: @unchecked Sendable {
     // MARK: - Error Handling
     private func handleError(_ error: AFError, response: HTTPURLResponse?) -> APIError {
         if let statusCode = response?.statusCode {
+            print("⚠️ HTTP Status Code: \(statusCode)")
             switch statusCode {
             case APIConstants.StatusCodes.unauthorized:
                 NotificationCenter.default.post(name: AppConstants.Notifications.tokenExpired, object: nil)
@@ -158,6 +185,7 @@ class APIClient: @unchecked Sendable {
         }
         
         if let underlyingError = error.underlyingError as? URLError {
+            print("⚠️ URLError: \(underlyingError.code)")
             switch underlyingError.code {
             case .notConnectedToInternet:
                 return .noInternetConnection
