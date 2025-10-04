@@ -15,6 +15,7 @@
 
 import SwiftUI
 import Combine
+import Alamofire
 
 class ResetPasswordViewModel: ObservableObject {
     let email: String

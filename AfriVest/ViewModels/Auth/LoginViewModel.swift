@@ -9,6 +9,7 @@ import SwiftUI
 import Combine
 import FirebaseMessaging
 import LocalAuthentication
+import Alamofire
 
 class LoginViewModel: ObservableObject {
     // Form Fields

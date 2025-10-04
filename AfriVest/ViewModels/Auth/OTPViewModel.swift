@@ -5,9 +5,9 @@
 //  Created by Kato Drake Smith on 04/10/2025.
 //
 
-
 import SwiftUI
 import Combine
+import Alamofire
 
 class OTPViewModel: ObservableObject {
     @Published var email: String
@@ -80,7 +80,8 @@ class OTPViewModel: ObservableObject {
             } catch {
                 await MainActor.run {
                     self.isLoading = false
-                    self.showError(message: error.localizedDescription)
+                    self.errorMessage = error.localizedDescription
+                    self.showError = true
                 }
             }
         }
@@ -110,7 +111,8 @@ class OTPViewModel: ObservableObject {
             } catch {
                 await MainActor.run {
                     self.isLoading = false
-                    self.showError(message: error.localizedDescription)
+                    self.errorMessage = error.localizedDescription
+                    self.showError = true
                 }
             }
         }

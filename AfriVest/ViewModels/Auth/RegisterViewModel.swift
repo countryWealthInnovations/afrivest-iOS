@@ -9,6 +9,7 @@
 import SwiftUI
 import Combine
 import FirebaseMessaging
+import Alamofire
 
 class RegisterViewModel: ObservableObject {
     // Form Fields
