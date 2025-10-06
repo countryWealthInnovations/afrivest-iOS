@@ -45,6 +45,10 @@ struct AppFont {
     static func caption() -> Font {
         return .system(size: 12, weight: .regular)
     }
+    
+    static func footnote() -> Font {
+        return .system(size: 10, weight: .regular)
+    }
 }
 
 // MARK: - Text Style Modifiers

@@ -326,21 +326,21 @@ struct HomeView: View {
                 }
                 
                 quickActionButton(
-                    icon: "shield.fill",
+                    icon: "staroflife.shield",
                     title: "Insurance"
                 ) {
                     print("🛡️ Insurance tapped")
                 }
                 
                 quickActionButton(
-                    icon: "bag.fill",
+                    icon: "bag",
                     title: "Marketplace"
                 ) {
                     print("🛍️ Marketplace tapped")
                 }
                 
                 quickActionButton(
-                    icon: "bitcoinsign.circle.fill",
+                    icon: "bitcoinsign",
                     title: "Crypto"
                 ) {
                     print("₿ Crypto tapped")
@@ -359,7 +359,7 @@ struct HomeView: View {
                     .frame(height: 40)
                 
                 Text(title)
-                    .font(AppFont.bodySmall())
+                    .font(AppFont.footnote())
                     .foregroundColor(Color.textPrimary)
             }
             .frame(maxWidth: .infinity)
