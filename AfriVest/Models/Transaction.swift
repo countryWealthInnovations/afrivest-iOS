@@ -45,5 +45,19 @@ var isPending: Bool { status == "pending" }
 var isSuccess: Bool { status == "success" }
 var isFailed: Bool { status == "failed" }
 
+    // Format amount with currency
+    func getFormattedAmount() -> String {
+        let numberFormatter = NumberFormatter()
+        numberFormatter.numberStyle = .decimal
+        numberFormatter.minimumFractionDigits = 2
+        numberFormatter.maximumFractionDigits = 2
+        
+        if let number = numberFormatter.number(from: amount) {
+            let formattedNumber = numberFormatter.string(from: number) ?? amount
+            return "\(formattedNumber) \(currency)"
+        }
+        
+        return "\(amount) \(currency)"
+    }
 
 }

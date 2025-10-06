@@ -30,11 +30,11 @@ struct SplashView: View {
                 LinearGradient(
                     gradient: Gradient(stops: [
                         .init(color: .clear, location: 0.0),
-                        .init(color: .glassmorphismOverlay, location: 0.7),
-                        .init(color: .overlayDark, location: 1.0)
+                        .init(color: .glassmorphismOverlay, location: 0),
+                        .init(color: .overlayDark, location: 0.4)
                     ]),
-                    startPoint: .top,
-                    endPoint: .bottom
+                    startPoint: .bottom,
+                    endPoint: .top
                 )
                 .blur(radius: 15)
                 .ignoresSafeArea()

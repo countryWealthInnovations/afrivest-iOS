@@ -38,7 +38,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
     
     // MARK: - MessagingDelegate
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        print("Firebase registration token: \(String(describing: fcmToken))")
+        print("Firebase registration token: \(fcmToken!)")
         
         if let token = fcmToken {
             // Save token
