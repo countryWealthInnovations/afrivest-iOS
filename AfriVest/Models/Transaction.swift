@@ -9,7 +9,7 @@
 
 import Foundation
 
-struct Transaction: Codable, Identifiable {
+struct Transaction: Codable, Identifiable, Sendable {
 let id: Int
 let reference: String
 let type: String

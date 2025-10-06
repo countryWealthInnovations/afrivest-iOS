@@ -71,6 +71,10 @@
 		ABF8E4B82E93F3CE00B4A771 /* AfriVestApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4752E93F3CE00B4A771 /* AfriVestApp.swift */; };
 		ABF8E4B92E93F3CE00B4A771 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4762E93F3CE00B4A771 /* ContentView.swift */; };
 		ABF8E4BA2E93F3CE00B4A771 /* Colors.swift in Resources */ = {isa = PBXBuildFile; fileRef = ABF8E43F2E93F3CE00B4A771 /* Colors.swift */; };
+		ABF9B50E2E942AE500867A55 /* WalletService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF9B50D2E942AE500867A55 /* WalletService.swift */; };
+		ABF9B5112E942B0B00867A55 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF9B5102E942B0B00867A55 /* HomeViewModel.swift */; };
+		ABF9B5132E942B1C00867A55 /* WalletCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF9B5122E942B1C00867A55 /* WalletCard.swift */; };
+		ABF9B5152E942B4300867A55 /* TransactionListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF9B5142E942B4300867A55 /* TransactionListItem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -143,6 +147,10 @@
 		ABF8E4752E93F3CE00B4A771 /* AfriVestApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AfriVestApp.swift; sourceTree = "<group>"; };
 		ABF8E4762E93F3CE00B4A771 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		ABF8E4772E93F3CE00B4A771 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		ABF9B50D2E942AE500867A55 /* WalletService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletService.swift; sourceTree = "<group>"; };
+		ABF9B5102E942B0B00867A55 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		ABF9B5122E942B1C00867A55 /* WalletCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletCard.swift; sourceTree = "<group>"; };
+		ABF9B5142E942B4300867A55 /* TransactionListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -213,6 +221,8 @@
 		ABF8E41A2E93F3CE00B4A771 /* Cards */ = {
 			isa = PBXGroup;
 			children = (
+				ABF9B5142E942B4300867A55 /* TransactionListItem.swift */,
+				ABF9B5122E942B1C00867A55 /* WalletCard.swift */,
 			);
 			path = Cards;
 			sourceTree = "<group>";
@@ -367,6 +377,7 @@
 		ABF8E4482E93F3CE00B4A771 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				ABF9B50D2E942AE500867A55 /* WalletService.swift */,
 				ABF8E4472E93F3CE00B4A771 /* Payment */,
 			);
 			path = Services;
@@ -416,6 +427,7 @@
 		ABF8E4542E93F3CE00B4A771 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				ABF9B5162E942E2D00867A55 /* Dashboard */,
 				ABF8E44E2E93F3CE00B4A771 /* Auth */,
 				ABF8E4502E93F3CE00B4A771 /* Deposit */,
 				ABF8E4512E93F3CE00B4A771 /* Profile */,
@@ -536,6 +548,14 @@
 			path = AfriVest;
 			sourceTree = "<group>";
 		};
+		ABF9B5162E942E2D00867A55 /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				ABF9B5102E942B0B00867A55 /* HomeViewModel.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -638,9 +658,13 @@
 			inputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-AfriVest/Pods-AfriVest-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
+			inputPaths = (
+			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-AfriVest/Pods-AfriVest-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -667,6 +691,7 @@
 				ABF8E4862E93F3CE00B4A771 /* APIConstants.swift in Sources */,
 				ABF8E4872E93F3CE00B4A771 /* AppConstants.swift in Sources */,
 				ABF8E4882E93F3CE00B4A771 /* APIClient.swift in Sources */,
+				ABF9B5132E942B1C00867A55 /* WalletCard.swift in Sources */,
 				ABF8E4892E93F3CE00B4A771 /* APIEndpoint.swift in Sources */,
 				ABF8E48A2E93F3CE00B4A771 /* APIError.swift in Sources */,
 				ABF8E48B2E93F3CE00B4A771 /* NetworkMonitor.swift in Sources */,
@@ -683,12 +708,14 @@
 				ABF8E4972E93F3CE00B4A771 /* Country.swift in Sources */,
 				ABF8E4982E93F3CE00B4A771 /* Spacing.swift in Sources */,
 				ABF8E4992E93F3CE00B4A771 /* Validators.swift in Sources */,
+				ABF9B5112E942B0B00867A55 /* HomeViewModel.swift in Sources */,
 				ABF8E49A2E93F3CE00B4A771 /* DepositService.swift in Sources */,
 				ABF8E49B2E93F3CE00B4A771 /* FlutterwaveSDKManager.swift in Sources */,
 				ABF8E49C2E93F3CE00B4A771 /* ForgotPasswordViewModel.swift in Sources */,
 				ABF8E49D2E93F3CE00B4A771 /* LoginViewModel.swift in Sources */,
 				ABF8E49E2E93F3CE00B4A771 /* OTPViewModel.swift in Sources */,
 				ABF8E49F2E93F3CE00B4A771 /* RegisterViewModel.swift in Sources */,
+				ABF9B5152E942B4300867A55 /* TransactionListItem.swift in Sources */,
 				ABF8E4A02E93F3CE00B4A771 /* ResetPasswordViewModel.swift in Sources */,
 				ABF8E4A12E93F3CE00B4A771 /* DepositViewModel.swift in Sources */,
 				ABF8E4A22E93F3CE00B4A771 /* ForgotPasswordView.swift in Sources */,
@@ -711,6 +738,7 @@
 				ABF8E4B32E93F3CE00B4A771 /* P2PTransferView.swift in Sources */,
 				ABF8E4B42E93F3CE00B4A771 /* WithdrawView.swift in Sources */,
 				ABF8E4B52E93F3CE00B4A771 /* WalletDetailView.swift in Sources */,
+				ABF9B50E2E942AE500867A55 /* WalletService.swift in Sources */,
 				ABF8E4B62E93F3CE00B4A771 /* WalletListView.swift in Sources */,
 				ABF8E4B82E93F3CE00B4A771 /* AfriVestApp.swift in Sources */,
 				ABF8E4B92E93F3CE00B4A771 /* ContentView.swift in Sources */,

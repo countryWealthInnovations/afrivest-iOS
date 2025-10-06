@@ -245,10 +245,15 @@ class RegisterViewModel: ObservableObject {
                         // Save credentials
                         KeychainManager.shared.saveToken(response.token)
                         UserDefaultsManager.shared.userEmail = self.email
-                        UserDefaultsManager.shared.userId = String(response.user.id)
-                        
+
+                        let user = response.user  // no need for optional binding here
+                        if let id = user.id {
+                            UserDefaultsManager.shared.userId = String(id)
+                        }
+
                         // Navigate to OTP
                         self.shouldNavigateToOTP = true
+
                     }
                     
                 } catch {

@@ -116,19 +116,25 @@ class LoginViewModel: ObservableObject {
                         // Save credentials
                         KeychainManager.shared.saveToken(response.token)
                         UserDefaultsManager.shared.userEmail = self.email
-                        UserDefaultsManager.shared.userId = String(response.user.id)
-                        
+
+                        let user = response.user   // no need for if let
+
+                        if let id = user.id {
+                            UserDefaultsManager.shared.userId = String(id)
+                        }
+
                         // Save verification status
-                        UserDefaultsManager.shared.emailVerified = response.user.emailVerified
-                        UserDefaultsManager.shared.kycVerified = response.user.kycVerified
-                        
-                        // Check email verification (Option 1: Auto-send OTP)
-                        if !response.user.emailVerified {
+                        UserDefaultsManager.shared.emailVerified = user.emailVerified ?? false
+                        UserDefaultsManager.shared.kycVerified = user.kycVerified ?? false
+
+                        // Check email verification
+                        if !(user.emailVerified ?? false) {
                             self.verificationAlertMessage = "Please verify your email to unlock all features. A verification code will be sent to your email."
                             self.showEmailVerificationAlert = true
                         } else {
                             self.shouldNavigateToDashboard = true
                         }
+
                     }
                     
                 } catch {
