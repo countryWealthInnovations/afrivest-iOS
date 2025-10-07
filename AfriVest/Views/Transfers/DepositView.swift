@@ -9,8 +9,16 @@ import SwiftUI
 
 struct DepositView: View {
     
-    @StateObject private var viewModel = DepositViewModel()
     @Environment(\.presentationMode) var presentationMode
+    @State private var amount: String = ""
+    @State private var selectedCurrency: String = "UGX"
+    @State private var phoneNumber: String = ""
+    @State private var phoneState: TextFieldState = .normal
+    @State private var errorMessage: String?
+    @State private var successMessage: String?
+    @State private var isLoading: Bool = false
+    
+    let currencies = ["UGX", "USD", "EUR", "GBP"]
     
     var body: some View {
         ZStack {
@@ -54,12 +62,12 @@ struct DepositView: View {
                                 .labelStyle()
                             
                             HStack {
-                                Text(viewModel.selectedCurrency)
+                                Text(selectedCurrency)
                                     .font(AppFont.bodyLarge())
                                     .foregroundColor(.textPrimary)
                                     .frame(width: 50)
                                 
-                                TextField("0", text: $viewModel.amount)
+                                TextField("0", text: $amount)
                                     .keyboardType(.numberPad)
                                     .font(AppFont.bodyLarge())
                                     .foregroundColor(.textPrimary)
@@ -74,8 +82,8 @@ struct DepositView: View {
                             Text("Currency")
                                 .labelStyle()
                             
-                            Picker("Currency", selection: $viewModel.selectedCurrency) {
-                                ForEach(viewModel.currencies, id: \.self) { currency in
+                            Picker("Currency", selection: $selectedCurrency) {
+                                ForEach(currencies, id: \.self) { currency in
                                     Text(currency).tag(currency)
                                 }
                             }
@@ -89,22 +97,30 @@ struct DepositView: View {
                             
                             PhoneTextField(
                                 label: "",
-                                text: $viewModel.phoneNumber,
-                                state: viewModel.phoneState,
+                                text: $phoneNumber,
+                                state: phoneState,
                                 errorMessage: "Invalid phone number format",
-                                showCheckmark: viewModel.phoneState == .success
+                                showCheckmark: phoneState == .success
                             )
+                            .onChange(of: phoneNumber) { newValue in
+                                if !newValue.isEmpty {
+                                    phoneState = Validators.isValidPhoneNumber(newValue) ? .success : .error
+                                } else {
+                                    phoneState = .normal
+                                }
+                            }
+                            
                         }
                         
                         // Error Message
-                        if let error = viewModel.errorMessage {
+                        if let error = errorMessage {
                             Text(error)
                                 .foregroundColor(.errorRed)
                                 .bodyRegularStyle()
                         }
                         
                         // Success Message
-                        if let success = viewModel.successMessage {
+                        if let success = successMessage {
                             Text(success)
                                 .foregroundColor(.successGreen)
                                 .bodyRegularStyle()
@@ -116,13 +132,11 @@ struct DepositView: View {
                         PrimaryButton(
                             title: "Deposit",
                             action: {
-                                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                                   let rootVC = windowScene.windows.first?.rootViewController {
-                                    viewModel.initiateDeposit(from: rootVC)
-                                }
+                                print("🔘 Deposit button tapped")
+                                // Add your deposit logic here
                             },
-                            isLoading: viewModel.isLoading,
-                            isEnabled: !viewModel.amount.isEmpty && !viewModel.phoneNumber.isEmpty
+                            isLoading: isLoading,
+                            isEnabled: !amount.isEmpty && phoneState == .success
                         )
                     }
                     .padding(Spacing.screenHorizontal)
@@ -131,10 +145,5 @@ struct DepositView: View {
             }
         }
         .navigationBarHidden(true)
-        .onChange(of: viewModel.shouldNavigateToDashboard) { should in
-            if should {
-                presentationMode.wrappedValue.dismiss()
-            }
-        }
     }
 }

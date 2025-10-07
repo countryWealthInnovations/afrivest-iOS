@@ -151,12 +151,22 @@ struct RegisterView: View {
             if viewModel.isLoading {
                 LoadingOverlay()
             }
+            
+            // FIXED: Hidden NavigationLink that triggers when shouldNavigateToOTP is true
+            NavigationLink(
+                destination: OTPView(email: viewModel.email, from: "register"),
+                isActive: $viewModel.shouldNavigateToOTP
+            ) {
+                EmptyView()
+            }
+            .hidden()
         }
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(viewModel.errorMessage)
         }
+        .navigationBarBackButtonHidden(true)
     }
 }
 

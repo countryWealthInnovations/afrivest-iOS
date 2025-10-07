@@ -15,6 +15,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<true/>
 	<key>FirebaseInAppMessagingAutomaticDataCollectionEnabled</key>
 	<false/>
 	<key>NSAppTransportSecurity</key>
@@ -38,7 +40,5 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
-	<key>FirebaseAppDelegateProxyEnabled</key>
-	<true/>
 </dict>
 </plist>

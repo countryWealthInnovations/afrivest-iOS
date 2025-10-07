@@ -76,19 +76,28 @@ struct OTPView: View {
                 .padding(.horizontal, Spacing.screenHorizontal)
                 .padding(.bottom, Spacing.xl)
             }
+            .padding(.horizontal, Spacing.screenHorizontal)
             
             // Loading Overlay
             if viewModel.isLoading {
                 LoadingOverlay()
             }
+            
+            // FIXED: Hidden NavigationLink for Dashboard navigation
+            NavigationLink(
+                destination: DashboardView()
+                    .navigationBarBackButtonHidden(true),
+                isActive: $viewModel.shouldNavigateToDashboard
+            ) {
+                EmptyView()
+            }
+            .hidden()
         }
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(viewModel.errorMessage)
         }
-        .fullScreenCover(isPresented: $viewModel.shouldNavigateToDashboard) {
-            DashboardView()
-        }
+        .navigationBarBackButtonHidden(true)
     }
 }
