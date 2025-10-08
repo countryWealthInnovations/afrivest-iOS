@@ -29,6 +29,33 @@ struct User: Codable, Identifiable, Sendable {
         case updatedAt = "updated_at"
     }
     
+    // Custom memberwise initializer
+    init(
+        id: Int?,
+        name: String,
+        email: String,
+        phoneNumber: String? = nil,
+        role: String? = nil,
+        status: String,
+        avatarUrl: String? = nil,
+        emailVerified: Bool? = nil,
+        kycVerified: Bool? = nil,
+        createdAt: String? = nil,
+        updatedAt: String? = nil
+    ) {
+        self.id = id
+        self.name = name
+        self.email = email
+        self.phoneNumber = phoneNumber
+        self.role = role
+        self.status = status
+        self.avatarUrl = avatarUrl
+        self.emailVerified = emailVerified
+        self.kycVerified = kycVerified
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+    }
+    
     nonisolated init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         

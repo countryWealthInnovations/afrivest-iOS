@@ -88,5 +88,48 @@ class UserDefaultsManager {
         get { bool(forKey: "kyc_verified") }
         set { set(newValue, forKey: "kyc_verified") }
     }
+    
+    // MARK: - Profile Caching
+    private let profileCacheKey = "cached_profile_data"
+    
+    func saveProfile(_ profile: ProfileData) {
+        do {
+            let encoder = JSONEncoder()
+            let data = try encoder.encode(profile)
+            defaults.set(data, forKey: profileCacheKey)
+            
+            // Also update individual fields for backwards compatibility
+            userEmail = profile.email
+            userId = String(profile.id)
+            kycVerified = profile.kycVerified
+            emailVerified = profile.emailVerified
+            
+            print("✅ Profile cached successfully")
+        } catch {
+            print("❌ Failed to cache profile: \(error.localizedDescription)")
+        }
+    }
+    
+    func getCachedProfile() -> ProfileData? {
+        guard let data = defaults.data(forKey: profileCacheKey) else {
+            print("⚠️ No cached profile found")
+            return nil
+        }
+        
+        do {
+            let decoder = JSONDecoder()
+            let profile = try decoder.decode(ProfileData.self, from: data)
+            print("✅ Cached profile loaded")
+            return profile
+        } catch {
+            print("❌ Failed to decode cached profile: \(error.localizedDescription)")
+            return nil
+        }
+    }
+    
+    func clearProfile() {
+        defaults.removeObject(forKey: profileCacheKey)
+        print("🗑️ Profile cache cleared")
+    }
 }
 

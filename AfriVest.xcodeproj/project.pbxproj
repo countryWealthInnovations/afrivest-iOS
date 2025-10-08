@@ -16,6 +16,8 @@
 		AB30ED022E95D64F00EEB7ED /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = AB30ED012E95D64F00EEB7ED /* FirebaseMessaging */; };
 		AB30ED052E95D67800EEB7ED /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = AB30ED042E95D67800EEB7ED /* Kingfisher */; };
 		AB30ED082E95D6A300EEB7ED /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = AB30ED072E95D6A300EEB7ED /* Lottie */; };
+		AB4C8FAD2E96333D00F2701C /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4C8FAC2E96333D00F2701C /* ProfileService.swift */; };
+		AB4C8FAF2E96338200F2701C /* ProfileResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4C8FAE2E96337D00F2701C /* ProfileResponse.swift */; };
 		ABF8E4792E93F3CE00B4A771 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ABF8E43E2E93F3CE00B4A771 /* Assets.xcassets */; };
 		ABF8E47A2E93F3CE00B4A771 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ABF8E4412E93F3CE00B4A771 /* GoogleService-Info.plist */; };
 		ABF8E47C2E93F3CE00B4A771 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4142E93F3CE00B4A771 /* AppDelegate.swift */; };
@@ -83,6 +85,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AB4C8FAC2E96333D00F2701C /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
+		AB4C8FAE2E96337D00F2701C /* ProfileResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileResponse.swift; sourceTree = "<group>"; };
 		ABD92DB92E8D904700808567 /* AfriVest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AfriVest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABF8E4142E93F3CE00B4A771 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		ABF8E4162E93F3CE00B4A771 /* BiometricButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricButton.swift; sourceTree = "<group>"; };
@@ -321,6 +325,7 @@
 		ABF8E4372E93F3CE00B4A771 /* API */ = {
 			isa = PBXGroup;
 			children = (
+				AB4C8FAE2E96337D00F2701C /* ProfileResponse.swift */,
 				ABF8E4352E93F3CE00B4A771 /* AuthResponse.swift */,
 				ABF8E4362E93F3CE00B4A771 /* OTPResponse.swift */,
 			);
@@ -356,6 +361,7 @@
 		ABF8E4482E93F3CE00B4A771 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				AB4C8FAC2E96333D00F2701C /* ProfileService.swift */,
 				ABF9B50D2E942AE500867A55 /* WalletService.swift */,
 			);
 			path = Services;
@@ -622,6 +628,8 @@
 				ABF8E4842E93F3CE00B4A771 /* KYCBannerView.swift in Sources */,
 				ABF8E4852E93F3CE00B4A771 /* LoadingOverlay.swift in Sources */,
 				ABF8E4862E93F3CE00B4A771 /* APIConstants.swift in Sources */,
+				AB4C8FAF2E96338200F2701C /* ProfileResponse.swift in Sources */,
+				AB4C8FAD2E96333D00F2701C /* ProfileService.swift in Sources */,
 				ABF8E4872E93F3CE00B4A771 /* AppConstants.swift in Sources */,
 				ABF8E4882E93F3CE00B4A771 /* APIClient.swift in Sources */,
 				ABF9B5132E942B1C00867A55 /* WalletCard.swift in Sources */,

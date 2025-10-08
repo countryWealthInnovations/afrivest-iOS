@@ -13,15 +13,32 @@ import Combine
 class HomeViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
-    @Published var user: User?
+    @Published var profile: ProfileData?
     @Published var wallets: [Wallet] = []
-    @Published var recentTransactions: [Transaction] = []
-    @Published var statistics: DashboardStatistics?
     
     // UI State
     @Published var isAmountHidden = false
     @Published var isOtherCurrenciesExpanded = false
     @Published var greeting = ""
+    
+    // Computed property for user (for backwards compatibility)
+    var user: User? {
+        guard let profile = profile else { return nil }
+        
+        return User(
+            id: profile.id,
+            name: profile.name,
+            email: profile.email,
+            phoneNumber: profile.phoneNumber,
+            role: profile.role,
+            status: profile.status,
+            avatarUrl: profile.avatarUrl,
+            emailVerified: profile.emailVerified,
+            kycVerified: profile.kycVerified,
+            createdAt: profile.createdAt,
+            updatedAt: nil
+        )
+    }
     
     // All wallets go to deposit section, separated by currency
     var depositWallets: [Wallet] {
@@ -47,46 +64,34 @@ class HomeViewModel: ObservableObject {
         updateGreeting()
     }
     
-    // MARK: - Load Dashboard Data
+    // MARK: - Load Profile with Caching
     func loadDashboard() {
-        isLoading = true
+        // Check if we have cached data
+        let hasCachedData = UserDefaultsManager.shared.getCachedProfile() != nil
+        
+        // Only show loading if no cached data
+        if !hasCachedData {
+            isLoading = true
+        }
+        
         errorMessage = nil
         
-        WalletService.shared.getDashboard { [weak self] result in
+        ProfileService.shared.getProfile { [weak self] result in
             DispatchQueue.main.async {
                 self?.isLoading = false
                 
                 switch result {
-                case .success(let response):
-                    self?.user = response.user
-                    self?.wallets = response.wallets
-                    self?.recentTransactions = response.recentTransactions
-                    self?.statistics = response.statistics
-                    print("✅ Dashboard loaded: \(response.wallets.count) wallets")
+                case .success(let profileData):
+                    self?.profile = profileData
+                    self?.wallets = profileData.wallets
+                    print("✅ Profile loaded: \(profileData.wallets.count) wallets")
                     
                 case .failure(let error):
-                    self?.errorMessage = error.localizedDescription
-                    print("❌ Dashboard load error: \(error.localizedDescription)")
-                    
-                    // Fallback to wallets endpoint
-                    self?.loadWalletsFallback()
-                }
-            }
-        }
-    }
-    
-    // MARK: - Fallback to Wallets Endpoint
-    private func loadWalletsFallback() {
-        WalletService.shared.getWallets { [weak self] result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let wallets):
-                    self?.wallets = wallets
-                    print("✅ Wallets loaded (fallback): \(wallets.count) wallets")
-                    
-                case .failure(let error):
-                    self?.errorMessage = "Failed to load data: \(error.localizedDescription)"
-                    print("❌ Wallets fallback error: \(error.localizedDescription)")
+                    // Only show error if we don't have cached data
+                    if !hasCachedData {
+                        self?.errorMessage = error.localizedDescription
+                        print("❌ Profile load error: \(error.localizedDescription)")
+                    }
                 }
             }
         }
@@ -147,5 +152,28 @@ class HomeViewModel: ObservableObject {
     func refresh() {
         loadDashboard()
         updateGreeting()
+    }
+    
+    // MARK: - Force Refresh (clears cache)
+    func forceRefresh() {
+        isLoading = true
+        errorMessage = nil
+        
+        ProfileService.shared.forceRefresh { [weak self] result in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                
+                switch result {
+                case .success(let profileData):
+                    self?.profile = profileData
+                    self?.wallets = profileData.wallets
+                    print("✅ Profile force refreshed")
+                    
+                case .failure(let error):
+                    self?.errorMessage = error.localizedDescription
+                    print("❌ Profile force refresh error: \(error.localizedDescription)")
+                }
+            }
+        }
     }
 }

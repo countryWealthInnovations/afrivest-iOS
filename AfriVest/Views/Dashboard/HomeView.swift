@@ -7,6 +7,7 @@
 //
 
 import SwiftUI
+import Kingfisher
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
@@ -94,19 +95,71 @@ struct HomeView: View {
         return UserDefaultsManager.shared.kycVerified
     }
     
+    // MARK: - User Avatar
+    private var userAvatar: some View {
+        Group {
+            if let avatarUrl = viewModel.user?.avatarUrl,
+               !avatarUrl.isEmpty,
+               avatarUrl != "https://afrivest.countrywealth.ug/images/default-avatar.png",
+               let url = URL(string: avatarUrl) {
+                // Show custom avatar image
+                KFImage(url)
+                    .placeholder {
+                        Circle()
+                            .fill(Color.primaryGold.opacity(0.3))
+                            .frame(width: 50, height: 50)
+                            .overlay(
+                                ProgressView()
+                                    .tint(Color.primaryGold)
+                            )
+                    }
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 50, height: 50)
+                    .clipShape(Circle())
+                    .overlay(
+                        Circle()
+                            .stroke(Color.primaryGold.opacity(0.5), lineWidth: 1)
+                    )
+            } else {
+                // Show initials for default avatar
+                Circle()
+                    .fill(Color.primaryGold.opacity(0.3))
+                    .frame(width: 50, height: 50)
+                    .overlay(
+                        Text(getUserInitials())
+                            .font(AppFont.heading2())
+                            .foregroundColor(Color.primaryGold)
+                    )
+            }
+        }
+    }
+    
+    // MARK: - Get User Initials
+    private func getUserInitials() -> String {
+        guard let name = viewModel.user?.name else { return "U" }
+        
+        let nameComponents = name.split(separator: " ")
+        
+        if nameComponents.count >= 2 {
+            // Get first letter of first name and first letter of last name
+            let firstInitial = nameComponents[0].prefix(1).uppercased()
+            let lastInitial = nameComponents[1].prefix(1).uppercased()
+            return "\(firstInitial)\(lastInitial)"
+        } else if nameComponents.count == 1 {
+            // Get first letter only
+            return nameComponents[0].prefix(1).uppercased()
+        }
+        
+        return "U"
+    }
+    
     // MARK: - Header Section
     private var headerSection: some View {
         HStack {
             // User Avatar and Name
             HStack(spacing: Spacing.md) {
-                Circle()
-                    .fill(Color.primaryGold.opacity(0.3))
-                    .frame(width: 50, height: 50)
-                    .overlay(
-                        Text(viewModel.user?.name.prefix(1).uppercased() ?? "U")
-                            .font(AppFont.heading2())
-                            .foregroundColor(Color.primaryGold)
-                    )
+                userAvatar
                 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(viewModel.user?.name ?? "User")
