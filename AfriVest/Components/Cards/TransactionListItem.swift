@@ -61,13 +61,23 @@ struct TransactionListItem: View {
     // MARK: - Computed Properties
     
     private var iconName: String {
+        // For transfers, show direction
+        if transaction.type == "transfer" {
+            switch transaction.direction {
+            case "sent":
+                return "arrow.up.circle.fill"
+            case "received":
+                return "arrow.down.circle.fill"
+            default:
+                return "arrow.left.arrow.right.circle.fill"
+            }
+        }
+        
         switch transaction.type {
         case "deposit":
             return "arrow.down.circle.fill"
         case "withdrawal":
             return "arrow.up.circle.fill"
-        case "transfer":
-            return "arrow.left.arrow.right.circle.fill"
         case "bill_payment":
             return "doc.text.fill"
         case "insurance":
@@ -84,6 +94,18 @@ struct TransactionListItem: View {
     }
     
     private var iconColor: Color {
+        // For transfers, color based on direction
+        if transaction.type == "transfer" {
+            switch transaction.direction {
+            case "sent":
+                return Color.errorRed
+            case "received":
+                return Color.successGreen
+            default:
+                return Color.primaryGold
+            }
+        }
+        
         switch transaction.type {
         case "deposit":
             return Color.successGreen
@@ -99,14 +121,31 @@ struct TransactionListItem: View {
     }
     
     private var transactionDescription: String {
+        // Use description if provided
         if let desc = transaction.description, !desc.isEmpty {
             return desc
         }
         
-        if transaction.type == "transfer", let recipient = transaction.recipient {
-            return "Transfer to \(recipient.name)"
+        // For transfers, show direction and other party
+        if transaction.type == "transfer" {
+            if let otherParty = transaction.otherParty {
+                switch transaction.direction {
+                case "sent":
+                    return "Transfer to \(otherParty.name)"
+                case "received":
+                    return "Transfer from \(otherParty.name)"
+                default:
+                    return "Transfer"
+                }
+            }
+            
+            // Fallback to recipient if available
+            if let recipient = transaction.recipient {
+                return "Transfer to \(recipient.name)"
+            }
         }
         
+        // Default descriptions for other types
         switch transaction.type {
         case "deposit":
             return "Deposit"
@@ -152,7 +191,6 @@ struct TransactionListItem: View {
         return displayFormatter.string(from: date)
     }
     
-    
     private var formattedAmount: String {
         guard let amount = Double(transaction.amount) else {
             return transaction.amount
@@ -164,7 +202,17 @@ struct TransactionListItem: View {
         formatter.maximumFractionDigits = 2
         formatter.groupingSeparator = ","
         
-        let sign = transaction.type == "deposit" ? "+" : "-"
+        // Determine sign based on direction and type
+        let sign: String
+        if transaction.direction == "received" {
+            sign = "+"
+        } else if transaction.type == "deposit" {
+            sign = "+"
+        } else if transaction.type == "withdrawal" || transaction.type == "transfer" {
+            sign = "-"
+        } else {
+            sign = "-"
+        }
         
         if let formatted = formatter.string(from: NSNumber(value: amount)) {
             return "\(sign) \(formatted) \(transaction.currency)"
@@ -174,6 +222,18 @@ struct TransactionListItem: View {
     }
     
     private var amountColor: Color {
+        // Color based on direction for transfers
+        if transaction.type == "transfer" {
+            switch transaction.direction {
+            case "sent":
+                return Color.errorRed
+            case "received":
+                return Color.successGreen
+            default:
+                return Color.textPrimary
+            }
+        }
+        
         switch transaction.type {
         case "deposit":
             return Color.successGreen
@@ -206,6 +266,7 @@ struct TransactionListItem: View {
 struct TransactionListItem_Previews: PreviewProvider {
     static var previews: some View {
         VStack(spacing: 16) {
+            // Deposit
             TransactionListItem(
                 transaction: Transaction(
                     id: 1,
@@ -219,32 +280,83 @@ struct TransactionListItem_Previews: PreviewProvider {
                     paymentChannel: "flutterwave",
                     externalReference: nil,
                     description: "Card deposit",
+                    direction: nil,
+                    otherParty: nil,
                     createdAt: "2025-01-15T10:30:00Z",
                     updatedAt: "2025-01-15T10:35:00Z",
                     completedAt: "2025-01-15T10:35:00Z",
                     recipient: nil
                 )
             )
+            
+            // Transfer Sent
             TransactionListItem(
                 transaction: Transaction(
                     id: 2,
                     reference: "TXN-124",
-                    type: "withdrawal",
-                    amount: "25000.00",
-                    feeAmount: "500.00",
-                    totalAmount: "25500.00",
+                    type: "transfer",
+                    amount: "15000.00",
+                    feeAmount: "0.00",
+                    totalAmount: "15000.00",
                     currency: "UGX",
-                    status: "pending",
-                    paymentChannel: "mtn",
+                    status: "success",
+                    paymentChannel: "internal",
                     externalReference: nil,
-                    description: "Mobile money withdrawal",
+                    description: nil,
+                    direction: "sent",
+                    otherParty: Recipient(name: "Jane Doe", email: "jane@example.com"),
                     createdAt: "2025-01-15T11:00:00Z",
                     updatedAt: "2025-01-15T11:00:00Z",
+                    completedAt: nil,
+                    recipient: Recipient(name: "Jane Doe", email: "jane@example.com")
+                )
+            )
+            
+            // Transfer Received
+            TransactionListItem(
+                transaction: Transaction(
+                    id: 3,
+                    reference: "TXN-125",
+                    type: "transfer",
+                    amount: "25000.00",
+                    feeAmount: "0.00",
+                    totalAmount: "25000.00",
+                    currency: "UGX",
+                    status: "success",
+                    paymentChannel: "internal",
+                    externalReference: nil,
+                    description: nil,
+                    direction: "received",
+                    otherParty: Recipient(name: "John Smith", email: "john@example.com"),
+                    createdAt: "2025-01-15T12:00:00Z",
+                    updatedAt: "2025-01-15T12:00:00Z",
                     completedAt: nil,
                     recipient: nil
                 )
             )
             
+            // Withdrawal Pending
+            TransactionListItem(
+                transaction: Transaction(
+                    id: 4,
+                    reference: "TXN-126",
+                    type: "withdrawal",
+                    amount: "30000.00",
+                    feeAmount: "500.00",
+                    totalAmount: "30500.00",
+                    currency: "UGX",
+                    status: "pending",
+                    paymentChannel: "mtn",
+                    externalReference: nil,
+                    description: "Mobile money withdrawal",
+                    direction: nil,
+                    otherParty: nil,
+                    createdAt: "2025-01-15T13:00:00Z",
+                    updatedAt: "2025-01-15T13:00:00Z",
+                    completedAt: nil,
+                    recipient: nil
+                )
+            )
         }
         .padding()
         .appBackground()

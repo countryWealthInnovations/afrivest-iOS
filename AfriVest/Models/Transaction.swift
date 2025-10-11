@@ -19,6 +19,8 @@ struct Transaction: Codable, Identifiable, Sendable {
     let paymentChannel: String?
     let externalReference: String?
     let description: String?
+    let direction: String? // NEW: sent, received, self, other
+    let otherParty: Recipient? // NEW: sender or recipient
     let createdAt: String
     let updatedAt: String?
     let completedAt: String?
@@ -30,6 +32,8 @@ struct Transaction: Codable, Identifiable, Sendable {
         case totalAmount = "total_amount"
         case paymentChannel = "payment_channel"
         case externalReference = "external_reference"
+        case direction
+        case otherParty = "other_party"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
         case completedAt = "completed_at"
@@ -48,6 +52,8 @@ struct Transaction: Codable, Identifiable, Sendable {
         paymentChannel: String? = nil,
         externalReference: String? = nil,
         description: String? = nil,
+        direction: String? = nil, // ADD THIS
+        otherParty: Recipient? = nil, // ADD THIS
         createdAt: String,
         updatedAt: String? = nil,
         completedAt: String? = nil,
@@ -64,6 +70,8 @@ struct Transaction: Codable, Identifiable, Sendable {
         self.paymentChannel = paymentChannel
         self.externalReference = externalReference
         self.description = description
+        self.direction = direction // ADD THIS
+        self.otherParty = otherParty // ADD THIS
         self.createdAt = createdAt
         self.updatedAt = updatedAt
         self.completedAt = completedAt
@@ -83,6 +91,8 @@ struct Transaction: Codable, Identifiable, Sendable {
         paymentChannel = try container.decodeIfPresent(String.self, forKey: .paymentChannel)
         externalReference = try container.decodeIfPresent(String.self, forKey: .externalReference)
         description = try container.decodeIfPresent(String.self, forKey: .description)
+        direction = try container.decodeIfPresent(String.self, forKey: .direction) // ADD THIS
+        otherParty = try container.decodeIfPresent(Recipient.self, forKey: .otherParty) // ADD THIS
         createdAt = try container.decode(String.self, forKey: .createdAt)
         updatedAt = try container.decodeIfPresent(String.self, forKey: .updatedAt)
         completedAt = try container.decodeIfPresent(String.self, forKey: .completedAt)

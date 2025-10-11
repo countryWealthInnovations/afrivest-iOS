@@ -30,26 +30,22 @@ class HistoryViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         currentPage = 1
-        transactions.removeAll()
-        filteredTransactions.removeAll()
         
         Task {
             do {
                 let endpoint = APIConstants.Endpoints.transactions
-                var parameters: [String: Any] = [
-                    "page": currentPage,
-                    "per_page": perPage
+                var queryParams: [String: String] = [
+                    "page": "\(currentPage)",
+                    "per_page": "\(perPage)"
                 ]
                 
                 if let filter = selectedFilter {
-                    parameters["status"] = filter
+                    queryParams["status"] = filter
                 }
 
-                let response: [Transaction] = try await APIClient.shared.request(
+                let response: [Transaction] = try await APIClient.shared.requestWithURLParameters(
                     endpoint,
-                    method: .get,
-                    parameters: parameters,
-                    encoding: URLEncoding.default,
+                    parameters: queryParams,
                     requiresAuth: true
                 )
 
@@ -77,20 +73,18 @@ class HistoryViewModel: ObservableObject {
         Task {
             do {
                 let endpoint = APIConstants.Endpoints.transactions
-                var parameters: [String: Any] = [
-                    "page": currentPage,
-                    "per_page": perPage
+                var queryParams: [String: String] = [
+                    "page": "\(currentPage)",
+                    "per_page": "\(perPage)"
                 ]
                 
                 if let filter = selectedFilter {
-                    parameters["status"] = filter
+                    queryParams["status"] = filter
                 }
 
-                let response: [Transaction] = try await APIClient.shared.request(
+                let response: [Transaction] = try await APIClient.shared.requestWithURLParameters(
                     endpoint,
-                    method: .get,
-                    parameters: parameters,
-                    encoding: URLEncoding.default,
+                    parameters: queryParams,
                     requiresAuth: true
                 )
 
@@ -113,7 +107,14 @@ class HistoryViewModel: ObservableObject {
     
     // MARK: - Filter Transactions
     func filterTransactions(_ status: String?) {
+        // If filter hasn't changed, don't reload
+        if selectedFilter == status {
+            return
+        }
+        
         selectedFilter = status
+        transactions.removeAll()
+        filteredTransactions.removeAll()
         loadTransactions()
     }
     

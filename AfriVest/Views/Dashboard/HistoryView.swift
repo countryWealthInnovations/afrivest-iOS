@@ -43,7 +43,9 @@ struct HistoryView: View {
         }
         .navigationBarHidden(true)
         .onAppear {
-            viewModel.loadTransactions()
+            if viewModel.transactions.isEmpty {
+                viewModel.loadTransactions()
+            }
         }
         .overlay(
             Group {
