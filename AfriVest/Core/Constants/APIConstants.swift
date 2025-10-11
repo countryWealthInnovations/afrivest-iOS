@@ -47,6 +47,7 @@ struct Endpoints {
     static let depositCard = "/deposits/card"
     static let depositMobileMoney = "/deposits/mobile-money"
     static let depositBank = "/deposits/bank-transfer"
+    static let checkDepositStatus = "/deposits"
     static func depositStatus(reference: String) -> String {
         return "/deposits/\(reference)/status"
     }

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB21F6512E9AC17300E32329 /* DepositProcessingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB21F6502E9AC17300E32329 /* DepositProcessingView.swift */; };
+		AB21F6532E9ADAA300E32329 /* TransactionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB21F6522E9ADAA100E32329 /* TransactionService.swift */; };
+		AB21F6552E9AE27F00E32329 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB21F6542E9AE27700E32329 /* HistoryViewModel.swift */; };
 		AB30ECF42E95D5D400EEB7ED /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = AB30ECF32E95D5D400EEB7ED /* Alamofire */; };
 		AB30ECF72E95D5EE00EEB7ED /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = AB30ECF62E95D5EE00EEB7ED /* KeychainSwift */; };
 		AB30ECFA2E95D64F00EEB7ED /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = AB30ECF92E95D64F00EEB7ED /* FirebaseAnalytics */; };
@@ -18,6 +21,11 @@
 		AB30ED082E95D6A300EEB7ED /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = AB30ED072E95D6A300EEB7ED /* Lottie */; };
 		AB4C8FAD2E96333D00F2701C /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4C8FAC2E96333D00F2701C /* ProfileService.swift */; };
 		AB4C8FAF2E96338200F2701C /* ProfileResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4C8FAE2E96337D00F2701C /* ProfileResponse.swift */; };
+		AB5CCAA42E995E6800EE5B95 /* DepositResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5CCAA32E995E6800EE5B95 /* DepositResponse.swift */; };
+		AB5CCAA62E995F1500EE5B95 /* DepositService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5CCAA52E995F1500EE5B95 /* DepositService.swift */; };
+		AB5CCAA82E995F2F00EE5B95 /* DepositViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5CCAA72E995F2F00EE5B95 /* DepositViewModel.swift */; };
+		AB5CCAAA2E995F6A00EE5B95 /* PaymentWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5CCAA92E995F6A00EE5B95 /* PaymentWebView.swift */; };
+		AB5CCAAC2E995FA900EE5B95 /* DepositStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5CCAAB2E995FA900EE5B95 /* DepositStatusView.swift */; };
 		ABF8E4792E93F3CE00B4A771 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ABF8E43E2E93F3CE00B4A771 /* Assets.xcassets */; };
 		ABF8E47A2E93F3CE00B4A771 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ABF8E4412E93F3CE00B4A771 /* GoogleService-Info.plist */; };
 		ABF8E47C2E93F3CE00B4A771 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4142E93F3CE00B4A771 /* AppDelegate.swift */; };
@@ -85,8 +93,16 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AB21F6502E9AC17300E32329 /* DepositProcessingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepositProcessingView.swift; sourceTree = "<group>"; };
+		AB21F6522E9ADAA100E32329 /* TransactionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionService.swift; sourceTree = "<group>"; };
+		AB21F6542E9AE27700E32329 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
 		AB4C8FAC2E96333D00F2701C /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
 		AB4C8FAE2E96337D00F2701C /* ProfileResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileResponse.swift; sourceTree = "<group>"; };
+		AB5CCAA32E995E6800EE5B95 /* DepositResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepositResponse.swift; sourceTree = "<group>"; };
+		AB5CCAA52E995F1500EE5B95 /* DepositService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepositService.swift; sourceTree = "<group>"; };
+		AB5CCAA72E995F2F00EE5B95 /* DepositViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepositViewModel.swift; sourceTree = "<group>"; };
+		AB5CCAA92E995F6A00EE5B95 /* PaymentWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentWebView.swift; sourceTree = "<group>"; };
+		AB5CCAAB2E995FA900EE5B95 /* DepositStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepositStatusView.swift; sourceTree = "<group>"; };
 		ABD92DB92E8D904700808567 /* AfriVest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AfriVest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABF8E4142E93F3CE00B4A771 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		ABF8E4162E93F3CE00B4A771 /* BiometricButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricButton.swift; sourceTree = "<group>"; };
@@ -176,6 +192,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		AB5CCAAD2E995FD000EE5B95 /* Deposit */ = {
+			isa = PBXGroup;
+			children = (
+				AB21F6502E9AC17300E32329 /* DepositProcessingView.swift */,
+				AB5CCAAB2E995FA900EE5B95 /* DepositStatusView.swift */,
+				AB5CCAA92E995F6A00EE5B95 /* PaymentWebView.swift */,
+				ABF8E46B2E93F3CE00B4A771 /* DepositView.swift */,
+			);
+			path = Deposit;
+			sourceTree = "<group>";
+		};
 		ABD92DB02E8D904600808567 = {
 			isa = PBXGroup;
 			children = (
@@ -336,6 +363,7 @@
 			isa = PBXGroup;
 			children = (
 				ABF8E4372E93F3CE00B4A771 /* API */,
+				AB5CCAA32E995E6800EE5B95 /* DepositResponse.swift */,
 				ABF8E4382E93F3CE00B4A771 /* Transaction.swift */,
 				ABF8E4392E93F3CE00B4A771 /* User.swift */,
 				ABF8E43A2E93F3CE00B4A771 /* Wallet.swift */,
@@ -361,6 +389,8 @@
 		ABF8E4482E93F3CE00B4A771 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				AB5CCAA52E995F1500EE5B95 /* DepositService.swift */,
+				AB21F6522E9ADAA100E32329 /* TransactionService.swift */,
 				AB4C8FAC2E96333D00F2701C /* ProfileService.swift */,
 				ABF9B50D2E942AE500867A55 /* WalletService.swift */,
 			);
@@ -382,6 +412,7 @@
 		ABF8E4502E93F3CE00B4A771 /* Deposit */ = {
 			isa = PBXGroup;
 			children = (
+				AB5CCAA72E995F2F00EE5B95 /* DepositViewModel.swift */,
 			);
 			path = Deposit;
 			sourceTree = "<group>";
@@ -396,6 +427,7 @@
 		ABF8E4522E93F3CE00B4A771 /* Transaction */ = {
 			isa = PBXGroup;
 			children = (
+				AB21F6542E9AE27700E32329 /* HistoryViewModel.swift */,
 			);
 			path = Transaction;
 			sourceTree = "<group>";
@@ -482,7 +514,6 @@
 		ABF8E46E2E93F3CE00B4A771 /* Transfers */ = {
 			isa = PBXGroup;
 			children = (
-				ABF8E46B2E93F3CE00B4A771 /* DepositView.swift */,
 				ABF8E46C2E93F3CE00B4A771 /* P2PTransferView.swift */,
 				ABF8E46D2E93F3CE00B4A771 /* WithdrawView.swift */,
 			);
@@ -501,6 +532,7 @@
 		ABF8E4732E93F3CE00B4A771 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				AB5CCAAD2E995FD000EE5B95 /* Deposit */,
 				ABF8E45A2E93F3CE00B4A771 /* Authentication */,
 				ABF8E4612E93F3CE00B4A771 /* Dashboard */,
 				ABF8E4642E93F3CE00B4A771 /* Onboarding */,
@@ -622,6 +654,7 @@
 				ABF8E47E2E93F3CE00B4A771 /* FloatingActionButton.swift in Sources */,
 				ABF8E47F2E93F3CE00B4A771 /* PrimaryButton.swift in Sources */,
 				ABF8E4802E93F3CE00B4A771 /* OTPBoxes.swift in Sources */,
+				AB5CCAAC2E995FA900EE5B95 /* DepositStatusView.swift in Sources */,
 				ABF8E4812E93F3CE00B4A771 /* PhoneTextField.swift in Sources */,
 				ABF8E4822E93F3CE00B4A771 /* TextFieldState.swift in Sources */,
 				ABF8E4832E93F3CE00B4A771 /* CountryPickerView.swift in Sources */,
@@ -629,9 +662,11 @@
 				ABF8E4852E93F3CE00B4A771 /* LoadingOverlay.swift in Sources */,
 				ABF8E4862E93F3CE00B4A771 /* APIConstants.swift in Sources */,
 				AB4C8FAF2E96338200F2701C /* ProfileResponse.swift in Sources */,
+				AB5CCAA62E995F1500EE5B95 /* DepositService.swift in Sources */,
 				AB4C8FAD2E96333D00F2701C /* ProfileService.swift in Sources */,
 				ABF8E4872E93F3CE00B4A771 /* AppConstants.swift in Sources */,
 				ABF8E4882E93F3CE00B4A771 /* APIClient.swift in Sources */,
+				AB21F6512E9AC17300E32329 /* DepositProcessingView.swift in Sources */,
 				ABF9B5132E942B1C00867A55 /* WalletCard.swift in Sources */,
 				ABF8E4892E93F3CE00B4A771 /* APIEndpoint.swift in Sources */,
 				ABF8E48A2E93F3CE00B4A771 /* APIError.swift in Sources */,
@@ -640,6 +675,7 @@
 				ABF8E48D2E93F3CE00B4A771 /* SecureStorage.swift in Sources */,
 				ABF8E48E2E93F3CE00B4A771 /* UserDefaultsManager.swift in Sources */,
 				ABF8E48F2E93F3CE00B4A771 /* AuthResponse.swift in Sources */,
+				AB5CCAA42E995E6800EE5B95 /* DepositResponse.swift in Sources */,
 				ABF8E4902E93F3CE00B4A771 /* OTPResponse.swift in Sources */,
 				ABF8E4912E93F3CE00B4A771 /* Transaction.swift in Sources */,
 				ABF8E4922E93F3CE00B4A771 /* User.swift in Sources */,
@@ -656,6 +692,7 @@
 				ABF8E49F2E93F3CE00B4A771 /* RegisterViewModel.swift in Sources */,
 				ABF9B5152E942B4300867A55 /* TransactionListItem.swift in Sources */,
 				ABF8E4A02E93F3CE00B4A771 /* ResetPasswordViewModel.swift in Sources */,
+				AB21F6552E9AE27F00E32329 /* HistoryViewModel.swift in Sources */,
 				ABF8E4A22E93F3CE00B4A771 /* ForgotPasswordView.swift in Sources */,
 				ABF8E4A32E93F3CE00B4A771 /* LoginView.swift in Sources */,
 				ABF8E4A42E93F3CE00B4A771 /* OTPView.swift in Sources */,
@@ -668,8 +705,10 @@
 				ABF8E4AB2E93F3CE00B4A771 /* ProfileView.swift in Sources */,
 				ABF8E4AC2E93F3CE00B4A771 /* OnboardingView.swift in Sources */,
 				ABF8E4AD2E93F3CE00B4A771 /* OnboardingViewModel.swift in Sources */,
+				AB5CCAA82E995F2F00EE5B95 /* DepositViewModel.swift in Sources */,
 				ABF8E4AE2E93F3CE00B4A771 /* SplashView.swift in Sources */,
 				ABF8E4AF2E93F3CE00B4A771 /* SplashViewModel.swift in Sources */,
+				AB21F6532E9ADAA300E32329 /* TransactionService.swift in Sources */,
 				ABF8E4B02E93F3CE00B4A771 /* TransactionDetailView.swift in Sources */,
 				ABF8E4B12E93F3CE00B4A771 /* TransactionListView.swift in Sources */,
 				ABF8E4B22E93F3CE00B4A771 /* DepositView.swift in Sources */,
@@ -677,6 +716,7 @@
 				ABF8E4B42E93F3CE00B4A771 /* WithdrawView.swift in Sources */,
 				ABF8E4B52E93F3CE00B4A771 /* WalletDetailView.swift in Sources */,
 				ABF9B50E2E942AE500867A55 /* WalletService.swift in Sources */,
+				AB5CCAAA2E995F6A00EE5B95 /* PaymentWebView.swift in Sources */,
 				ABF8E4B62E93F3CE00B4A771 /* WalletListView.swift in Sources */,
 				ABF8E4B82E93F3CE00B4A771 /* AfriVestApp.swift in Sources */,
 				ABF8E4B92E93F3CE00B4A771 /* ContentView.swift in Sources */,

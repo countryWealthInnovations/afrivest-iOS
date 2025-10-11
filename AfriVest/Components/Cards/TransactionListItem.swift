@@ -30,7 +30,7 @@ struct TransactionListItem: View {
                     .foregroundColor(Color.textPrimary)
                 
                 Text(formattedDate)
-                    .font(AppFont.bodySmall())
+                    .font(AppFont.footnote())
                     .foregroundColor(Color.textSecondary)
             }
             
@@ -39,12 +39,13 @@ struct TransactionListItem: View {
             // Amount and Status
             VStack(alignment: .trailing, spacing: 4) {
                 Text(formattedAmount)
-                    .font(AppFont.bodyLarge())
+                    .font(AppFont.bodyRegular())
+                    .bold()
                     .foregroundColor(amountColor)
                 
                 // Status Badge
                 Text(transaction.status.capitalized)
-                    .font(AppFont.bodySmall())
+                    .font(AppFont.footnote())
                     .foregroundColor(statusTextColor)
                     .padding(.horizontal, 8)
                     .padding(.vertical, 4)
@@ -52,7 +53,7 @@ struct TransactionListItem: View {
                     .cornerRadius(4)
             }
         }
-        .padding(Spacing.md)
+        .padding(Spacing.xs)
         .background(Color("3A3A3A"))
         .cornerRadius(Spacing.radiusMedium)
     }
@@ -102,6 +103,10 @@ struct TransactionListItem: View {
             return desc
         }
         
+        if transaction.type == "transfer", let recipient = transaction.recipient {
+            return "Transfer to \(recipient.name)"
+        }
+        
         switch transaction.type {
         case "deposit":
             return "Deposit"
@@ -126,9 +131,19 @@ struct TransactionListItem: View {
     
     private var formattedDate: String {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZ"
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
+        dateFormatter.timeZone = TimeZone(identifier: "UTC")
         
         guard let date = dateFormatter.date(from: transaction.createdAt) else {
+            // Fallback for API responses without microseconds
+            let fallbackFormatter = DateFormatter()
+            fallbackFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+            fallbackFormatter.timeZone = TimeZone(identifier: "UTC")
+            if let fallbackDate = fallbackFormatter.date(from: transaction.createdAt) {
+                let displayFormatter = DateFormatter()
+                displayFormatter.dateFormat = "MMM d, yyyy"
+                return displayFormatter.string(from: fallbackDate)
+            }
             return transaction.createdAt
         }
         
@@ -136,6 +151,7 @@ struct TransactionListItem: View {
         displayFormatter.dateFormat = "MMM d, yyyy"
         return displayFormatter.string(from: date)
     }
+    
     
     private var formattedAmount: String {
         guard let amount = Double(transaction.amount) else {
@@ -205,7 +221,8 @@ struct TransactionListItem_Previews: PreviewProvider {
                     description: "Card deposit",
                     createdAt: "2025-01-15T10:30:00Z",
                     updatedAt: "2025-01-15T10:35:00Z",
-                    completedAt: "2025-01-15T10:35:00Z"
+                    completedAt: "2025-01-15T10:35:00Z",
+                    recipient: nil
                 )
             )
             TransactionListItem(
@@ -223,9 +240,11 @@ struct TransactionListItem_Previews: PreviewProvider {
                     description: "Mobile money withdrawal",
                     createdAt: "2025-01-15T11:00:00Z",
                     updatedAt: "2025-01-15T11:00:00Z",
-                    completedAt: nil
+                    completedAt: nil,
+                    recipient: nil
                 )
             )
+            
         }
         .padding()
         .appBackground()

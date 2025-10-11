@@ -12,7 +12,7 @@ import FirebaseMessaging
 class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
     
     func application(_ application: UIApplication,
-                    didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
         // Configure Firebase
         FirebaseApp.configure()
@@ -53,14 +53,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
     
     // Handle token refresh
     func application(_ application: UIApplication,
-                    didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+                     didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         Messaging.messaging().apnsToken = deviceToken
     }
     
     // Handle remote notifications
     func application(_ application: UIApplication,
-                    didReceiveRemoteNotification userInfo: [AnyHashable: Any],
-                    fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+                     didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+                     fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         print("Received remote notification: \(userInfo)")
         completionHandler(.newData)
     }
@@ -71,8 +71,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     
     // Handle notification when app is in foreground
     func userNotificationCenter(_ center: UNUserNotificationCenter,
-                               willPresent notification: UNNotification,
-                               withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+                                willPresent notification: UNNotification,
+                                withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         let userInfo = notification.request.content.userInfo
         print("Notification received in foreground: \(userInfo)")
         completionHandler([[.banner, .sound]])
@@ -80,10 +80,23 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     
     // Handle notification tap
     func userNotificationCenter(_ center: UNUserNotificationCenter,
-                               didReceive response: UNNotificationResponse,
-                               withCompletionHandler completionHandler: @escaping () -> Void) {
+                                didReceive response: UNNotificationResponse,
+                                withCompletionHandler completionHandler: @escaping () -> Void) {
         let userInfo = response.notification.request.content.userInfo
         print("Notification tapped: \(userInfo)")
+        
+        // Extract transaction data from notification
+        if let transactionIdString = userInfo["transaction_id"] as? String,
+           let transactionId = Int(transactionIdString) {
+            
+            // Post notification to navigate to transaction detail
+            NotificationCenter.default.post(
+                name: NSNotification.Name("NavigateToTransaction"),
+                object: nil,
+                userInfo: ["transaction_id": transactionId]
+            )
+        }
+        
         completionHandler()
     }
 }

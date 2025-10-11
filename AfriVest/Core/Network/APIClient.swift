@@ -24,37 +24,38 @@ class APIClient: @unchecked Sendable {
     }
     
     // MARK: - Generic Request
-    func request<T: Decodable & Sendable>(
-        _ endpoint: String,
-        method: HTTPMethod = .get,
-        parameters: Parameters? = nil,
-        encoding: ParameterEncoding = JSONEncoding.default,
-        headers: HTTPHeaders? = nil,
-        requiresAuth: Bool = true
-    ) async throws -> T {
-        
-        let url = APIConstants.baseURL + endpoint
-        
-        var finalHeaders = headers ?? HTTPHeaders()
-        finalHeaders.add(name: APIConstants.Headers.contentType, value: APIConstants.Headers.applicationJSON)
-        finalHeaders.add(name: APIConstants.Headers.accept, value: APIConstants.Headers.applicationJSON)
-        
-        if requiresAuth, let token = keychainManager.getToken() {
-            finalHeaders.add(name: APIConstants.Headers.authorization, value: "Bearer \(token)")
-        }
-        
-        return try await withCheckedThrowingContinuation { continuation in
-            Task.detached {
+        func request<T: Decodable & Sendable>(
+            _ endpoint: String,
+            method: HTTPMethod = .get,
+            parameters: Parameters? = nil,
+            encoding: ParameterEncoding? = nil,
+            headers: HTTPHeaders? = nil,
+            requiresAuth: Bool = true
+        ) async throws -> T {
+            
+            let url = APIConstants.baseURL + endpoint
+            
+            var finalHeaders = headers ?? HTTPHeaders()
+            finalHeaders.add(name: APIConstants.Headers.contentType, value: APIConstants.Headers.applicationJSON)
+            finalHeaders.add(name: APIConstants.Headers.accept, value: APIConstants.Headers.applicationJSON)
+            
+            if requiresAuth, let token = keychainManager.getToken() {
+                finalHeaders.add(name: APIConstants.Headers.authorization, value: "Bearer \(token)")
+                print("Bearer Token: \(token)")
+            }
+            
+            let finalEncoding = encoding ?? JSONEncoding.default
+            
+            return try await withCheckedThrowingContinuation { continuation in
                 self.session.request(
                     url,
                     method: method,
                     parameters: parameters,
-                    encoding: encoding,
+                    encoding: finalEncoding,
                     headers: finalHeaders
                 )
                 .validate()
                 .responseDecodable(of: APIResponse<T>.self) { response in
-                    // Log raw response for debugging
                     if let data = response.data {
                         if let json = String(data: data, encoding: .utf8) {
                             print("📦 API Response [\(endpoint)]: \(json)")
@@ -76,6 +77,70 @@ class APIClient: @unchecked Sendable {
                         print("❌ Network Error: \(error.localizedDescription)")
                         if let statusCode = response.response?.statusCode {
                             print("📍 Status Code: \(statusCode)")
+                        }
+                        continuation.resume(throwing: self.handleError(error, response: response.response))
+                    }
+                }
+            }
+        }
+    
+    // GET request with URL parameters
+    func requestWithURLParameters<T: Decodable & Sendable>(
+        _ endpoint: String,
+        parameters: [String: String]? = nil,
+        requiresAuth: Bool = true
+    ) async throws -> T {
+        
+        var urlString = APIConstants.baseURL + endpoint
+        
+        // Add query parameters for GET requests
+        if let parameters = parameters, !parameters.isEmpty {
+            let queryItems = parameters.map { key, value in
+                URLQueryItem(name: key, value: value)
+            }
+            var components = URLComponents(string: urlString)!
+            components.queryItems = queryItems
+            urlString = components.url?.absoluteString ?? urlString
+        }
+        
+        var finalHeaders = HTTPHeaders()
+        finalHeaders.add(name: APIConstants.Headers.contentType, value: APIConstants.Headers.applicationJSON)
+        finalHeaders.add(name: APIConstants.Headers.accept, value: APIConstants.Headers.applicationJSON)
+        
+        if requiresAuth, let token = keychainManager.getToken() {
+            finalHeaders.add(name: APIConstants.Headers.authorization, value: "Bearer \(token)")
+        }
+        
+        return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<T, Error>) in
+            Task.detached {
+                self.session.request(
+                    urlString,
+                    method: .get,
+                    headers: finalHeaders
+                )
+                .validate()
+                .responseDecodable(of: APIResponse<T>.self) { response in
+                    if let data = response.data {
+                        if let json = String(data: data, encoding: .utf8) {
+                            print("📦 API Response [\(endpoint)]: \(json)")
+                        }
+                    }
+                    
+                    switch response.result {
+                    case .success(let apiResponse):
+                        if apiResponse.success {
+                            print("✅ Success: \(endpoint)")
+                            continuation.resume(returning: apiResponse.data)
+                        } else {
+                            print("❌ API Error: \(apiResponse.message ?? "Unknown error")")
+                            let error = APIError.serverError(apiResponse.message ?? "Unknown error")
+                            continuation.resume(throwing: error)
+                        }
+                        
+                    case .failure(let error):
+                        print("❌ Network Error: \(error.localizedDescription)")
+                        if let statusCode = response.response?.statusCode {
+                            print("🔍 Status Code: \(statusCode)")
                         }
                         continuation.resume(throwing: self.handleError(error, response: response.response))
                     }
