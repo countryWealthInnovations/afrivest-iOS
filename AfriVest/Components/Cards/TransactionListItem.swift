@@ -61,51 +61,29 @@ struct TransactionListItem: View {
     // MARK: - Computed Properties
     
     private var iconName: String {
-        // For transfers, show direction
-        if transaction.type == "transfer" {
-            switch transaction.direction {
-            case "sent":
-                return "arrow.up.circle.fill"
-            case "received":
-                return "arrow.down.circle.fill"
-            default:
-                return "arrow.left.arrow.right.circle.fill"
-            }
-        }
-        
         switch transaction.type {
         case "deposit":
-            return "arrow.down.circle.fill"
+            return "arrow.down"
         case "withdrawal":
-            return "arrow.up.circle.fill"
+            return "arrow.up"
+        case "transfer":
+            return "arrow.right"
         case "bill_payment":
-            return "doc.text.fill"
+            return "receipt"
         case "insurance":
-            return "shield.fill"
+            return "shield.lefthalf.filled"
         case "investment":
             return "chart.line.uptrend.xyaxis"
         case "gold_purchase":
             return "circle.fill"
         case "crypto_purchase":
-            return "bitcoinsign.circle.fill"
+            return "bitcoinsign.circle"
         default:
-            return "dollarsign.circle.fill"
+            return "arrow.left.arrow.right"
         }
     }
     
     private var iconColor: Color {
-        // For transfers, color based on direction
-        if transaction.type == "transfer" {
-            switch transaction.direction {
-            case "sent":
-                return Color.errorRed
-            case "received":
-                return Color.successGreen
-            default:
-                return Color.primaryGold
-            }
-        }
-        
         switch transaction.type {
         case "deposit":
             return Color.successGreen
@@ -128,24 +106,30 @@ struct TransactionListItem: View {
         
         // For transfers, show direction and other party
         if transaction.type == "transfer" {
-            if let otherParty = transaction.otherParty {
-                switch transaction.direction {
-                case "sent":
+            switch transaction.direction {
+            case "sent":
+                if let otherParty = transaction.otherParty {
                     return "Transfer to \(otherParty.name)"
-                case "received":
-                    return "Transfer from \(otherParty.name)"
-                default:
-                    return "Transfer"
+                } else if let recipient = transaction.recipient {
+                    return "Transfer to \(recipient.name)"
                 }
-            }
-            
-            // Fallback to recipient if available
-            if let recipient = transaction.recipient {
-                return "Transfer to \(recipient.name)"
+                return "Transfer to Unknown"
+            case "received":
+                if let otherParty = transaction.otherParty {
+                    return "Transfer from \(otherParty.name)"
+                }
+                return "Transfer from Unknown"
+            default:
+                return getTypeDisplayName()
             }
         }
         
         // Default descriptions for other types
+        return getTypeDisplayName()
+    }
+
+    // Helper function to get display name
+    private func getTypeDisplayName() -> String {
         switch transaction.type {
         case "deposit":
             return "Deposit"
@@ -202,16 +186,22 @@ struct TransactionListItem: View {
         formatter.maximumFractionDigits = 2
         formatter.groupingSeparator = ","
         
-        // Determine sign based on direction and type
+        // Determine sign based on direction and type - Match Android exactly
         let sign: String
         if transaction.direction == "received" {
             sign = "+"
         } else if transaction.type == "deposit" {
             sign = "+"
-        } else if transaction.type == "withdrawal" || transaction.type == "transfer" {
+        } else if transaction.type == "withdrawal" ||
+                  transaction.type == "transfer" ||
+                  transaction.type == "bill_payment" ||
+                  transaction.type == "insurance" ||
+                  transaction.type == "investment" ||
+                  transaction.type == "gold_purchase" ||
+                  transaction.type == "crypto_purchase" {
             sign = "-"
         } else {
-            sign = "-"
+            sign = ""
         }
         
         if let formatted = formatter.string(from: NSNumber(value: amount)) {
@@ -222,26 +212,20 @@ struct TransactionListItem: View {
     }
     
     private var amountColor: Color {
-        // Color based on direction for transfers
-        if transaction.type == "transfer" {
-            switch transaction.direction {
-            case "sent":
-                return Color.errorRed
-            case "received":
-                return Color.successGreen
-            default:
-                return Color.textPrimary
-            }
+        // Match Android logic exactly
+        if transaction.direction == "received" {
+            return Color.successGreen
         }
         
-        switch transaction.type {
-        case "deposit":
+        if transaction.type == "deposit" {
             return Color.successGreen
-        case "withdrawal":
-            return Color.errorRed
-        default:
-            return Color.textPrimary
         }
+        
+        if transaction.type == "withdrawal" || transaction.type == "transfer" {
+            return Color.errorRed
+        }
+        
+        return Color.textPrimary
     }
     
     private var statusTextColor: Color {

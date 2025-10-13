@@ -9,6 +9,8 @@ import SwiftUI
 
 struct FloatingActionButton: View {
     @Binding var isExpanded: Bool
+    @State private var showSendMoney = false
+    @State private var showWithdraw = false
     
     var body: some View {
         VStack(spacing: Spacing.md) {
@@ -18,18 +20,18 @@ struct FloatingActionButton: View {
                     icon: "paperplane.fill",
                     title: "Send Money",
                     action: {
-                        // TODO: Navigate to send money
-                        print("Send Money tapped")
+                        showSendMoney = true
+                        isExpanded = false
                     }
                 )
                 
-                // Receive Money Button
+                // Withdraw Button (changed from Receive Money)
                 ActionButton(
-                    icon: "qrcode",
-                    title: "Receive Money",
+                    icon: "arrow.down.circle.fill",
+                    title: "Withdraw",
                     action: {
-                        // TODO: Navigate to receive money
-                        print("Receive Money tapped")
+                        showWithdraw = true
+                        isExpanded = false
                     }
                 )
             }
@@ -48,6 +50,12 @@ struct FloatingActionButton: View {
                     .clipShape(Circle())
                     .shadow(color: .black.opacity(0.3), radius: 8, x: 0, y: 4)
             }
+        }
+        .fullScreenCover(isPresented: $showSendMoney) {
+            SendMoneyView()
+        }
+        .fullScreenCover(isPresented: $showWithdraw) {
+            WithdrawView()
         }
     }
 }

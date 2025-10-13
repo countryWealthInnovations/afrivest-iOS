@@ -40,5 +40,7 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
+    <key>NSContactsUsageDescription</key>
+    <string>AfriVest needs access to your contacts to help you send money to friends and family.</string>
 </dict>
 </plist>
