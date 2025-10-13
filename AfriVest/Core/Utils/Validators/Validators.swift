@@ -27,6 +27,11 @@ struct Validators {
         // Remove any spaces, dashes, parentheses, or plus signs
         let cleanPhone = phone.replacingOccurrences(of: "[\\s\\-\\(\\)\\+]", with: "", options: .regularExpression)
         
+        // For Uganda: Accept 9 digits (7xxxxxxxx) or full international format (256xxxxxxxxx)
+        if cleanPhone.count == 9 && cleanPhone.hasPrefix("7") {
+            return true
+        }
+        
         // International phone pattern:
         // - Starts with 1-9 (first digit of country code)
         // - Followed by 6-18 more digits (total length 7-19 digits)
@@ -40,7 +45,13 @@ struct Validators {
     static func formatPhoneNumber(_ phone: String) -> String {
         let cleanPhone = phone.replacingOccurrences(of: "[\\s\\-\\(\\)\\+]", with: "", options: .regularExpression)
         
-        return cleanPhone.hasPrefix("+") ? cleanPhone : "+\(cleanPhone)"
+        // If already has country code, return with +
+        if cleanPhone.hasPrefix("256") {
+            return "+\(cleanPhone)"
+        }
+        
+        // If starts with 7, 0, etc., add Uganda code
+        return "+256\(cleanPhone)"
     }
     
     /// Validates and formats phone number

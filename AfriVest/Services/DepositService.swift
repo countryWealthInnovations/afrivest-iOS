@@ -48,4 +48,29 @@ class DepositService: @unchecked Sendable {
             requiresAuth: true
         )
     }
+    
+    func depositCard(
+        amount: Double,
+        currency: String,
+        cardNumber: String,
+        cvv: String,
+        expiryMonth: String,
+        expiryYear: String
+    ) async throws -> DepositResponse {
+        let parameters: [String: Any] = [
+            "amount": amount,
+            "currency": currency,
+            "card_number": cardNumber,
+            "cvv": cvv,
+            "expiry_month": expiryMonth,
+            "expiry_year": expiryYear
+        ]
+        
+        return try await apiClient.request(
+            APIConstants.Endpoints.depositCard,
+            method: .post,
+            parameters: parameters,
+            requiresAuth: true
+        )
+    }
 }

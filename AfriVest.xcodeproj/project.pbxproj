@@ -310,6 +310,9 @@
 		ABF8E4302E93F3CE00B4A771 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				ABF8E43C2E93F3CE00B4A771 /* AppFont.swift */,
+				ABF8E43D2E93F3CE00B4A771 /* AppTheme.swift */,
+				ABF8E4402E93F3CE00B4A771 /* Country.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -317,6 +320,7 @@
 		ABF8E4312E93F3CE00B4A771 /* Formatters */ = {
 			isa = PBXGroup;
 			children = (
+				ABF8E4422E93F3CE00B4A771 /* Spacing.swift */,
 			);
 			path = Formatters;
 			sourceTree = "<group>";
@@ -324,6 +328,7 @@
 		ABF8E4322E93F3CE00B4A771 /* Validators */ = {
 			isa = PBXGroup;
 			children = (
+				ABF8E4432E93F3CE00B4A771 /* Validators.swift */,
 			);
 			path = Validators;
 			sourceTree = "<group>";
@@ -374,14 +379,9 @@
 		ABF8E4442E93F3CE00B4A771 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				ABF8E43C2E93F3CE00B4A771 /* AppFont.swift */,
-				ABF8E43D2E93F3CE00B4A771 /* AppTheme.swift */,
 				ABF8E43E2E93F3CE00B4A771 /* Assets.xcassets */,
 				ABF8E43F2E93F3CE00B4A771 /* Colors.swift */,
-				ABF8E4402E93F3CE00B4A771 /* Country.swift */,
 				ABF8E4412E93F3CE00B4A771 /* GoogleService-Info.plist */,
-				ABF8E4422E93F3CE00B4A771 /* Spacing.swift */,
-				ABF8E4432E93F3CE00B4A771 /* Validators.swift */,
 			);
 			path = Resources;
 			sourceTree = "<group>";

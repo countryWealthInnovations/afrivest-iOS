@@ -12,6 +12,20 @@ struct DepositView: View {
     @Environment(\.presentationMode) var presentationMode
     @StateObject private var viewModel = DepositViewModel()
     @State private var showWebView = false
+    @FocusState private var focusedField: CardField?
+    
+    enum CardField {
+        case expiryMonth
+        case expiryYear
+        case cvv
+    }
+    
+    enum DepositMethod: String, CaseIterable {
+        case mobileMoney = "Mobile Money"
+        case card = "Card Deposit"
+    }
+    
+    @State private var selectedMethod: DepositMethod = .mobileMoney
     
     var body: some View {
         ZStack {
@@ -45,42 +59,27 @@ struct DepositView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: Spacing.lg) {
                         
-                        // Network Selection
+                        // Payment Method Selector
                         VStack(alignment: .leading, spacing: Spacing.sm) {
-                            Text("Select Network")
+                            Text("Payment Method")
                                 .labelStyle()
                             
-                            HStack(spacing: Spacing.sm) {
-                                NetworkButton(
-                                    title: "MTN",
-                                    isSelected: viewModel.selectedNetwork == "MTN",
-                                    action: { viewModel.selectedNetwork = "MTN" }
-                                )
-                                
-                                NetworkButton(
-                                    title: "Airtel",
-                                    isSelected: viewModel.selectedNetwork == "AIRTEL",
-                                    action: { viewModel.selectedNetwork = "AIRTEL" }
-                                )
+                            Picker("", selection: $selectedMethod) {
+                                ForEach(DepositMethod.allCases, id: \.self) { method in
+                                    Text(method.rawValue).tag(method)
+                                }
                             }
+                            .pickerStyle(SegmentedPickerStyle())
                         }
                         
-                        // Phone Number
-                        VStack(alignment: .leading, spacing: Spacing.sm) {
-                            Text("Phone Number")
-                                .labelStyle()
-                            
-                            PhoneTextField(
-                                label: "",
-                                text: $viewModel.phoneNumber,
-                                state: viewModel.phoneState,
-                                errorMessage: "Invalid phone number format",
-                                showCheckmark: viewModel.phoneState == .success
-                            )
-                            
-                            Text("MTN: 077, 078, 076 | Airtel: 070, 074, 075")
-                                .font(.system(size: 12))
-                                .foregroundColor(.textSecondary)
+                        // Mobile Money Fields
+                        if selectedMethod == .mobileMoney {
+                            mobileMoneySectionView
+                        }
+                        
+                        // Card Fields
+                        if selectedMethod == .card {
+                            cardSectionView
                         }
                         
                         // Amount
@@ -88,7 +87,7 @@ struct DepositView: View {
                             Text("Amount (UGX)")
                                 .labelStyle()
                             
-                            TextField("Enter amount (min 1,000)", text: $viewModel.amount)
+                            TextField("Enter amount (min 5,000)", text: $viewModel.amount)
                                 .keyboardType(.numberPad)
                                 .font(AppFont.bodyLarge())
                                 .foregroundColor(.textPrimary)
@@ -126,9 +125,15 @@ struct DepositView: View {
                         // Deposit Button
                         PrimaryButton(
                             title: "Continue",
-                            action: { viewModel.initiateDeposit() },
+                            action: {
+                                if selectedMethod == .mobileMoney {
+                                    viewModel.initiateDeposit()
+                                } else {
+                                    viewModel.initiateCardDeposit()
+                                }
+                            },
                             isLoading: viewModel.isLoading,
-                            isEnabled: viewModel.isFormValid
+                            isEnabled: selectedMethod == .mobileMoney ? viewModel.isFormValid : viewModel.isCardFormValid
                         )
                     }
                     .padding(Spacing.screenHorizontal)
@@ -156,23 +161,214 @@ struct DepositView: View {
             }
         }
     }
-}
-
-// MARK: - Network Button
-struct NetworkButton: View {
-    let title: String
-    let isSelected: Bool
-    let action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(AppFont.button())
-                .foregroundColor(isSelected ? .buttonPrimaryText : .textPrimary)
-                .frame(maxWidth: .infinity)
-                .frame(height: Spacing.buttonHeight)
-                .background(isSelected ? Color.primaryGold : Color.inputBackground)
+    // MARK: - Mobile Money Section
+    private var mobileMoneySectionView: some View {
+        VStack(alignment: .leading, spacing: Spacing.lg) {
+            // Phone Number
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Text("Phone Number")
+                    .labelStyle()
+                
+                HStack(spacing: 0) {
+                    // Uganda Flag and Code (hardcoded)
+                    HStack(spacing: 4) {
+                        Text("🇺🇬")
+                            .font(.system(size: 20))
+                        Text("+256")
+                            .font(AppFont.bodyLarge())
+                            .foregroundColor(.textPrimary)
+                    }
+                    .padding(.leading, Spacing.md)
+                    .padding(.trailing, Spacing.sm)
+                    
+                    Divider()
+                        .frame(height: 24)
+                        .background(Color.borderDefault)
+                    
+                    TextField("700000001", text: $viewModel.phoneNumber)
+                        .font(AppFont.bodyLarge())
+                        .foregroundColor(.textPrimary)
+                        .keyboardType(.numberPad)
+                        .autocapitalization(.none)
+                        .disableAutocorrection(true)
+                        .padding(.leading, Spacing.sm)
+                        .onChange(of: viewModel.phoneNumber) { newValue in
+                            viewModel.phoneNumber = newValue.filter { $0.isNumber }
+                            if viewModel.phoneNumber.count > 9 {
+                                viewModel.phoneNumber = String(viewModel.phoneNumber.prefix(9))
+                            }
+                        }
+                    
+                    if viewModel.phoneState == .success {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.successGreen)
+                            .frame(width: Spacing.iconSize, height: Spacing.iconSize)
+                            .padding(.trailing, Spacing.md)
+                    }
+                }
+                .frame(height: Spacing.inputHeight)
+                .background(Color.inputBackground)
                 .cornerRadius(Spacing.radiusMedium)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Spacing.radiusMedium)
+                        .stroke(viewModel.phoneState == .error ? Color.errorRed : Color.borderDefault, lineWidth: 1)
+                )
+                
+                if viewModel.phoneState == .error {
+                    Text("Invalid phone number format")
+                        .font(.system(size: 12))
+                        .foregroundColor(.errorRed)
+                } else if viewModel.phoneNumber.count >= 2 {
+                    if viewModel.selectedNetwork == "MTN" {
+                        Text("MTN detected ✓")
+                            .font(.system(size: 12))
+                            .foregroundColor(.successGreen)
+                    } else if viewModel.selectedNetwork == "AIRTEL" {
+                        Text("Airtel detected ✓")
+                            .font(.system(size: 12))
+                            .foregroundColor(.successGreen)
+                    } else {
+                        Text("MTN: 77, 78, 76, 79 | Airtel: 70, 74, 75")
+                            .font(.system(size: 12))
+                            .foregroundColor(.textSecondary)
+                    }
+                } else {
+                    Text("MTN: 77, 78, 76, 79 | Airtel: 70, 74, 75")
+                        .font(.system(size: 12))
+                        .foregroundColor(.textSecondary)
+                }
+            }
+        }
+    }
+    
+    // MARK: - Card Section
+    private var cardSectionView: some View {
+        VStack(alignment: .leading, spacing: Spacing.lg) {
+            // Card Number
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Text("Card Number")
+                    .labelStyle()
+                
+                TextField("1234 5678 9012 3456", text: $viewModel.cardNumber)
+                    .keyboardType(.numberPad)
+                    .font(AppFont.bodyLarge())
+                    .foregroundColor(.textPrimary)
+                    .padding()
+                    .background(Color.inputBackground)
+                    .cornerRadius(Spacing.radiusMedium)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Spacing.radiusMedium)
+                            .stroke(Color.borderDefault, lineWidth: 1)
+                    )
+                    .onChange(of: viewModel.cardNumber) { newValue in
+                        // Format card number with spaces
+                        let filtered = newValue.filter { $0.isNumber }
+                        if filtered.count > 16 {
+                            viewModel.cardNumber = String(filtered.prefix(16))
+                        } else {
+                            var formatted = ""
+                            for (index, char) in filtered.enumerated() {
+                                if index > 0 && index % 4 == 0 {
+                                    formatted += " "
+                                }
+                                formatted += String(char)
+                            }
+                            viewModel.cardNumber = formatted
+                        }
+                    }
+            }
+            
+            // CVV and Expiry Row
+            HStack(spacing: Spacing.md) {
+                // Expiry Month
+                VStack(alignment: .leading, spacing: Spacing.sm) {
+                    Text("Expiry Month")
+                        .labelStyle()
+                    
+                    TextField("MM", text: $viewModel.expiryMonth)
+                        .keyboardType(.numberPad)
+                        .font(AppFont.bodyLarge())
+                        .foregroundColor(.textPrimary)
+                        .padding()
+                        .background(Color.inputBackground)
+                        .cornerRadius(Spacing.radiusMedium)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Spacing.radiusMedium)
+                                .stroke(Color.borderDefault, lineWidth: 1)
+                        )
+                        .focused($focusedField, equals: .expiryMonth)
+                        .onChange(of: viewModel.expiryMonth) { newValue in
+                            let filtered = newValue.filter { $0.isNumber }
+                            if filtered.count > 2 {
+                                viewModel.expiryMonth = String(filtered.prefix(2))
+                                focusedField = .expiryYear
+                            } else {
+                                viewModel.expiryMonth = filtered
+                                if filtered.count == 2 {
+                                    focusedField = .expiryYear
+                                }
+                            }
+                        }
+                }
+                
+                // Expiry Year
+                VStack(alignment: .leading, spacing: Spacing.sm) {
+                    Text("Expiry Year")
+                        .labelStyle()
+                    
+                    TextField("YY", text: $viewModel.expiryYear)
+                        .keyboardType(.numberPad)
+                        .font(AppFont.bodyLarge())
+                        .foregroundColor(.textPrimary)
+                        .padding()
+                        .background(Color.inputBackground)
+                        .cornerRadius(Spacing.radiusMedium)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Spacing.radiusMedium)
+                                .stroke(Color.borderDefault, lineWidth: 1)
+                        )
+                        .focused($focusedField, equals: .expiryYear)
+                        .onChange(of: viewModel.expiryYear) { newValue in
+                            let filtered = newValue.filter { $0.isNumber }
+                            if filtered.count > 2 {
+                                viewModel.expiryYear = String(filtered.prefix(2))
+                                focusedField = .cvv
+                            } else {
+                                viewModel.expiryYear = filtered
+                                if filtered.count == 2 {
+                                    focusedField = .cvv
+                                }
+                            }
+                        }
+                }
+                
+                // CVV
+                VStack(alignment: .leading, spacing: Spacing.sm) {
+                    Text("CVV")
+                        .labelStyle()
+                    
+                    TextField("123", text: $viewModel.cvv)
+                        .keyboardType(.numberPad)
+                        .font(AppFont.bodyLarge())
+                        .foregroundColor(.textPrimary)
+                        .padding()
+                        .background(Color.inputBackground)
+                        .cornerRadius(Spacing.radiusMedium)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: Spacing.radiusMedium)
+                                .stroke(Color.borderDefault, lineWidth: 1)
+                        )
+                        .focused($focusedField, equals: .cvv)
+                        .onChange(of: viewModel.cvv) { newValue in
+                            let filtered = newValue.filter { $0.isNumber }
+                            if filtered.count > 3 {
+                                viewModel.cvv = String(filtered.prefix(3))
+                            } else {
+                                viewModel.cvv = filtered
+                            }
+                        }
+                }
+            }
         }
     }
 }

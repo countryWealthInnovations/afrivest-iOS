@@ -36,24 +36,27 @@ struct DepositResponse: Codable, Sendable {
 
 struct PaymentData: Codable, Sendable {
     let mode: String
+    let url: String?
     let authorizationUrl: String?
     let redirectUrl: String?
     let flutterwaveTransactionId: String?
     
     enum CodingKeys: String, CodingKey {
         case mode
+        case url
         case authorizationUrl = "authorization_url"
         case redirectUrl = "redirect_url"
         case flutterwaveTransactionId = "flutterwave_transaction_id"
     }
     
     var paymentUrl: String? {
-        return authorizationUrl ?? redirectUrl
+        return url ?? authorizationUrl ?? redirectUrl
     }
     
     nonisolated init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         mode = try container.decode(String.self, forKey: .mode)
+        url = try container.decodeIfPresent(String.self, forKey: .url)
         authorizationUrl = try container.decodeIfPresent(String.self, forKey: .authorizationUrl)
         redirectUrl = try container.decodeIfPresent(String.self, forKey: .redirectUrl)
         flutterwaveTransactionId = try container.decodeIfPresent(String.self, forKey: .flutterwaveTransactionId)

@@ -53,8 +53,12 @@ struct TransactionDetailView: View {
                         paymentDetailsCard
                         
                         // Recipient Details Card (if transfer)
-                        if transaction.type == "transfer", let recipient = transaction.recipient {
-                            recipientDetailsCard(recipient: recipient)
+                        if transaction.type == "transfer" {
+                            if let otherParty = transaction.otherParty {
+                                otherPartyDetailsCard(otherParty: otherParty)
+                            } else if let recipient = transaction.recipient {
+                                otherPartyDetailsCard(otherParty: recipient)
+                            }
                         }
                         
                         // Additional Details Card
@@ -122,20 +126,32 @@ struct TransactionDetailView: View {
     }
     
     // MARK: - Recipient Details Card
-    private func recipientDetailsCard(recipient: Recipient) -> some View {
+    private func otherPartyDetailsCard(otherParty: Recipient) -> some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
-            Text("Recipient Details")
+            // Dynamic title based on direction
+            Text(otherPartyTitle)
                 .font(AppFont.bodyLarge())
                 .foregroundColor(Color.textPrimary)
                 .padding(.bottom, Spacing.xs)
             
-            DetailRow(label: "Name", value: recipient.name)
+            DetailRow(label: "Name", value: otherParty.name)
             Divider().background(Color.borderDefault)
-            DetailRow(label: "Email", value: recipient.email, isMultiline: true)
+            DetailRow(label: "Email", value: otherParty.email, isMultiline: true)
         }
         .padding(Spacing.md)
         .background(Color("3A3A3A"))
         .cornerRadius(Spacing.radiusMedium)
+    }
+
+    private var otherPartyTitle: String {
+        switch transaction.direction {
+        case "sent":
+            return "Recipient Details"
+        case "received":
+            return "Sender Details"
+        default:
+            return "Other Party"
+        }
     }
     
     // MARK: - Additional Details Card
@@ -175,7 +191,16 @@ struct TransactionDetailView: View {
     }
     
     private var formattedAmount: String {
-        let sign = transaction.type == "deposit" ? "+" : "-"
+        // Determine sign based on direction and type
+        let sign: String
+        if transaction.direction == "received" {
+            sign = "+"
+        } else if transaction.type == "deposit" {
+            sign = "+"
+        } else {
+            sign = "-"
+        }
+        
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.minimumFractionDigits = 2
@@ -190,10 +215,23 @@ struct TransactionDetailView: View {
     }
     
     private var amountColor: Color {
+        // Color based on direction for transfers
+        if transaction.type == "transfer" {
+            switch transaction.direction {
+            case "received":
+                return Color.successGreen
+            case "sent":
+                return Color.errorRed
+            default:
+                return Color.textPrimary
+            }
+        }
+        
+        // Color for other types
         switch transaction.type {
         case "deposit":
             return Color.successGreen
-        case "withdrawal", "transfer":
+        case "withdrawal":
             return Color.errorRed
         default:
             return Color.textPrimary
