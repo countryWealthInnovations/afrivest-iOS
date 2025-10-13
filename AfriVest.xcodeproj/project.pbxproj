@@ -34,6 +34,7 @@
 		AB74DABA2E9D14DD0068C633 /* WithdrawService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB74DAB92E9D14DD0068C633 /* WithdrawService.swift */; };
 		AB74DABC2E9D150D0068C633 /* WithdrawViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB74DABB2E9D150D0068C633 /* WithdrawViewModel.swift */; };
 		AB74DABE2E9D15210068C633 /* WithdrawSuccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB74DABD2E9D15210068C633 /* WithdrawSuccessView.swift */; };
+		AB74DAC02E9D3FA40068C633 /* FeeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB74DABF2E9D3FA40068C633 /* FeeCalculator.swift */; };
 		ABF8E4792E93F3CE00B4A771 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ABF8E43E2E93F3CE00B4A771 /* Assets.xcassets */; };
 		ABF8E47A2E93F3CE00B4A771 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ABF8E4412E93F3CE00B4A771 /* GoogleService-Info.plist */; };
 		ABF8E47C2E93F3CE00B4A771 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4142E93F3CE00B4A771 /* AppDelegate.swift */; };
@@ -118,6 +119,7 @@
 		AB74DAB92E9D14DD0068C633 /* WithdrawService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithdrawService.swift; sourceTree = "<group>"; };
 		AB74DABB2E9D150D0068C633 /* WithdrawViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithdrawViewModel.swift; sourceTree = "<group>"; };
 		AB74DABD2E9D15210068C633 /* WithdrawSuccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithdrawSuccessView.swift; sourceTree = "<group>"; };
+		AB74DABF2E9D3FA40068C633 /* FeeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeCalculator.swift; sourceTree = "<group>"; };
 		ABD92DB92E8D904700808567 /* AfriVest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AfriVest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABF8E4142E93F3CE00B4A771 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		ABF8E4162E93F3CE00B4A771 /* BiometricButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricButton.swift; sourceTree = "<group>"; };
@@ -351,6 +353,7 @@
 		ABF8E4322E93F3CE00B4A771 /* Validators */ = {
 			isa = PBXGroup;
 			children = (
+				AB74DABF2E9D3FA40068C633 /* FeeCalculator.swift */,
 				ABF8E4432E93F3CE00B4A771 /* Validators.swift */,
 			);
 			path = Validators;
@@ -735,6 +738,7 @@
 				AB5CCAA82E995F2F00EE5B95 /* DepositViewModel.swift in Sources */,
 				ABF8E4AE2E93F3CE00B4A771 /* SplashView.swift in Sources */,
 				ABF8E4AF2E93F3CE00B4A771 /* SplashViewModel.swift in Sources */,
+				AB74DAC02E9D3FA40068C633 /* FeeCalculator.swift in Sources */,
 				AB21F6532E9ADAA300E32329 /* TransactionService.swift in Sources */,
 				AB74DAB12E9D119B0068C633 /* TransferService.swift in Sources */,
 				ABF8E4B02E93F3CE00B4A771 /* TransactionDetailView.swift in Sources */,

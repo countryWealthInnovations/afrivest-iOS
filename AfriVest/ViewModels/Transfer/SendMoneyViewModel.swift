@@ -35,7 +35,7 @@ class SendMoneyViewModel: ObservableObject {
     var isFormValid: Bool {
         guard selectedContact != nil,
               let amountValue = Double(amount),
-              amountValue >= 10000 else {
+              amountValue >= 5000 else {
             return false
         }
         return true

@@ -22,7 +22,13 @@ class WithdrawViewModel: ObservableObject {
     
     @Published var withdrawResponse: WithdrawResponse?
     @Published var shouldNavigateToSuccess: Bool = false
-    
+
+    @Published var fee: Double = 0.0
+    @Published var totalAmount: Double = 0.0
+    @Published var balanceAfterWithdrawal: Double = 0.0
+    @Published var userBalance: Double = 0.0
+    @Published var insufficientFundsWarning: Bool = false
+
     private let withdrawService = WithdrawService.shared
     private var cancellables = Set<AnyCancellable>()
     
@@ -31,15 +37,28 @@ class WithdrawViewModel: ObservableObject {
     }
     
     private func setupValidation() {
-        Publishers.CombineLatest3($amount, $phoneNumber, $phoneState)
-            .map { amount, phone, phoneState in
+        Publishers.CombineLatest4($amount, $phoneNumber, $phoneState, $insufficientFundsWarning)
+            .map { amount, phone, phoneState, insufficientFunds in
                 guard let amountValue = Double(amount), amountValue >= 10000 else {
                     return false
                 }
                 
-                return phoneState == .success && !phone.isEmpty
+                return phoneState == .success && !phone.isEmpty && !insufficientFunds
             }
             .assign(to: &$isFormValid)
+        
+        // Calculate fee whenever amount changes
+        $amount
+            .sink { [weak self] amount in
+                if let amountValue = Double(amount), amountValue >= 10000 {
+                    self?.calculateAndUpdateFee(amountValue)
+                } else {
+                    self?.fee = 0.0
+                    self?.totalAmount = 0.0
+                    self?.insufficientFundsWarning = false
+                }
+            }
+            .store(in: &cancellables)
         
         // Auto-detect network from phone number
         $phoneNumber
@@ -67,6 +86,20 @@ class WithdrawViewModel: ObservableObject {
             phoneState = .success
         } else {
             phoneState = .error
+        }
+    }
+
+    private func calculateAndUpdateFee(_ amount: Double) {
+        fee = FeeCalculator.calculateFee(for: amount)
+        totalAmount = amount + fee
+        
+        // Get user's UGX balance from profile
+        if let profile = UserDefaultsManager.shared.getCachedProfile(),
+           let ugxWallet = profile.wallets.first(where: { $0.currency == "UGX" }),
+           let balance = Double(ugxWallet.balance) {
+            userBalance = balance
+            balanceAfterWithdrawal = balance - totalAmount
+            insufficientFundsWarning = totalAmount > balance
         }
     }
     

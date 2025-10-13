@@ -26,14 +26,19 @@ struct WithdrawView: View {
                         
                         // Amount
                         amountSection
-                        
+
+                        // Fee Display Section
+                        if viewModel.totalAmount > 0 {
+                            feeDisplaySection
+                        }
+
                         // Error Message
                         if let error = viewModel.errorMessage {
                             Text(error)
                                 .bodyRegularStyle()
                                 .foregroundColor(.errorRed)
                         }
-                        
+
                         // Info Box
                         infoBox
                         
@@ -198,6 +203,76 @@ struct WithdrawView: View {
             Text("Funds will be sent to your mobile money account within 5 minutes")
                 .font(.system(size: 12))
                 .foregroundColor(.textSecondary)
+        }
+        .padding(Spacing.md)
+        .background(Color.inputBackground)
+        .cornerRadius(Spacing.radiusMedium)
+    }
+    
+    // MARK: - Fee Display Section
+    private var feeDisplaySection: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            // Current amount
+            HStack {
+                Text("Amount")
+                    .bodyRegularStyle()
+                    .foregroundColor(.textSecondary)
+                
+                Spacer()
+                
+                if let currentAmount = Double(viewModel.amount) {
+                    Text("UGX \(FeeCalculator.formatCurrency(currentAmount))")
+                        .bodyRegularStyle()
+                        .foregroundColor(.textPrimary)
+                }
+            }
+            
+            // Fee breakdown
+            HStack {
+                Text("Fee")
+                    .bodyRegularStyle()
+                    .foregroundColor(.textSecondary)
+                
+                Spacer()
+                
+                Text("UGX \(FeeCalculator.formatCurrency(viewModel.fee))")
+                    .bodyRegularStyle()
+                    .foregroundColor(.textPrimary)
+            }
+            
+            // Total Amount
+            HStack {
+                Text("Total Amount")
+                    .bodyLargeStyle()
+                    .foregroundColor(.textPrimary)
+                
+                Spacer()
+                
+                Text("UGX \(FeeCalculator.formatCurrency(viewModel.totalAmount))")
+                    .bodyLargeStyle()
+                    .foregroundColor(.primaryGold)
+            }
+            
+            // Balance after withdrawal
+            if viewModel.userBalance > 0 {
+                HStack {
+                    Text("Balance After Withdrawal")
+                        .bodyRegularStyle()
+                        .foregroundColor(.textSecondary)
+                    
+                    Spacer()
+                    
+                    if viewModel.insufficientFundsWarning {
+                        Text("UGX \(FeeCalculator.formatCurrency(viewModel.balanceAfterWithdrawal))")
+                            .bodyRegularStyle()
+                            .foregroundColor(.errorRed)
+                    } else {
+                        Text("UGX \(FeeCalculator.formatCurrency(viewModel.balanceAfterWithdrawal))")
+                            .bodyRegularStyle()
+                            .foregroundColor(.successGreen)
+                    }
+                }
+            }
         }
         .padding(Spacing.md)
         .background(Color.inputBackground)

@@ -244,7 +244,7 @@ struct SendMoneyView: View {
             // Amount
             AppTextField(
                 label: "Amount (UGX)",
-                placeholder: "Enter amount (min 10,000)",
+                placeholder: "Enter amount (min 5,000)",
                 text: $viewModel.amount,
                 keyboardType: .decimalPad
             )
