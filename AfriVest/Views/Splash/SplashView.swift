@@ -21,7 +21,7 @@ struct SplashView: View {
                     .ignoresSafeArea()
                 
                 // Pattern Layer
-                Image("financial_pattern")
+                Image("background")
                     .resizable(resizingMode: .tile)
                     .opacity(0.1)
                     .ignoresSafeArea()
@@ -44,7 +44,7 @@ struct SplashView: View {
                     Spacer()
                     
                     // Money Bag Illustration
-                    Image("money_bag")
+                    Image("logo")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 200, height: 200)

@@ -171,7 +171,7 @@ struct FilterChip: View {
                 .padding(.vertical, Spacing.sm)
                 .background(
                     RoundedRectangle(cornerRadius: 20)
-                        .fill(isSelected ? color.opacity(0.2) : Color("3A3A3A"))
+                        .fill(isSelected ? color.opacity(0.2) : Color.backgroundDark1)
                 )
                 .overlay(
                     RoundedRectangle(cornerRadius: 20)

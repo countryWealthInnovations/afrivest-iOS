@@ -264,7 +264,7 @@ struct HomeView: View {
                 }
                 .padding(Spacing.md)
                 .frame(height: 180)
-                .background(Color("3A3A3A").opacity(0.5))
+                .background(Color.backgroundDark1.opacity(0.5))
                 .cornerRadius(Spacing.radiusMedium)
                 .overlay(
                     RoundedRectangle(cornerRadius: Spacing.radiusMedium)
@@ -288,7 +288,7 @@ struct HomeView: View {
                     }
                     .frame(maxWidth: .infinity)
                     .frame(height: 44)
-                    .background(Color("3A3A3A"))
+                    .background(Color.backgroundDark1)
                     .cornerRadius(Spacing.radiusMedium)
                     .overlay(
                         RoundedRectangle(cornerRadius: Spacing.radiusMedium)
@@ -349,7 +349,7 @@ struct HomeView: View {
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, Spacing.md)
-                .background(Color("3A3A3A"))
+                .background(Color.backgroundDark1)
                 .cornerRadius(Spacing.radiusMedium)
                 .overlay(
                     RoundedRectangle(cornerRadius: Spacing.radiusMedium)
@@ -359,7 +359,7 @@ struct HomeView: View {
         }
         .padding(Spacing.md)
         .frame(height: 200)
-        .background(Color("3A3A3A"))
+        .background(Color.backgroundDark1)
         .cornerRadius(Spacing.radiusMedium)
     }
     
@@ -417,7 +417,7 @@ struct HomeView: View {
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, Spacing.md)
-            .background(Color("3A3A3A"))
+            .background(Color.backgroundDark1)
             .cornerRadius(Spacing.radiusMedium)
             .overlay(
                 RoundedRectangle(cornerRadius: Spacing.radiusMedium)
@@ -520,7 +520,7 @@ struct HomeView: View {
         }
         .padding(Spacing.md)
         .frame(width: 240, height: 180)
-        .background(Color("3A3A3A"))
+        .background(Color.backgroundDark1)
         .cornerRadius(Spacing.radiusMedium)
         .overlay(
             RoundedRectangle(cornerRadius: Spacing.radiusMedium)

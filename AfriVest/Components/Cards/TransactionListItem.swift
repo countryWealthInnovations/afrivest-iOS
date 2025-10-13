@@ -54,7 +54,7 @@ struct TransactionListItem: View {
             }
         }
         .padding(Spacing.xs)
-        .background(Color("3A3A3A"))
+        .background(Color.backgroundDark1)
         .cornerRadius(Spacing.radiusMedium)
     }
     

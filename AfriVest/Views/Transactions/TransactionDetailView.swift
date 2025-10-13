@@ -102,7 +102,7 @@ struct TransactionDetailView: View {
             DetailRow(label: "Description", value: transactionDescription, isMultiline: true)
         }
         .padding(Spacing.md)
-        .background(Color("3A3A3A"))
+        .background(Color.backgroundDark1)
         .cornerRadius(Spacing.radiusMedium)
     }
     
@@ -121,7 +121,7 @@ struct TransactionDetailView: View {
             DetailRow(label: "Payment Channel", value: paymentChannel)
         }
         .padding(Spacing.md)
-        .background(Color("3A3A3A"))
+        .background(Color.backgroundDark1)
         .cornerRadius(Spacing.radiusMedium)
     }
     
@@ -139,7 +139,7 @@ struct TransactionDetailView: View {
             DetailRow(label: "Email", value: otherParty.email, isMultiline: true)
         }
         .padding(Spacing.md)
-        .background(Color("3A3A3A"))
+        .background(Color.backgroundDark1)
         .cornerRadius(Spacing.radiusMedium)
     }
 
@@ -167,7 +167,7 @@ struct TransactionDetailView: View {
             DetailRow(label: "Completed At", value: completedAt)
         }
         .padding(Spacing.md)
-        .background(Color("3A3A3A"))
+        .background(Color.backgroundDark1)
         .cornerRadius(Spacing.radiusMedium)
     }
     

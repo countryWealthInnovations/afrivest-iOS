@@ -108,7 +108,7 @@ struct WalletCard: View {
         }
         .padding(Spacing.md)
         .frame(height: 180)
-        .background(Color("3A3A3A"))
+        .background(Color.backgroundDark1)
         .cornerRadius(Spacing.radiusMedium)
     }
     
