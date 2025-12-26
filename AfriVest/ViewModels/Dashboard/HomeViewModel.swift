@@ -20,6 +20,7 @@ class HomeViewModel: ObservableObject {
     @Published var isAmountHidden = false
     @Published var isOtherCurrenciesExpanded = false
     @Published var greeting = ""
+    @Published var featuredInvestments: [InvestmentProduct] = []
     
     // Computed property for user (for backwards compatibility)
     var user: User? {
@@ -85,7 +86,7 @@ class HomeViewModel: ObservableObject {
                     self?.profile = profileData
                     self?.wallets = profileData.wallets
                     print("✅ Profile loaded: \(profileData.wallets.count) wallets")
-                    
+                    self!.loadFeaturedInvestments()
                 case .failure(let error):
                     // Only show error if we don't have cached data
                     if !hasCachedData {
@@ -93,6 +94,18 @@ class HomeViewModel: ObservableObject {
                         print("❌ Profile load error: \(error.localizedDescription)")
                     }
                 }
+            }
+        }
+    }
+    
+    func loadFeaturedInvestments() {
+        Task {
+            do {
+                let products = try await InvestmentService.shared.getFeaturedProducts()
+                self.featuredInvestments = Array(products.prefix(3))
+                print("✅ Loaded \(products.count) featured investments")
+            } catch {
+                print("❌ Failed to load featured investments: \(error)")
             }
         }
     }

@@ -7,9 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB1C782E2EFAD81B00347335 /* InsuranceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1C782D2EFAD81B00347335 /* InsuranceViewModel.swift */; };
 		AB21F6512E9AC17300E32329 /* DepositProcessingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB21F6502E9AC17300E32329 /* DepositProcessingView.swift */; };
 		AB21F6532E9ADAA300E32329 /* TransactionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB21F6522E9ADAA100E32329 /* TransactionService.swift */; };
 		AB21F6552E9AE27F00E32329 /* HistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB21F6542E9AE27700E32329 /* HistoryViewModel.swift */; };
+		AB269AAD2EFA946100F53C4A /* InvestmentProductsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB269AAC2EFA946100F53C4A /* InvestmentProductsView.swift */; };
+		AB269AB02EFA948000F53C4A /* InsuranceListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB269AAF2EFA948000F53C4A /* InsuranceListView.swift */; };
+		AB269AB32EFA949700F53C4A /* MarketplaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB269AB22EFA949700F53C4A /* MarketplaceView.swift */; };
+		AB269AB52EFA94A300F53C4A /* GoldMarketplaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB269AB42EFA94A300F53C4A /* GoldMarketplaceView.swift */; };
+		AB269ABD2EFAB32B00F53C4A /* InvestmentService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB269ABC2EFAB32B00F53C4A /* InvestmentService.swift */; };
+		AB269ABF2EFAB33800F53C4A /* InsuranceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB269ABE2EFAB33800F53C4A /* InsuranceService.swift */; };
+		AB269AC12EFAB34400F53C4A /* MarketplaceService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB269AC02EFAB34400F53C4A /* MarketplaceService.swift */; };
+		AB269AC32EFAB8BC00F53C4A /* InvestmentModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB269AC22EFAB8BC00F53C4A /* InvestmentModels.swift */; };
+		AB269AC52EFAB8DD00F53C4A /* GoldModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB269AC42EFAB8D900F53C4A /* GoldModels.swift */; };
+		AB269AC72EFAB9F500F53C4A /* InsuranceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB269AC62EFAB9F300F53C4A /* InsuranceModels.swift */; };
+		AB269ACA2EFAC45500F53C4A /* InvestmentViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB269AC92EFAC45500F53C4A /* InvestmentViewModel.swift */; };
+		AB3066F72EFEEE4600F9110C /* ProductDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3066F62EFEEE4600F9110C /* ProductDetailViewModel.swift */; };
+		AB3066F92EFEEE5600F9110C /* ProductDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3066F82EFEEE5600F9110C /* ProductDetailView.swift */; };
+		AB3066FE2EFEF28600F9110C /* AssetsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3066FD2EFEF28600F9110C /* AssetsViewModel.swift */; };
 		AB30ECF42E95D5D400EEB7ED /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = AB30ECF32E95D5D400EEB7ED /* Alamofire */; };
 		AB30ECF72E95D5EE00EEB7ED /* KeychainSwift in Frameworks */ = {isa = PBXBuildFile; productRef = AB30ECF62E95D5EE00EEB7ED /* KeychainSwift */; };
 		AB30ECFA2E95D64F00EEB7ED /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = AB30ECF92E95D64F00EEB7ED /* FirebaseAnalytics */; };
@@ -35,6 +50,15 @@
 		AB74DABC2E9D150D0068C633 /* WithdrawViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB74DABB2E9D150D0068C633 /* WithdrawViewModel.swift */; };
 		AB74DABE2E9D15210068C633 /* WithdrawSuccessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB74DABD2E9D15210068C633 /* WithdrawSuccessView.swift */; };
 		AB74DAC02E9D3FA40068C633 /* FeeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB74DABF2E9D3FA40068C633 /* FeeCalculator.swift */; };
+		AB7BB5092EFF033C00CEDA48 /* InsuranceProductDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7BB5082EFF033C00CEDA48 /* InsuranceProductDetailView.swift */; };
+		AB7BB50B2EFF03DF00CEDA48 /* GoldProductDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7BB50A2EFF03DF00CEDA48 /* GoldProductDetailView.swift */; };
+		AB7BB50E2EFF0A7500CEDA48 /* InvestmentDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7BB50D2EFF0A7500CEDA48 /* InvestmentDetailView.swift */; };
+		AB7BB5102EFF0C9B00CEDA48 /* PolicyDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7BB50F2EFF0C9B00CEDA48 /* PolicyDetailView.swift */; };
+		AB7BB5122EFF0CB800CEDA48 /* PolicyDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7BB5112EFF0CB800CEDA48 /* PolicyDetailViewModel.swift */; };
+		AB7BB5142EFF0CC700CEDA48 /* FileClaimView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7BB5132EFF0CC700CEDA48 /* FileClaimView.swift */; };
+		AB7BB5172EFF3C7E00CEDA48 /* ChangePasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7BB5162EFF3C7E00CEDA48 /* ChangePasswordView.swift */; };
+		AB7BB51A2EFF3CA800CEDA48 /* ChangePasswordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7BB5192EFF3CA800CEDA48 /* ChangePasswordViewModel.swift */; };
+		AB7BB51C2EFF3CEF00CEDA48 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7BB51B2EFF3CEF00CEDA48 /* ProfileViewModel.swift */; };
 		ABF8E4792E93F3CE00B4A771 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ABF8E43E2E93F3CE00B4A771 /* Assets.xcassets */; };
 		ABF8E47A2E93F3CE00B4A771 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ABF8E4412E93F3CE00B4A771 /* GoogleService-Info.plist */; };
 		ABF8E47C2E93F3CE00B4A771 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4142E93F3CE00B4A771 /* AppDelegate.swift */; };
@@ -86,7 +110,6 @@
 		ABF8E4AE2E93F3CE00B4A771 /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4652E93F3CE00B4A771 /* SplashView.swift */; };
 		ABF8E4AF2E93F3CE00B4A771 /* SplashViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4662E93F3CE00B4A771 /* SplashViewModel.swift */; };
 		ABF8E4B02E93F3CE00B4A771 /* TransactionDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4682E93F3CE00B4A771 /* TransactionDetailView.swift */; };
-		ABF8E4B12E93F3CE00B4A771 /* TransactionListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4692E93F3CE00B4A771 /* TransactionListView.swift */; };
 		ABF8E4B22E93F3CE00B4A771 /* DepositView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E46B2E93F3CE00B4A771 /* DepositView.swift */; };
 		ABF8E4B42E93F3CE00B4A771 /* WithdrawView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E46D2E93F3CE00B4A771 /* WithdrawView.swift */; };
 		ABF8E4B52E93F3CE00B4A771 /* WalletDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E46F2E93F3CE00B4A771 /* WalletDetailView.swift */; };
@@ -101,9 +124,24 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AB1C782D2EFAD81B00347335 /* InsuranceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsuranceViewModel.swift; sourceTree = "<group>"; };
 		AB21F6502E9AC17300E32329 /* DepositProcessingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepositProcessingView.swift; sourceTree = "<group>"; };
 		AB21F6522E9ADAA100E32329 /* TransactionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionService.swift; sourceTree = "<group>"; };
 		AB21F6542E9AE27700E32329 /* HistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewModel.swift; sourceTree = "<group>"; };
+		AB269AAC2EFA946100F53C4A /* InvestmentProductsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvestmentProductsView.swift; sourceTree = "<group>"; };
+		AB269AAF2EFA948000F53C4A /* InsuranceListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsuranceListView.swift; sourceTree = "<group>"; };
+		AB269AB22EFA949700F53C4A /* MarketplaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketplaceView.swift; sourceTree = "<group>"; };
+		AB269AB42EFA94A300F53C4A /* GoldMarketplaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoldMarketplaceView.swift; sourceTree = "<group>"; };
+		AB269ABC2EFAB32B00F53C4A /* InvestmentService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvestmentService.swift; sourceTree = "<group>"; };
+		AB269ABE2EFAB33800F53C4A /* InsuranceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsuranceService.swift; sourceTree = "<group>"; };
+		AB269AC02EFAB34400F53C4A /* MarketplaceService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketplaceService.swift; sourceTree = "<group>"; };
+		AB269AC22EFAB8BC00F53C4A /* InvestmentModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvestmentModels.swift; sourceTree = "<group>"; };
+		AB269AC42EFAB8D900F53C4A /* GoldModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoldModels.swift; sourceTree = "<group>"; };
+		AB269AC62EFAB9F300F53C4A /* InsuranceModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsuranceModels.swift; sourceTree = "<group>"; };
+		AB269AC92EFAC45500F53C4A /* InvestmentViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvestmentViewModel.swift; sourceTree = "<group>"; };
+		AB3066F62EFEEE4600F9110C /* ProductDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailViewModel.swift; sourceTree = "<group>"; };
+		AB3066F82EFEEE5600F9110C /* ProductDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailView.swift; sourceTree = "<group>"; };
+		AB3066FD2EFEF28600F9110C /* AssetsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsViewModel.swift; sourceTree = "<group>"; };
 		AB4C8FAC2E96333D00F2701C /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
 		AB4C8FAE2E96337D00F2701C /* ProfileResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileResponse.swift; sourceTree = "<group>"; };
 		AB5CCAA32E995E6800EE5B95 /* DepositResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepositResponse.swift; sourceTree = "<group>"; };
@@ -120,6 +158,15 @@
 		AB74DABB2E9D150D0068C633 /* WithdrawViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithdrawViewModel.swift; sourceTree = "<group>"; };
 		AB74DABD2E9D15210068C633 /* WithdrawSuccessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithdrawSuccessView.swift; sourceTree = "<group>"; };
 		AB74DABF2E9D3FA40068C633 /* FeeCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeCalculator.swift; sourceTree = "<group>"; };
+		AB7BB5082EFF033C00CEDA48 /* InsuranceProductDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsuranceProductDetailView.swift; sourceTree = "<group>"; };
+		AB7BB50A2EFF03DF00CEDA48 /* GoldProductDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoldProductDetailView.swift; sourceTree = "<group>"; };
+		AB7BB50D2EFF0A7500CEDA48 /* InvestmentDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvestmentDetailView.swift; sourceTree = "<group>"; };
+		AB7BB50F2EFF0C9B00CEDA48 /* PolicyDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolicyDetailView.swift; sourceTree = "<group>"; };
+		AB7BB5112EFF0CB800CEDA48 /* PolicyDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PolicyDetailViewModel.swift; sourceTree = "<group>"; };
+		AB7BB5132EFF0CC700CEDA48 /* FileClaimView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileClaimView.swift; sourceTree = "<group>"; };
+		AB7BB5162EFF3C7E00CEDA48 /* ChangePasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordView.swift; sourceTree = "<group>"; };
+		AB7BB5192EFF3CA800CEDA48 /* ChangePasswordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordViewModel.swift; sourceTree = "<group>"; };
+		AB7BB51B2EFF3CEF00CEDA48 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		ABD92DB92E8D904700808567 /* AfriVest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AfriVest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		ABF8E4142E93F3CE00B4A771 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		ABF8E4162E93F3CE00B4A771 /* BiometricButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiometricButton.swift; sourceTree = "<group>"; };
@@ -173,7 +220,6 @@
 		ABF8E4652E93F3CE00B4A771 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		ABF8E4662E93F3CE00B4A771 /* SplashViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewModel.swift; sourceTree = "<group>"; };
 		ABF8E4682E93F3CE00B4A771 /* TransactionDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionDetailView.swift; sourceTree = "<group>"; };
-		ABF8E4692E93F3CE00B4A771 /* TransactionListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionListView.swift; sourceTree = "<group>"; };
 		ABF8E46B2E93F3CE00B4A771 /* DepositView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepositView.swift; sourceTree = "<group>"; };
 		ABF8E46D2E93F3CE00B4A771 /* WithdrawView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithdrawView.swift; sourceTree = "<group>"; };
 		ABF8E46F2E93F3CE00B4A771 /* WalletDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletDetailView.swift; sourceTree = "<group>"; };
@@ -208,6 +254,60 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		AB1C782C2EFAD81300347335 /* Insurance */ = {
+			isa = PBXGroup;
+			children = (
+				AB1C782D2EFAD81B00347335 /* InsuranceViewModel.swift */,
+			);
+			path = Insurance;
+			sourceTree = "<group>";
+		};
+		AB269AA92EFA942900F53C4A /* Investments */ = {
+			isa = PBXGroup;
+			children = (
+				AB3066F82EFEEE5600F9110C /* ProductDetailView.swift */,
+				AB269AAC2EFA946100F53C4A /* InvestmentProductsView.swift */,
+			);
+			path = Investments;
+			sourceTree = "<group>";
+		};
+		AB269AAE2EFA947400F53C4A /* Insurance */ = {
+			isa = PBXGroup;
+			children = (
+				AB7BB5082EFF033C00CEDA48 /* InsuranceProductDetailView.swift */,
+				AB269AAF2EFA948000F53C4A /* InsuranceListView.swift */,
+			);
+			path = Insurance;
+			sourceTree = "<group>";
+		};
+		AB269AB12EFA948E00F53C4A /* Marketplace */ = {
+			isa = PBXGroup;
+			children = (
+				AB7BB50A2EFF03DF00CEDA48 /* GoldProductDetailView.swift */,
+				AB269AB42EFA94A300F53C4A /* GoldMarketplaceView.swift */,
+				AB269AB22EFA949700F53C4A /* MarketplaceView.swift */,
+			);
+			path = Marketplace;
+			sourceTree = "<group>";
+		};
+		AB269AC82EFAC44F00F53C4A /* Investment */ = {
+			isa = PBXGroup;
+			children = (
+				AB3066F62EFEEE4600F9110C /* ProductDetailViewModel.swift */,
+				AB269AC92EFAC45500F53C4A /* InvestmentViewModel.swift */,
+			);
+			path = Investment;
+			sourceTree = "<group>";
+		};
+		AB3066FC2EFEF27500F9110C /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				AB7BB5112EFF0CB800CEDA48 /* PolicyDetailViewModel.swift */,
+				AB3066FD2EFEF28600F9110C /* AssetsViewModel.swift */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
 		AB5CCAAD2E995FD000EE5B95 /* Deposit */ = {
 			isa = PBXGroup;
 			children = (
@@ -226,6 +326,24 @@
 				AB74DAB52E9D121E0068C633 /* SendMoneyViewModel.swift */,
 			);
 			path = Transfer;
+			sourceTree = "<group>";
+		};
+		AB7BB50C2EFF0A5E00CEDA48 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				AB7BB5132EFF0CC700CEDA48 /* FileClaimView.swift */,
+				AB7BB50F2EFF0C9B00CEDA48 /* PolicyDetailView.swift */,
+				AB7BB50D2EFF0A7500CEDA48 /* InvestmentDetailView.swift */,
+			);
+			path = Assets;
+			sourceTree = "<group>";
+		};
+		AB7BB5152EFF3C7500CEDA48 /* Profile */ = {
+			isa = PBXGroup;
+			children = (
+				AB7BB5162EFF3C7E00CEDA48 /* ChangePasswordView.swift */,
+			);
+			path = Profile;
 			sourceTree = "<group>";
 		};
 		ABD92DB02E8D904600808567 = {
@@ -394,6 +512,9 @@
 			isa = PBXGroup;
 			children = (
 				ABF8E4372E93F3CE00B4A771 /* Auth */,
+				AB269AC62EFAB9F300F53C4A /* InsuranceModels.swift */,
+				AB269AC42EFAB8D900F53C4A /* GoldModels.swift */,
+				AB269AC22EFAB8BC00F53C4A /* InvestmentModels.swift */,
 				AB74DAB72E9D14C00068C633 /* WithdrawModels.swift */,
 				AB74DAAE2E9D117E0068C633 /* TransferModels.swift */,
 				AB5CCAA32E995E6800EE5B95 /* DepositResponse.swift */,
@@ -417,6 +538,9 @@
 		ABF8E4482E93F3CE00B4A771 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				AB269AC02EFAB34400F53C4A /* MarketplaceService.swift */,
+				AB269ABE2EFAB33800F53C4A /* InsuranceService.swift */,
+				AB269ABC2EFAB32B00F53C4A /* InvestmentService.swift */,
 				AB74DAB92E9D14DD0068C633 /* WithdrawService.swift */,
 				AB74DAB02E9D119B0068C633 /* TransferService.swift */,
 				AB5CCAA52E995F1500EE5B95 /* DepositService.swift */,
@@ -450,6 +574,8 @@
 		ABF8E4512E93F3CE00B4A771 /* Profile */ = {
 			isa = PBXGroup;
 			children = (
+				AB7BB51B2EFF3CEF00CEDA48 /* ProfileViewModel.swift */,
+				AB7BB5192EFF3CA800CEDA48 /* ChangePasswordViewModel.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -472,6 +598,9 @@
 		ABF8E4542E93F3CE00B4A771 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				AB3066FC2EFEF27500F9110C /* Assets */,
+				AB1C782C2EFAD81300347335 /* Insurance */,
+				AB269AC82EFAC44F00F53C4A /* Investment */,
 				ABF9B5162E942E2D00867A55 /* Dashboard */,
 				ABF8E44E2E93F3CE00B4A771 /* Auth */,
 				ABF8E4502E93F3CE00B4A771 /* Deposit */,
@@ -529,7 +658,6 @@
 			isa = PBXGroup;
 			children = (
 				ABF8E4682E93F3CE00B4A771 /* TransactionDetailView.swift */,
-				ABF8E4692E93F3CE00B4A771 /* TransactionListView.swift */,
 			);
 			path = Transactions;
 			sourceTree = "<group>";
@@ -556,6 +684,11 @@
 		ABF8E4732E93F3CE00B4A771 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				AB7BB5152EFF3C7500CEDA48 /* Profile */,
+				AB7BB50C2EFF0A5E00CEDA48 /* Assets */,
+				AB269AB12EFA948E00F53C4A /* Marketplace */,
+				AB269AAE2EFA947400F53C4A /* Insurance */,
+				AB269AA92EFA942900F53C4A /* Investments */,
 				AB5CCAAD2E995FD000EE5B95 /* Deposit */,
 				ABF8E45A2E93F3CE00B4A771 /* Authentication */,
 				ABF8E4612E93F3CE00B4A771 /* Dashboard */,
@@ -680,12 +813,17 @@
 				ABF8E47F2E93F3CE00B4A771 /* PrimaryButton.swift in Sources */,
 				ABF8E4802E93F3CE00B4A771 /* OTPBoxes.swift in Sources */,
 				AB5CCAAC2E995FA900EE5B95 /* DepositStatusView.swift in Sources */,
+				AB269ABD2EFAB32B00F53C4A /* InvestmentService.swift in Sources */,
 				AB74DABC2E9D150D0068C633 /* WithdrawViewModel.swift in Sources */,
 				ABF8E4812E93F3CE00B4A771 /* PhoneTextField.swift in Sources */,
 				ABF8E4822E93F3CE00B4A771 /* TextFieldState.swift in Sources */,
+				AB7BB51A2EFF3CA800CEDA48 /* ChangePasswordViewModel.swift in Sources */,
+				AB7BB50B2EFF03DF00CEDA48 /* GoldProductDetailView.swift in Sources */,
+				AB269ABF2EFAB33800F53C4A /* InsuranceService.swift in Sources */,
 				ABF8E4832E93F3CE00B4A771 /* CountryPickerView.swift in Sources */,
 				ABF8E4842E93F3CE00B4A771 /* KYCBannerView.swift in Sources */,
 				ABF8E4852E93F3CE00B4A771 /* LoadingOverlay.swift in Sources */,
+				AB7BB50E2EFF0A7500CEDA48 /* InvestmentDetailView.swift in Sources */,
 				ABF8E4862E93F3CE00B4A771 /* APIConstants.swift in Sources */,
 				AB4C8FAF2E96338200F2701C /* ProfileResponse.swift in Sources */,
 				AB5CCAA62E995F1500EE5B95 /* DepositService.swift in Sources */,
@@ -693,27 +831,38 @@
 				ABF8E4872E93F3CE00B4A771 /* AppConstants.swift in Sources */,
 				ABF8E4882E93F3CE00B4A771 /* APIClient.swift in Sources */,
 				AB21F6512E9AC17300E32329 /* DepositProcessingView.swift in Sources */,
+				AB269AC32EFAB8BC00F53C4A /* InvestmentModels.swift in Sources */,
 				ABF9B5132E942B1C00867A55 /* WalletCard.swift in Sources */,
+				AB7BB5142EFF0CC700CEDA48 /* FileClaimView.swift in Sources */,
 				ABF8E4892E93F3CE00B4A771 /* APIEndpoint.swift in Sources */,
 				ABF8E48A2E93F3CE00B4A771 /* APIError.swift in Sources */,
+				AB7BB51C2EFF3CEF00CEDA48 /* ProfileViewModel.swift in Sources */,
 				ABF8E48B2E93F3CE00B4A771 /* NetworkMonitor.swift in Sources */,
 				ABF8E48C2E93F3CE00B4A771 /* KeychainManager.swift in Sources */,
+				AB269AC52EFAB8DD00F53C4A /* GoldModels.swift in Sources */,
 				ABF8E48D2E93F3CE00B4A771 /* SecureStorage.swift in Sources */,
 				ABF8E48E2E93F3CE00B4A771 /* UserDefaultsManager.swift in Sources */,
 				AB74DAB82E9D14C30068C633 /* WithdrawModels.swift in Sources */,
+				AB269AAD2EFA946100F53C4A /* InvestmentProductsView.swift in Sources */,
 				ABF8E48F2E93F3CE00B4A771 /* AuthResponse.swift in Sources */,
 				AB5CCAA42E995E6800EE5B95 /* DepositResponse.swift in Sources */,
+				AB7BB5102EFF0C9B00CEDA48 /* PolicyDetailView.swift in Sources */,
 				ABF8E4902E93F3CE00B4A771 /* OTPResponse.swift in Sources */,
 				ABF8E4912E93F3CE00B4A771 /* Transaction.swift in Sources */,
 				ABF8E4922E93F3CE00B4A771 /* User.swift in Sources */,
+				AB7BB5092EFF033C00CEDA48 /* InsuranceProductDetailView.swift in Sources */,
+				AB269AB52EFA94A300F53C4A /* GoldMarketplaceView.swift in Sources */,
 				ABF8E4932E93F3CE00B4A771 /* Wallet.swift in Sources */,
 				ABF8E4942E93F3CE00B4A771 /* AppFont.swift in Sources */,
 				AB74DAAF2E9D11810068C633 /* TransferModels.swift in Sources */,
 				ABF8E4952E93F3CE00B4A771 /* AppTheme.swift in Sources */,
+				AB3066FE2EFEF28600F9110C /* AssetsViewModel.swift in Sources */,
 				ABF8E4972E93F3CE00B4A771 /* Country.swift in Sources */,
 				ABF8E4982E93F3CE00B4A771 /* Spacing.swift in Sources */,
 				ABF8E4992E93F3CE00B4A771 /* Validators.swift in Sources */,
 				ABF9B5112E942B0B00867A55 /* HomeViewModel.swift in Sources */,
+				AB269AB32EFA949700F53C4A /* MarketplaceView.swift in Sources */,
+				AB1C782E2EFAD81B00347335 /* InsuranceViewModel.swift in Sources */,
 				ABF8E49C2E93F3CE00B4A771 /* ForgotPasswordViewModel.swift in Sources */,
 				ABF8E49D2E93F3CE00B4A771 /* LoginViewModel.swift in Sources */,
 				ABF8E49E2E93F3CE00B4A771 /* OTPViewModel.swift in Sources */,
@@ -723,26 +872,33 @@
 				AB21F6552E9AE27F00E32329 /* HistoryViewModel.swift in Sources */,
 				ABF8E4A22E93F3CE00B4A771 /* ForgotPasswordView.swift in Sources */,
 				ABF8E4A32E93F3CE00B4A771 /* LoginView.swift in Sources */,
+				AB7BB5122EFF0CB800CEDA48 /* PolicyDetailViewModel.swift in Sources */,
+				AB269AC12EFAB34400F53C4A /* MarketplaceService.swift in Sources */,
 				ABF8E4A42E93F3CE00B4A771 /* OTPView.swift in Sources */,
 				ABF8E4A52E93F3CE00B4A771 /* RegisterView.swift in Sources */,
 				ABF8E4A62E93F3CE00B4A771 /* ResetPasswordView.swift in Sources */,
+				AB3066F92EFEEE5600F9110C /* ProductDetailView.swift in Sources */,
 				ABF8E4A72E93F3CE00B4A771 /* AssetsView.swift in Sources */,
+				AB3066F72EFEEE4600F9110C /* ProductDetailViewModel.swift in Sources */,
 				ABF8E4A82E93F3CE00B4A771 /* DashboardView.swift in Sources */,
 				ABF8E4A92E93F3CE00B4A771 /* HistoryView.swift in Sources */,
 				ABF8E4AA2E93F3CE00B4A771 /* HomeView.swift in Sources */,
 				ABF8E4AB2E93F3CE00B4A771 /* ProfileView.swift in Sources */,
 				AB74DAB62E9D121E0068C633 /* SendMoneyViewModel.swift in Sources */,
+				AB269AC72EFAB9F500F53C4A /* InsuranceModels.swift in Sources */,
 				ABF8E4AC2E93F3CE00B4A771 /* OnboardingView.swift in Sources */,
 				ABF8E4AD2E93F3CE00B4A771 /* OnboardingViewModel.swift in Sources */,
 				AB74DAB32E9D11B80068C633 /* SendMoneyView.swift in Sources */,
 				AB5CCAA82E995F2F00EE5B95 /* DepositViewModel.swift in Sources */,
 				ABF8E4AE2E93F3CE00B4A771 /* SplashView.swift in Sources */,
 				ABF8E4AF2E93F3CE00B4A771 /* SplashViewModel.swift in Sources */,
+				AB269AB02EFA948000F53C4A /* InsuranceListView.swift in Sources */,
 				AB74DAC02E9D3FA40068C633 /* FeeCalculator.swift in Sources */,
+				AB269ACA2EFAC45500F53C4A /* InvestmentViewModel.swift in Sources */,
+				AB7BB5172EFF3C7E00CEDA48 /* ChangePasswordView.swift in Sources */,
 				AB21F6532E9ADAA300E32329 /* TransactionService.swift in Sources */,
 				AB74DAB12E9D119B0068C633 /* TransferService.swift in Sources */,
 				ABF8E4B02E93F3CE00B4A771 /* TransactionDetailView.swift in Sources */,
-				ABF8E4B12E93F3CE00B4A771 /* TransactionListView.swift in Sources */,
 				ABF8E4B22E93F3CE00B4A771 /* DepositView.swift in Sources */,
 				ABF8E4B42E93F3CE00B4A771 /* WithdrawView.swift in Sources */,
 				ABF8E4B52E93F3CE00B4A771 /* WalletDetailView.swift in Sources */,
@@ -889,6 +1045,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AfriVest/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AfriVest;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need camera access to capture your ID documents for verification";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Use Face ID to securely access your account";
@@ -942,6 +1099,7 @@
 				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AfriVest/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = AfriVest;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.finance";
 				INFOPLIST_KEY_NSCameraUsageDescription = "We need camera access to capture your ID documents for verification";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "Use Face ID to securely access your account";

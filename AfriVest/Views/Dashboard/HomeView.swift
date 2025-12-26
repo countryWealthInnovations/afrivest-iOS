@@ -15,6 +15,9 @@ struct HomeView: View {
     @State private var showWithdrawView = false
     @State private var showKYCBanner = true
     @State private var showKYCAlert = false
+    @State private var showInvestmentProducts = false
+    @State private var showInsuranceList = false
+    @State private var showGoldMarketplace = false
     
     var body: some View {
         ZStack {
@@ -88,6 +91,15 @@ struct HomeView: View {
             Text("Withdraw View - Coming Soon")
                 .background(AppTheme.backgroundGradient.ignoresSafeArea())
         }
+        .fullScreenCover(isPresented: $showInvestmentProducts) {
+            InvestmentProductsView()
+        }
+        .fullScreenCover(isPresented: $showInsuranceList) {
+            InsuranceListView()
+        }
+        .fullScreenCover(isPresented: $showGoldMarketplace) {
+            GoldMarketplaceView()
+        }
     }
     
     // MARK: - KYC Helper
@@ -100,7 +112,7 @@ struct HomeView: View {
         Group {
             if let avatarUrl = viewModel.user?.avatarUrl,
                !avatarUrl.isEmpty,
-               avatarUrl != "https://afrivest.countrywealth.ug/images/default-avatar.png",
+               avatarUrl != "https://afrivest.co/images/default-avatar.png",
                let url = URL(string: avatarUrl) {
                 // Show custom avatar image
                 KFImage(url)
@@ -375,29 +387,31 @@ struct HomeView: View {
                     icon: "chart.line.uptrend.xyaxis",
                     title: "Invest"
                 ) {
-                    print("📊 Invest tapped")
+                    showInvestmentProducts = true
                 }
                 
                 quickActionButton(
                     icon: "staroflife.shield",
                     title: "Insurance"
                 ) {
-                    print("🛡️ Insurance tapped")
+                    showInsuranceList = true
                 }
                 
                 quickActionButton(
                     icon: "bag",
                     title: "Marketplace"
                 ) {
-                    print("🛍️ Marketplace tapped")
+                    showGoldMarketplace = true
                 }
                 
                 quickActionButton(
                     icon: "bitcoinsign",
                     title: "Crypto"
                 ) {
-                    print("₿ Crypto tapped")
+                    // Disabled for now
                 }
+                .opacity(0.5)
+                .disabled(true)
             }
         }
     }
@@ -435,8 +449,13 @@ struct HomeView: View {
             
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: Spacing.md) {
-                    ForEach(0..<3) { index in
-                        investmentCard(index: index)
+                    ForEach(viewModel.featuredInvestments) { product in
+                        NavigationLink {
+                            ProductDetailView(product: product)
+                        } label: {
+                            investmentCard(product: product)
+                        }
+                        .buttonStyle(PlainButtonStyle())
                     }
                 }
             }
@@ -444,7 +463,7 @@ struct HomeView: View {
     }
     
     // MARK: - Investment Card
-    private func investmentCard(index: Int) -> some View {
+    private func investmentCard(product: InvestmentProduct) -> some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
             // Top Section: Logo and Company Info
             HStack(alignment: .top, spacing: Spacing.sm) {
@@ -460,12 +479,12 @@ struct HomeView: View {
                 
                 // Company and Type
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("Old Mutual Uganda")
+                    Text(product.partner?.name ?? product.category?.name ?? "")
                         .font(AppFont.bodyRegular())
                         .foregroundColor(Color.textPrimary)
                         .lineLimit(2)
-                    
-                    Text("Treasury Bond")
+
+                    Text(product.category?.name ?? "")
                         .font(AppFont.bodySmall())
                         .foregroundColor(Color.textSecondary)
                 }
@@ -480,7 +499,7 @@ struct HomeView: View {
             HStack(alignment: .top) {
                 // Rate
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("12.8% p.a")
+                    Text(product.expectedReturns == "0.00" ? "No Returns" : "\(product.expectedReturns)% p.a")
                         .font(AppFont.bodyLarge())
                         .foregroundColor(Color.primaryGold)
                     
@@ -493,7 +512,7 @@ struct HomeView: View {
                 
                 // Maturity
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text("1-3 Years")
+                    Text(product.durationLabel)
                         .font(AppFont.bodyLarge())
                         .foregroundColor(Color.textPrimary)
                     
@@ -508,7 +527,7 @@ struct HomeView: View {
             
             // Bottom Section: Minimum Investment
             VStack(alignment: .leading, spacing: 2) {
-                Text("UGX 250,000")
+                Text(product.minInvestmentFormatted)
                     .font(AppFont.bodyLarge())
                     .foregroundColor(Color.primaryGold)
                 

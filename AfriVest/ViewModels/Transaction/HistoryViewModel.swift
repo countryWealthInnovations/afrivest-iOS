@@ -22,6 +22,7 @@ class HistoryViewModel: ObservableObject {
     private var currentPage = 1
     private var totalPages = 1
     private let perPage = 20
+    private let investmentService = InvestmentService.shared
     
     // MARK: - Load Transactions
     func loadTransactions() {
@@ -42,19 +43,28 @@ class HistoryViewModel: ObservableObject {
                 if let filter = selectedFilter {
                     queryParams["status"] = filter
                 }
-
+                
                 let response: [Transaction] = try await APIClient.shared.requestWithURLParameters(
                     endpoint,
                     parameters: queryParams,
                     requiresAuth: true
                 )
-
+                
                 transactions = response
-                filteredTransactions = response
+                
+                // Load investment purchases on first page
+                if currentPage == 1 {
+                    await loadInvestmentPurchases()
+                }
+                
+                // Sort by date
+                transactions.sort { parseDate($0.createdAt) > parseDate($1.createdAt) }
+                
+                filteredTransactions = transactions
                 isLastPage = response.isEmpty || response.count < perPage
                 isLoading = false
                 
-                print("✅ Loaded \(response.count) transactions")
+                print("✅ Loaded \(transactions.count) total transactions")
             } catch {
                 errorMessage = error.localizedDescription
                 isLoading = false
@@ -81,13 +91,13 @@ class HistoryViewModel: ObservableObject {
                 if let filter = selectedFilter {
                     queryParams["status"] = filter
                 }
-
+                
                 let response: [Transaction] = try await APIClient.shared.requestWithURLParameters(
                     endpoint,
                     parameters: queryParams,
                     requiresAuth: true
                 )
-
+                
                 if !response.isEmpty {
                     transactions.append(contentsOf: response)
                     filteredTransactions = transactions
@@ -103,6 +113,45 @@ class HistoryViewModel: ObservableObject {
                 print("❌ Failed to load more transactions: \(error.localizedDescription)")
             }
         }
+    }
+    
+    // MARK: - Load Investment Purchases
+    private func loadInvestmentPurchases() async {
+        do {
+            let investments = try await investmentService.getUserInvestments(status: nil)
+            
+            for investment in investments {
+                let transaction = Transaction(
+                    id: -investment.id,
+                    reference: investment.product?.slug ?? "INV-\(investment.id)",
+                    type: "investment",
+                    amount: investment.amountInvested,
+                    feeAmount: nil,
+                    totalAmount: investment.amountInvested,
+                    currency: investment.currency,
+                    status: investment.status,
+                    paymentChannel: "wallet",
+                    externalReference: nil,
+                    description: "Investment: \(investment.product?.name ?? "")",
+                    direction: "sent",
+                    otherParty: nil,
+                    createdAt: investment.purchaseDate,
+                    updatedAt: nil,
+                    completedAt: investment.purchaseDate,
+                    recipient: nil
+                )
+                transactions.append(transaction)
+            }
+        } catch {
+            print("Failed to load investment purchases: \(error)")
+        }
+    }
+    
+    private func parseDate(_ dateString: String) -> Date {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
+        formatter.timeZone = TimeZone(identifier: "UTC")
+        return formatter.date(from: dateString) ?? Date(timeIntervalSince1970: 0)
     }
     
     // MARK: - Filter Transactions

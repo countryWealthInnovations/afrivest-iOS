@@ -113,7 +113,7 @@ struct RegisterView: View {
                             .underline())
                             .font(AppFont.bodySmall())
                             .onTapGesture {
-                                if let url = URL(string: "https://afrivest.countrywealth.ug/terms") {
+                                if let url = URL(string: "https://afrivest.co/terms") {
                                     UIApplication.shared.open(url)
                                 }
                             }

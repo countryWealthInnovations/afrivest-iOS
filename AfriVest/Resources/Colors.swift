@@ -13,6 +13,7 @@ extension Color {
     static let primaryGold = Color(hex: "EFBF04")
     static let backgroundDark1 = Color(hex: "2F2F2F")
     static let backgroundDark2 = Color(hex: "333231")
+    static let backgroundDark = Color(hex: "1A1A1A")
     static let inputBackground = Color(hex: "1A1A1A")
     
     // MARK: - Semantic Colors

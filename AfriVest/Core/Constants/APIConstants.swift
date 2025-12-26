@@ -8,117 +8,142 @@
 import Foundation
 
 struct APIConstants {
-// MARK: - Base URL
+    // MARK: - Base URL
 #if DEBUG
-static let baseURL = "https://afrivest.countrywealth.ug/api"
+    static let baseURL = "https://afrivest.co/api"
 #else
-static let baseURL = "https://afrivest.countrywealth.ug/api"
+    static let baseURL = "https://afrivest.co/api"
 #endif
-
-
-// MARK: - Endpoints
-struct Endpoints {
-    // Authentication
-    static let register = "/auth/register"
-    static let login = "/auth/login"
-    static let logout = "/auth/logout"
-    static let me = "/auth/me"
-    static let verifyOTP = "/auth/verify-otp"
-    static let resendOTP = "/auth/resend-otp"
-    static let forgotPassword = "/auth/forgot-password"
-    static let resetPassword = "/auth/reset-password"
     
-    // Profile
-    static let profile = "/profile"
-    static let updatePassword = "/profile/password"
-    static let uploadAvatar = "/profile/avatar"
-    static let deleteAvatar = "/profile/avatar"
     
-    // Wallets
-    static let wallets = "/wallets"
-    static func wallet(currency: String) -> String {
-        return "/wallets/\(currency)"
+    // MARK: - Endpoints
+    struct Endpoints {
+        // Authentication
+        static let register = "/auth/register"
+        static let login = "/auth/login"
+        static let logout = "/auth/logout"
+        static let me = "/auth/me"
+        static let verifyOTP = "/auth/verify-otp"
+        static let resendOTP = "/auth/resend-otp"
+        static let forgotPassword = "/auth/forgot-password"
+        static let resetPassword = "/auth/reset-password"
+        
+        // Profile
+        static let profile = "/profile"
+        static let updatePassword = "/profile/password"
+        static let uploadAvatar = "/profile/avatar"
+        static let deleteAvatar = "/profile/avatar"
+        
+        // Wallets
+        static let wallets = "/wallets"
+        static func wallet(currency: String) -> String {
+            return "/wallets/\(currency)"
+        }
+        static func walletTransactions(currency: String) -> String {
+            return "/wallets/\(currency)/transactions"
+        }
+        
+        // Deposits
+        static let depositCard = "/deposits/card"
+        static let depositMobileMoney = "/deposits/mobile-money"
+        static let depositBank = "/deposits/bank-transfer"
+        static let checkDepositStatus = "/deposits"
+        static func depositStatus(reference: String) -> String {
+            return "/deposits/\(reference)/status"
+        }
+        
+        // Withdrawals
+        static let withdrawBank = "/withdrawals/bank"
+        static let withdrawMobileMoney = "/withdrawals/mobile-money"
+        static func withdrawalStatus(reference: String) -> String {
+            return "/withdrawals/\(reference)/status"
+        }
+        
+        // Transfers
+        static let p2pTransfer = "/transfers/p2p"
+        static let insurance = "/transfers/insurance"
+        static let investment = "/transfers/investment"
+        static let billPayment = "/transfers/bill-payment"
+        static let gold = "/transfers/gold"
+        static let crypto = "/transfers/crypto"
+        static let transferHistory = "/transfers/history"
+        
+        // Transactions
+        static let transactions = "/transactions"
+        static func transaction(id: Int) -> String {
+            return "/transactions/\(id)"
+        }
+        static func transactionReceipt(id: Int) -> String {
+            return "/transactions/\(id)/receipt"
+        }
+        
+        // Forex
+        static let forexRates = "/forex/rates"
+        static let forexConvert = "/forex/convert"
+        
+        // Dashboard
+        static let dashboard = "/dashboard"
+        
+        // Investments
+        static let investmentCategories = "/investment-categories"
+        static func investmentCategory(slug: String) -> String {
+            return "/investment-categories/\(slug)"
+        }
+        static let investmentProducts = "/investment-products"
+        static let featuredInvestmentProducts = "/investment-products/featured"
+        static func investmentProduct(slug: String) -> String {
+            return "/investment-products/\(slug)"
+        }
+        static let userInvestments = "/investments"
+        static func userInvestment(id: Int) -> String {
+            return "/investments/\(id)"
+        }
+        
+        // Insurance
+        static let insuranceProviders = "/insurance-policies/providers"
+        static let insurancePolicies = "/insurance-policies"
+        static func insurancePolicy(id: Int) -> String {
+            return "/insurance-policies/\(id)"
+        }
+        
+        // Gold
+        static let goldCurrentPrice = "/gold/current-price"
     }
-    static func walletTransactions(currency: String) -> String {
-        return "/wallets/\(currency)/transactions"
+    
+    // MARK: - Headers
+    struct Headers {
+        static let contentType = "Content-Type"
+        static let authorization = "Authorization"
+        static let accept = "Accept"
+        static let applicationJSON = "application/json"
     }
     
-    // Deposits
-    static let depositCard = "/deposits/card"
-    static let depositMobileMoney = "/deposits/mobile-money"
-    static let depositBank = "/deposits/bank-transfer"
-    static let checkDepositStatus = "/deposits"
-    static func depositStatus(reference: String) -> String {
-        return "/deposits/\(reference)/status"
+    // MARK: - HTTP Methods
+    enum HTTPMethod: String {
+        case get = "GET"
+        case post = "POST"
+        case put = "PUT"
+        case delete = "DELETE"
+        case patch = "PATCH"
     }
     
-    // Withdrawals
-    static let withdrawBank = "/withdrawals/bank"
-    static let withdrawMobileMoney = "/withdrawals/mobile-money"
-    static func withdrawalStatus(reference: String) -> String {
-        return "/withdrawals/\(reference)/status"
+    // MARK: - Status Codes
+    struct StatusCodes {
+        static let success = 200
+        static let created = 201
+        static let noContent = 204
+        static let badRequest = 400
+        static let unauthorized = 401
+        static let forbidden = 403
+        static let notFound = 404
+        static let validationError = 422
+        static let tooManyRequests = 429
+        static let serverError = 500
     }
     
-    // Transfers
-    static let p2pTransfer = "/transfers/p2p"
-    static let insurance = "/transfers/insurance"
-    static let investment = "/transfers/investment"
-    static let billPayment = "/transfers/bill-payment"
-    static let gold = "/transfers/gold"
-    static let crypto = "/transfers/crypto"
-    static let transferHistory = "/transfers/history"
+    // MARK: - Timeouts
+    static let requestTimeout: TimeInterval = 30
+    static let resourceTimeout: TimeInterval = 60
     
-    // Transactions
-    static let transactions = "/transactions"
-    static func transaction(id: Int) -> String {
-        return "/transactions/\(id)"
-    }
-    static func transactionReceipt(id: Int) -> String {
-        return "/transactions/\(id)/receipt"
-    }
     
-    // Forex
-    static let forexRates = "/forex/rates"
-    static let forexConvert = "/forex/convert"
-    
-    // Dashboard
-    static let dashboard = "/dashboard"
-}
-
-// MARK: - Headers
-struct Headers {
-    static let contentType = "Content-Type"
-    static let authorization = "Authorization"
-    static let accept = "Accept"
-    static let applicationJSON = "application/json"
-}
-
-// MARK: - HTTP Methods
-enum HTTPMethod: String {
-    case get = "GET"
-    case post = "POST"
-    case put = "PUT"
-    case delete = "DELETE"
-    case patch = "PATCH"
-}
-
-// MARK: - Status Codes
-struct StatusCodes {
-    static let success = 200
-    static let created = 201
-    static let noContent = 204
-    static let badRequest = 400
-    static let unauthorized = 401
-    static let forbidden = 403
-    static let notFound = 404
-    static let validationError = 422
-    static let tooManyRequests = 429
-    static let serverError = 500
-}
-
-// MARK: - Timeouts
-static let requestTimeout: TimeInterval = 30
-static let resourceTimeout: TimeInterval = 60
-
-
 }
