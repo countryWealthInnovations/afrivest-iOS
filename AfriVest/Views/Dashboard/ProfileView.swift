@@ -128,7 +128,7 @@ struct ProfileView: View {
         ZStack {
             Circle()
                 .fill(Color.primaryGold.opacity(0.2))
-                .frame(width: 80, height: 80)
+                .frame(width: 60, height: 60)
             
             Text(getInitials())
                 .font(AppFont.heading2())
@@ -141,28 +141,59 @@ struct ProfileView: View {
         VStack(spacing: 0) {
             SectionHeader(title: "Account")
             
-            SettingsRow(
-                icon: "person.fill",
-                title: "Personal Information",
-                subtitle: "Name, Email, Phone"
-            ) {
-                // TODO: Navigate to edit profile
+            NavigationLink(destination: EditProfileView()) {
+                settingsRowContent(
+                    icon: "person.fill",
+                    title: "Personal Information",
+                    subtitle: "Name, Phone"
+                )
             }
             
             Divider()
                 .background(Color.borderDefault)
                 .padding(.leading, 50)
             
-            SettingsRow(
-                icon: "bell.fill",
-                title: "Notifications",
-                subtitle: "Push, Email, SMS preferences"
-            ) {
-                // TODO: Navigate to notifications settings
+            NavigationLink(destination: NotificationSettingsView()) {
+                settingsRowContent(
+                    icon: "bell.fill",
+                    title: "Notifications",
+                    subtitle: "Push, Email, SMS preferences"
+                )
             }
         }
         .background(Color.backgroundDark1)
         .cornerRadius(Spacing.radiusMedium)
+    }
+    
+    private func settingsRowContent(icon: String, title: String, subtitle: String) -> some View {
+        HStack(spacing: Spacing.md) {
+            ZStack {
+                Circle()
+                    .fill(Color.primaryGold.opacity(0.2))
+                    .frame(width: 40, height: 40)
+                
+                Image(systemName: icon)
+                    .foregroundColor(Color.primaryGold)
+                    .font(.system(size: 18))
+            }
+            
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(AppFont.bodyRegular())
+                    .foregroundColor(Color.textPrimary)
+                
+                Text(subtitle)
+                    .font(AppFont.bodySmall())
+                    .foregroundColor(Color.textSecondary)
+            }
+            
+            Spacer()
+            
+            Image(systemName: "chevron.right")
+                .foregroundColor(Color.textSecondary)
+                .font(.system(size: 14))
+        }
+        .padding(Spacing.md)
     }
     
     // MARK: - Security Section
@@ -282,6 +313,28 @@ struct ProfileView: View {
                 .cornerRadius(Spacing.radiusMedium)
             }
             
+            // Delete Account Button
+            Button(action: {
+                showLogoutConfirmation = true
+            }) {
+                HStack {
+                    Image(systemName: "trash")
+                        .font(.system(size: 20))
+                    
+                    Text("Delete Account")
+                        .font(AppFont.bodyLarge())
+                }
+                .foregroundColor(.errorRed)
+                .frame(maxWidth: .infinity)
+                .frame(height: 50)
+                .background(Color.backgroundDark1)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Spacing.radiusMedium)
+                        .stroke(Color.errorRed, lineWidth: 1)
+                )
+                .cornerRadius(Spacing.radiusMedium)
+            }
+            
             // App Version
             Text("Version 1.0.0")
                 .font(AppFont.bodySmall())
@@ -314,14 +367,14 @@ struct ProfileView: View {
             UIApplication.shared.open(url)
         }
     }
-
+    
     private func openPhone() {
         let phone = "+256700000000" // Replace with actual phone number
         if let url = URL(string: "tel:\(phone)") {
             UIApplication.shared.open(url)
         }
     }
-
+    
     private func openURL(_ urlString: String) {
         if let url = URL(string: urlString) {
             UIApplication.shared.open(url)

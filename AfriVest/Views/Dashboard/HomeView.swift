@@ -48,7 +48,7 @@ struct HomeView: View {
                         investmentOpportunitiesSection
                         
                         // Quick Send or Receive Money
-                        quickSendReceiveSection
+                        //quickSendReceiveSection
                     }
                     .padding(.horizontal, Spacing.screenHorizontal)
                     .padding(.top, Spacing.md)

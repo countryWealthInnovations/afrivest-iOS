@@ -42,5 +42,13 @@
 	</array>
 	<key>NSContactsUsageDescription</key>
 	<string>AfriVest needs access to your contacts to help you send money to friends and family.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>AfriVest needs access to your camera to take profile photos</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>AfriVest needs access to your photos to update your profile picture</string>
+    <key>NSFaceIDUsageDescription</key>
+    <string>AfriVest uses Face ID to securely and quickly log you into your account</string>
+    <key>NSUserNotificationsUsageDescription</key>
+    <string>AfriVest sends you important updates about your investments and account activity</string>
 </dict>
 </plist>
