@@ -24,65 +24,81 @@ class APIClient: @unchecked Sendable {
     }
     
     // MARK: - Generic Request
-        func request<T: Decodable & Sendable>(
-            _ endpoint: String,
-            method: HTTPMethod = .get,
-            parameters: Parameters? = nil,
-            encoding: ParameterEncoding? = nil,
-            headers: HTTPHeaders? = nil,
-            requiresAuth: Bool = true
-        ) async throws -> T {
-            
-            let url = APIConstants.baseURL + endpoint
-            
-            var finalHeaders = headers ?? HTTPHeaders()
-            finalHeaders.add(name: APIConstants.Headers.contentType, value: APIConstants.Headers.applicationJSON)
-            finalHeaders.add(name: APIConstants.Headers.accept, value: APIConstants.Headers.applicationJSON)
-            
-            if requiresAuth, let token = keychainManager.getToken() {
-                finalHeaders.add(name: APIConstants.Headers.authorization, value: "Bearer \(token)")
-                print("Bearer Token: \(token)")
-            }
-            
-            let finalEncoding = encoding ?? JSONEncoding.default
-            
-            return try await withCheckedThrowingContinuation { continuation in
-                self.session.request(
-                    url,
-                    method: method,
-                    parameters: parameters,
-                    encoding: finalEncoding,
-                    headers: finalHeaders
-                )
-                .validate()
-                .responseDecodable(of: APIResponse<T>.self) { response in
-                    if let data = response.data {
-                        if let json = String(data: data, encoding: .utf8) {
-                            print("📦 API Response [\(endpoint)]: \(json)")
-                        }
+    func request<T: Decodable & Sendable>(
+        _ endpoint: String,
+        method: HTTPMethod = .get,
+        parameters: Parameters? = nil,
+        encoding: ParameterEncoding? = nil,
+        headers: HTTPHeaders? = nil,
+        requiresAuth: Bool = true
+    ) async throws -> T {
+        
+        let url = APIConstants.baseURL + endpoint
+        
+        var finalHeaders = headers ?? HTTPHeaders()
+        finalHeaders.add(name: APIConstants.Headers.contentType, value: APIConstants.Headers.applicationJSON)
+        finalHeaders.add(name: APIConstants.Headers.accept, value: APIConstants.Headers.applicationJSON)
+        
+        if requiresAuth, let token = keychainManager.getToken() {
+            finalHeaders.add(name: APIConstants.Headers.authorization, value: "Bearer \(token)")
+            print("Bearer Token: \(token)")
+        }
+        
+        let finalEncoding = encoding ?? JSONEncoding.default
+        
+        return try await withCheckedThrowingContinuation { continuation in
+            self.session.request(
+                url,
+                method: method,
+                parameters: parameters,
+                encoding: finalEncoding,
+                headers: finalHeaders
+            )
+            .validate(statusCode: 200..<300)
+            .responseDecodable(of: APIResponse<T>.self) { response in
+                if let data = response.data {
+                    if let json = String(data: data, encoding: .utf8) {
+                        print("📦 API Response [\(endpoint)]: \(json)")
                     }
-                    
-                    switch response.result {
-                    case .success(let apiResponse):
-                        if apiResponse.success {
-                            print("✅ Success: \(endpoint)")
-                            continuation.resume(returning: apiResponse.data)
-                        } else {
-                            print("❌ API Error: \(apiResponse.message ?? "Unknown error")")
-                            let error = APIError.serverError(apiResponse.message ?? "Unknown error")
-                            continuation.resume(throwing: error)
+                }
+                
+                switch response.result {
+                case .success(let apiResponse):
+                    if apiResponse.success {
+                        print("✅ Success: \(endpoint)")
+                        continuation.resume(returning: apiResponse.data)
+                    } else {
+                        print("❌ API Error: \(apiResponse.message ?? "Unknown error")")
+                        
+                        // Extract detailed error message
+                        var errorMessage = apiResponse.message ?? "Unknown error"
+                        
+                        // Check if we have validation errors
+                        if let data = response.data,
+                           let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                            
+                            if let errors = json["errors"] as? [String: [String]],
+                               let firstError = errors.values.first?.first {
+                                errorMessage = firstError
+                            } else if let message = json["message"] as? String {
+                                errorMessage = message
+                            }
                         }
                         
-                    case .failure(let error):
-                        print("❌ Network Error: \(error.localizedDescription)")
-                        if let statusCode = response.response?.statusCode {
-                            print("📍 Status Code: \(statusCode)")
-                        }
-                        continuation.resume(throwing: self.handleError(error, response: response.response))
+                        let error = APIError.validationError(errorMessage)
+                        continuation.resume(throwing: error)
                     }
+                    
+                case .failure(let error):
+                    print("❌ Network Error: \(error.localizedDescription)")
+                    if let statusCode = response.response?.statusCode {
+                        print("📍 Status Code: \(statusCode)")
+                    }
+                    continuation.resume(throwing: self.handleError(error, response: response.response, data: response.data))
                 }
             }
         }
+    }
     
     // GET request with URL parameters
     func requestWithURLParameters<T: Decodable & Sendable>(
@@ -118,7 +134,7 @@ class APIClient: @unchecked Sendable {
                     method: .get,
                     headers: finalHeaders
                 )
-                .validate()
+                .validate(statusCode: 200..<300)
                 .responseDecodable(of: APIResponse<T>.self) { response in
                     if let data = response.data {
                         if let json = String(data: data, encoding: .utf8) {
@@ -133,7 +149,23 @@ class APIClient: @unchecked Sendable {
                             continuation.resume(returning: apiResponse.data)
                         } else {
                             print("❌ API Error: \(apiResponse.message ?? "Unknown error")")
-                            let error = APIError.serverError(apiResponse.message ?? "Unknown error")
+                            
+                            // Extract detailed error message
+                            var errorMessage = apiResponse.message ?? "Unknown error"
+                            
+                            // Check if we have validation errors
+                            if let data = response.data,
+                               let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                                
+                                if let errors = json["errors"] as? [String: [String]],
+                                   let firstError = errors.values.first?.first {
+                                    errorMessage = firstError
+                                } else if let message = json["message"] as? String {
+                                    errorMessage = message
+                                }
+                            }
+                            
+                            let error = APIError.validationError(errorMessage)
                             continuation.resume(throwing: error)
                         }
                         
@@ -142,7 +174,7 @@ class APIClient: @unchecked Sendable {
                         if let statusCode = response.response?.statusCode {
                             print("🔍 Status Code: \(statusCode)")
                         }
-                        continuation.resume(throwing: self.handleError(error, response: response.response))
+                        continuation.resume(throwing: self.handleError(error, response: response.response, data: response.data))
                     }
                 }
             }
@@ -194,7 +226,7 @@ class APIClient: @unchecked Sendable {
                     method: method,
                     headers: headers
                 )
-                .validate()
+                .validate(statusCode: 200..<300)
                 .responseDecodable(of: APIResponse<T>.self) { response in
                     // Log raw response
                     if let data = response.data {
@@ -219,7 +251,7 @@ class APIClient: @unchecked Sendable {
                         if let statusCode = response.response?.statusCode {
                             print("📍 Status Code: \(statusCode)")
                         }
-                        continuation.resume(throwing: self.handleError(error, response: response.response))
+                        continuation.resume(throwing: self.handleError(error, response: response.response, data: response.data))
                     }
                 }
             }
@@ -227,7 +259,7 @@ class APIClient: @unchecked Sendable {
     }
     
     // MARK: - Error Handling
-    private func handleError(_ error: AFError, response: HTTPURLResponse?) -> APIError {
+    private func handleError(_ error: AFError, response: HTTPURLResponse?, data: Data?) -> APIError {
         if let statusCode = response?.statusCode {
             print("⚠️ HTTP Status Code: \(statusCode)")
             switch statusCode {
@@ -239,6 +271,16 @@ class APIClient: @unchecked Sendable {
             case APIConstants.StatusCodes.notFound:
                 return .notFound
             case APIConstants.StatusCodes.validationError:
+                // Try to extract validation error from response body
+                if let data = data,
+                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                    if let errors = json["errors"] as? [String: [String]],
+                       let firstError = errors.values.first?.first {
+                        return .validationError(firstError)
+                    } else if let message = json["message"] as? String {
+                        return .validationError(message)
+                    }
+                }
                 return .validationError("Please check your input")
             case APIConstants.StatusCodes.tooManyRequests:
                 return .rateLimitExceeded

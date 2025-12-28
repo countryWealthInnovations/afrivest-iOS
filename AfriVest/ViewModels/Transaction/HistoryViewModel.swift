@@ -132,7 +132,7 @@ class HistoryViewModel: ObservableObject {
                     status: investment.status,
                     paymentChannel: "wallet",
                     externalReference: nil,
-                    description: "Investment: \(investment.product?.name ?? "")",
+                    description: "Investment: \(investment.product?.title ?? "")",
                     direction: "sent",
                     otherParty: nil,
                     createdAt: investment.purchaseDate,

@@ -144,6 +144,4 @@ struct APIConstants {
     // MARK: - Timeouts
     static let requestTimeout: TimeInterval = 30
     static let resourceTimeout: TimeInterval = 60
-    
-    
 }

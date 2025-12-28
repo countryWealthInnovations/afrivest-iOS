@@ -26,17 +26,26 @@ class AssetsViewModel: ObservableObject {
     }
     
     func loadInvestments() {
-        isLoading = true
-        errorMessage = nil
-        
         Task {
+            await MainActor.run {
+                isLoading = true
+                errorMessage = nil
+            }
+            
             do {
                 let fetchedInvestments = try await investmentService.getUserInvestments(status: nil)
-                self.investments = fetchedInvestments
+                await MainActor.run {
+                    self.investments = fetchedInvestments
+                    print("✅ Loaded \(fetchedInvestments.count) investments")
+                    self.isLoading = false
+                }
             } catch {
-                self.errorMessage = error.localizedDescription
+                await MainActor.run {
+                    self.errorMessage = error.localizedDescription
+                    print("❌ Failed to load investments: \(error)")
+                    self.isLoading = false
+                }
             }
-            self.isLoading = false
         }
     }
     
@@ -44,9 +53,14 @@ class AssetsViewModel: ObservableObject {
         Task {
             do {
                 let fetchedPolicies = try await insuranceService.getInsurancePolicies(status: nil, policyType: nil)
-                self.policies = fetchedPolicies
+                await MainActor.run {
+                    self.policies = fetchedPolicies
+                    print("✅ Loaded \(fetchedPolicies.count) policies")
+                }
             } catch {
-                print("Failed to load policies: \(error)")
+                await MainActor.run {
+                    print("❌ Failed to load policies: \(error.localizedDescription)")
+                }
             }
         }
     }
@@ -56,6 +70,16 @@ class AssetsViewModel: ObservableObject {
     }
     
     var totalReturns: Double {
-        investments.reduce(0) { $0 + (Double($1.returnsEarned) ?? 0) }
+        investments.reduce(0) { result, investment in
+            if let returnsEarned = investment.returnsEarned,
+               let returns = Double(returnsEarned) {
+                return result + returns
+            } else {
+                // Calculate returns if not provided
+                let invested = Double(investment.amountInvested) ?? 0.0
+                let current = Double(investment.currentValue) ?? 0.0
+                return result + (current - invested)
+            }
+        }
     }
 }

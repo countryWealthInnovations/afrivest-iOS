@@ -72,19 +72,23 @@ struct PurchaseInsurancePolicyRequest: Codable, Sendable {
 // MARK: - Insurance Policy
 struct InsurancePolicy: Codable, Identifiable, Sendable {
     let id: Int
-    let userId: Int
-    let partnerId: Int
+    let userId: Int?
+    let partnerId: Int?
     let partner: InsuranceProvider?
     let policyNumber: String
     let policyType: String
+    let policyTypeLabel: String?
+    let providerName: String?
     let coverageAmount: String
     let premiumAmount: String
     let premiumFrequency: String
     let status: String
     let startDate: String
     let endDate: String
-    let beneficiaries: [Beneficiary]
-    let createdAt: String
+    let nextPaymentDate: String?
+    let daysToExpiry: Int?
+    let beneficiaries: [Beneficiary]?
+    let createdAt: String?
     
     enum CodingKeys: String, CodingKey {
         case id, partner, status, beneficiaries
@@ -92,30 +96,38 @@ struct InsurancePolicy: Codable, Identifiable, Sendable {
         case partnerId = "partner_id"
         case policyNumber = "policy_number"
         case policyType = "policy_type"
+        case policyTypeLabel = "policy_type_label"
+        case providerName = "provider_name"
         case coverageAmount = "coverage_amount"
         case premiumAmount = "premium_amount"
         case premiumFrequency = "premium_frequency"
         case startDate = "start_date"
         case endDate = "end_date"
+        case nextPaymentDate = "next_payment_date"
+        case daysToExpiry = "days_to_expiry"
         case createdAt = "created_at"
     }
     
     nonisolated init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(Int.self, forKey: .id)
-        userId = try container.decode(Int.self, forKey: .userId)
-        partnerId = try container.decode(Int.self, forKey: .partnerId)
+        userId = try container.decodeIfPresent(Int.self, forKey: .userId)
+        partnerId = try container.decodeIfPresent(Int.self, forKey: .partnerId)
         partner = try container.decodeIfPresent(InsuranceProvider.self, forKey: .partner)
         policyNumber = try container.decode(String.self, forKey: .policyNumber)
         policyType = try container.decode(String.self, forKey: .policyType)
+        policyTypeLabel = try container.decodeIfPresent(String.self, forKey: .policyTypeLabel)
+        providerName = try container.decodeIfPresent(String.self, forKey: .providerName)
         coverageAmount = try container.decode(String.self, forKey: .coverageAmount)
         premiumAmount = try container.decode(String.self, forKey: .premiumAmount)
         premiumFrequency = try container.decode(String.self, forKey: .premiumFrequency)
         status = try container.decode(String.self, forKey: .status)
         startDate = try container.decode(String.self, forKey: .startDate)
         endDate = try container.decode(String.self, forKey: .endDate)
-        beneficiaries = try container.decode([Beneficiary].self, forKey: .beneficiaries)
-        createdAt = try container.decode(String.self, forKey: .createdAt)
+        nextPaymentDate = try container.decodeIfPresent(String.self, forKey: .nextPaymentDate)
+        daysToExpiry = try container.decodeIfPresent(Int.self, forKey: .daysToExpiry)
+        beneficiaries = try container.decodeIfPresent([Beneficiary].self, forKey: .beneficiaries)
+        createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
     }
     
     var statusColor: String {
@@ -129,7 +141,7 @@ struct InsurancePolicy: Codable, Identifiable, Sendable {
     }
     
     var policyTypeText: String {
-        policyType.replacingOccurrences(of: "_", with: " ").capitalized
+        policyTypeLabel ?? policyType.replacingOccurrences(of: "_", with: " ").capitalized
     }
 }
 

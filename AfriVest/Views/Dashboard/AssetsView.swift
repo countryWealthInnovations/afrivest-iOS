@@ -105,8 +105,8 @@ struct AssetsView: View {
                 .padding(.vertical, Spacing.sm)
                 .background(
                     viewModel.selectedTab == index
-                        ? Color.primaryGold.opacity(0.1)
-                        : Color.clear
+                    ? Color.primaryGold.opacity(0.1)
+                    : Color.clear
                 )
                 .cornerRadius(Spacing.radiusSmall)
         }
@@ -201,7 +201,7 @@ struct InvestmentCard: View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(investment.product?.name ?? "Investment")
+                    Text(investment.product?.title ?? "Investment")
                         .font(AppFont.bodyLarge())
                         .foregroundColor(Color.textPrimary)
                     
@@ -244,7 +244,7 @@ struct InvestmentCard: View {
                         .font(AppFont.footnote())
                         .foregroundColor(Color.textSecondary)
                     
-                    Text("+\(investment.returnsEarned)")
+                    Text("+\(investment.returnsEarned ?? "0")")
                         .font(AppFont.bodyLarge())
                         .foregroundColor(Color.successGreen)
                 }

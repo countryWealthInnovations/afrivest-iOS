@@ -16,6 +16,7 @@ class ProductDetailViewModel: ObservableObject {
     @Published var errorMessage: String?
     @Published var purchaseSuccess = false
     @Published var walletBalance: Double = 0.0
+    @Published var autoReinvest: Bool = false
     
     private let investmentService = InvestmentService.shared
     
@@ -40,12 +41,23 @@ class ProductDetailViewModel: ObservableObject {
                     productId: product.id,
                     amount: amountValue,
                     currency: product.currency,
-                    payoutFrequency: nil,
-                    autoReinvest: false
+                    payoutFrequency: "monthly",
+                    autoReinvest: autoReinvest
                 )
                 
-                let _ = try await investmentService.purchaseInvestment(request: request)
+                let response = try await investmentService.purchaseInvestment(request: request)
+                print("✅ Investment purchased: \(response.investment.investmentCode)")
+                print("✅ Transaction: \(response.transaction.reference)")
                 self.purchaseSuccess = true
+            } catch let apiError as APIError {
+                switch apiError {
+                case .validationError(let message):
+                    self.errorMessage = message
+                case .serverError(let message):
+                    self.errorMessage = message
+                default:
+                    self.errorMessage = apiError.localizedDescription
+                }
             } catch {
                 self.errorMessage = error.localizedDescription
             }

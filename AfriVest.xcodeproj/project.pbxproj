@@ -78,9 +78,6 @@
 		ABF8E4862E93F3CE00B4A771 /* APIConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4242E93F3CE00B4A771 /* APIConstants.swift */; };
 		ABF8E4872E93F3CE00B4A771 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4252E93F3CE00B4A771 /* AppConstants.swift */; };
 		ABF8E4882E93F3CE00B4A771 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4272E93F3CE00B4A771 /* APIClient.swift */; };
-		ABF8E4892E93F3CE00B4A771 /* APIEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4282E93F3CE00B4A771 /* APIEndpoint.swift */; };
-		ABF8E48A2E93F3CE00B4A771 /* APIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4292E93F3CE00B4A771 /* APIError.swift */; };
-		ABF8E48B2E93F3CE00B4A771 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E42A2E93F3CE00B4A771 /* NetworkMonitor.swift */; };
 		ABF8E48C2E93F3CE00B4A771 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E42C2E93F3CE00B4A771 /* KeychainManager.swift */; };
 		ABF8E48D2E93F3CE00B4A771 /* SecureStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E42D2E93F3CE00B4A771 /* SecureStorage.swift */; };
 		ABF8E48E2E93F3CE00B4A771 /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E42E2E93F3CE00B4A771 /* UserDefaultsManager.swift */; };
@@ -189,9 +186,6 @@
 		ABF8E4242E93F3CE00B4A771 /* APIConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIConstants.swift; sourceTree = "<group>"; };
 		ABF8E4252E93F3CE00B4A771 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		ABF8E4272E93F3CE00B4A771 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
-		ABF8E4282E93F3CE00B4A771 /* APIEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEndpoint.swift; sourceTree = "<group>"; };
-		ABF8E4292E93F3CE00B4A771 /* APIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIError.swift; sourceTree = "<group>"; };
-		ABF8E42A2E93F3CE00B4A771 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		ABF8E42C2E93F3CE00B4A771 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
 		ABF8E42D2E93F3CE00B4A771 /* SecureStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureStorage.swift; sourceTree = "<group>"; };
 		ABF8E42E2E93F3CE00B4A771 /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
@@ -443,9 +437,6 @@
 			isa = PBXGroup;
 			children = (
 				ABF8E4272E93F3CE00B4A771 /* APIClient.swift */,
-				ABF8E4282E93F3CE00B4A771 /* APIEndpoint.swift */,
-				ABF8E4292E93F3CE00B4A771 /* APIError.swift */,
-				ABF8E42A2E93F3CE00B4A771 /* NetworkMonitor.swift */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -846,10 +837,7 @@
 				AB269AC32EFAB8BC00F53C4A /* InvestmentModels.swift in Sources */,
 				ABF9B5132E942B1C00867A55 /* WalletCard.swift in Sources */,
 				AB7BB5142EFF0CC700CEDA48 /* FileClaimView.swift in Sources */,
-				ABF8E4892E93F3CE00B4A771 /* APIEndpoint.swift in Sources */,
-				ABF8E48A2E93F3CE00B4A771 /* APIError.swift in Sources */,
 				AB7BB51C2EFF3CEF00CEDA48 /* ProfileViewModel.swift in Sources */,
-				ABF8E48B2E93F3CE00B4A771 /* NetworkMonitor.swift in Sources */,
 				ABF8E48C2E93F3CE00B4A771 /* KeychainManager.swift in Sources */,
 				AB269AC52EFAB8DD00F53C4A /* GoldModels.swift in Sources */,
 				ABF8E48D2E93F3CE00B4A771 /* SecureStorage.swift in Sources */,

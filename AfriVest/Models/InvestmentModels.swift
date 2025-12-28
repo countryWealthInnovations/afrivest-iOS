@@ -201,6 +201,37 @@ struct InvestmentProduct: Codable, Identifiable, Sendable {
     }
 }
 
+// MARK: - Investment Product Simple
+struct InvestmentProductSimple: Codable, Sendable {
+    let id: Int
+    let title: String
+    let slug: String
+    let featuredImage: String?
+    let category: InvestmentCategorySimple?
+    let partner: InvestmentPartnerSimple?
+    let riskLevel: String?
+    let riskLevelLabel: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, title, slug, category, partner
+        case featuredImage = "featured_image"
+        case riskLevel = "risk_level"
+        case riskLevelLabel = "risk_level_label"
+    }
+    
+    nonisolated init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(Int.self, forKey: .id)
+        title = try container.decode(String.self, forKey: .title)
+        slug = try container.decode(String.self, forKey: .slug)
+        featuredImage = try container.decodeIfPresent(String.self, forKey: .featuredImage)
+        category = try container.decodeIfPresent(InvestmentCategorySimple.self, forKey: .category)
+        partner = try container.decodeIfPresent(InvestmentPartnerSimple.self, forKey: .partner)
+        riskLevel = try container.decodeIfPresent(String.self, forKey: .riskLevel)
+        riskLevelLabel = try container.decodeIfPresent(String.self, forKey: .riskLevelLabel)
+    }
+}
+
 // MARK: - Purchase Investment Request
 struct PurchaseInvestmentRequest: Codable, Sendable {
     let productId: Int
@@ -217,12 +248,32 @@ struct PurchaseInvestmentRequest: Codable, Sendable {
     }
 }
 
+// MARK: - Transaction Info (simplified for purchase response)
+struct TransactionInfo: Codable, Sendable {
+    let id: Int
+    let reference: String
+    let amount: String
+    let status: String
+    
+    enum CodingKeys: String, CodingKey {
+        case id, reference, amount, status
+    }
+    
+    nonisolated init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(Int.self, forKey: .id)
+        reference = try container.decode(String.self, forKey: .reference)
+        amount = try container.decode(String.self, forKey: .amount)
+        status = try container.decode(String.self, forKey: .status)
+    }
+}
+
 // MARK: - User Investment
 struct UserInvestment: Codable, Identifiable, Sendable {
     let id: Int
-    let userId: Int
-    let productId: Int
-    let product: InvestmentProduct?
+    let userId: Int?
+    let productId: Int?
+    let product: InvestmentProductSimple?
     let investmentCode: String
     let amountInvested: String
     let amountInvestedFormatted: String
@@ -233,10 +284,10 @@ struct UserInvestment: Codable, Identifiable, Sendable {
     let currentValue: String
     let currentValueFormatted: String
     let returnsPercentage: Double
-    let returnsEarned: String
+    let returnsEarned: String?
     let payoutFrequency: String?
-    let autoReinvest: Bool
-    let createdAt: String
+    let autoReinvest: Bool?
+    let createdAt: String?
     
     enum CodingKeys: String, CodingKey {
         case id, product, currency, status
@@ -259,9 +310,9 @@ struct UserInvestment: Codable, Identifiable, Sendable {
     nonisolated init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(Int.self, forKey: .id)
-        userId = try container.decode(Int.self, forKey: .userId)
-        productId = try container.decode(Int.self, forKey: .productId)
-        product = try container.decodeIfPresent(InvestmentProduct.self, forKey: .product)
+        userId = try container.decodeIfPresent(Int.self, forKey: .userId)
+        productId = try container.decodeIfPresent(Int.self, forKey: .productId)
+        product = try container.decodeIfPresent(InvestmentProductSimple.self, forKey: .product)
         investmentCode = try container.decode(String.self, forKey: .investmentCode)
         amountInvested = try container.decode(String.self, forKey: .amountInvested)
         amountInvestedFormatted = try container.decode(String.self, forKey: .amountInvestedFormatted)
@@ -272,10 +323,10 @@ struct UserInvestment: Codable, Identifiable, Sendable {
         currentValue = try container.decode(String.self, forKey: .currentValue)
         currentValueFormatted = try container.decode(String.self, forKey: .currentValueFormatted)
         returnsPercentage = try container.decode(Double.self, forKey: .returnsPercentage)
-        returnsEarned = try container.decode(String.self, forKey: .returnsEarned)
+        returnsEarned = try container.decodeIfPresent(String.self, forKey: .returnsEarned)
         payoutFrequency = try container.decodeIfPresent(String.self, forKey: .payoutFrequency)
-        autoReinvest = try container.decode(Bool.self, forKey: .autoReinvest)
-        createdAt = try container.decode(String.self, forKey: .createdAt)
+        autoReinvest = try container.decodeIfPresent(Bool.self, forKey: .autoReinvest)
+        createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
     }
     
     var statusColor: String {
@@ -286,5 +337,36 @@ struct UserInvestment: Codable, Identifiable, Sendable {
         case "pending": return "warning_yellow"
         default: return "text_secondary"
         }
+    }
+    
+    var computedReturnsEarned: String {
+        if let returns = returnsEarned {
+            return returns
+        }
+        let invested = Double(amountInvested) ?? 0.0
+        let current = Double(currentValue) ?? 0.0
+        return String(format: "%.2f", current - invested)
+    }
+}
+
+// MARK: - Purchase Investment Response
+struct PurchaseInvestmentResponse: Codable, Sendable {
+    let investment: UserInvestment
+    let transaction: TransactionInfo
+    
+    enum CodingKeys: String, CodingKey {
+        case investment, transaction
+    }
+    
+    nonisolated init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        investment = try container.decode(UserInvestment.self, forKey: .investment)
+        transaction = try container.decode(TransactionInfo.self, forKey: .transaction)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(investment, forKey: .investment)
+        try container.encode(transaction, forKey: .transaction)
     }
 }

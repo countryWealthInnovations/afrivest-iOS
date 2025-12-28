@@ -7,11 +7,13 @@
 
 import SwiftUI
 import MessageUI
+import Alamofire
 
 struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
     @State private var showHelpSheet = false
     @State private var showLogoutConfirmation = false
+    @State private var showDeleteConfirmation = false
     @State private var showChangePassword = false
     @Environment(\.dismiss) var dismiss
     
@@ -60,10 +62,18 @@ struct ProfileView: View {
         .alert("Logout", isPresented: $showLogoutConfirmation) {
             Button("Cancel", role: .cancel) {}
             Button("Logout", role: .destructive) {
-                viewModel.logout()
+                logout()
             }
         } message: {
             Text("Are you sure you want to logout?")
+        }
+        .alert("Delete Account", isPresented: $showDeleteConfirmation) {
+            Button("Cancel", role: .cancel) {}
+            Button("Delete", role: .destructive) {
+                logout()
+            }
+        } message: {
+            Text("Are you sure you want to delete your account? This action cannot be undone.")
         }
         .overlay {
             if viewModel.isLoading {
@@ -315,7 +325,7 @@ struct ProfileView: View {
             
             // Delete Account Button
             Button(action: {
-                showLogoutConfirmation = true
+                showDeleteConfirmation = true
             }) {
                 HStack {
                     Image(systemName: "trash")
@@ -378,6 +388,42 @@ struct ProfileView: View {
     private func openURL(_ urlString: String) {
         if let url = URL(string: urlString) {
             UIApplication.shared.open(url)
+        }
+    }
+    private func logout() {
+        Task {
+            do {
+                // Call logout API
+                let _: MessageResponse = try await APIClient.shared.request(
+                    APIConstants.Endpoints.logout,
+                    method: .post,
+                    requiresAuth: true
+                )
+                
+                await MainActor.run {
+                    // Clear all stored data after successful API call
+                    KeychainManager.shared.clearAll()
+                    
+                    // Reset to login screen
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let window = windowScene.windows.first {
+                        window.rootViewController = UIHostingController(rootView: LoginView())
+                        window.makeKeyAndVisible()
+                    }
+                }
+                
+            } catch {
+                await MainActor.run {
+                    // Even if API call fails, still logout locally
+                    KeychainManager.shared.clearAll()
+                    
+                    if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                       let window = windowScene.windows.first {
+                        window.rootViewController = UIHostingController(rootView: LoginView())
+                        window.makeKeyAndVisible()
+                    }
+                }
+            }
         }
     }
 }

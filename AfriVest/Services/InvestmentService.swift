@@ -5,6 +5,7 @@
 //  Created by Kato Drake Smith on 23/12/2025.
 //
 
+
 import Foundation
 import Alamofire
 
@@ -75,7 +76,7 @@ class InvestmentService {
     }
     
     // MARK: - Purchase Investment
-    nonisolated func purchaseInvestment(request: PurchaseInvestmentRequest) async throws -> UserInvestment {
+    nonisolated func purchaseInvestment(request: PurchaseInvestmentRequest) async throws -> PurchaseInvestmentResponse {
         let parameters: [String: Any] = [
             "product_id": request.productId,
             "amount": request.amount,

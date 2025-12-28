@@ -46,7 +46,7 @@ struct InvestmentDetailView: View {
         VStack(alignment: .leading, spacing: Spacing.md) {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(investment.product?.name ?? "Investment")
+                    Text(investment.product?.title ?? "Investment")
                         .font(AppFont.heading3())
                         .foregroundColor(Color.textPrimary)
                     
@@ -261,7 +261,7 @@ struct InvestmentDetailView: View {
             if let product = investment.product {
                 VStack(spacing: Spacing.sm) {
                     detailRow(label: "Category", value: product.category?.name ?? "N/A")
-                    detailRow(label: "Risk Level", value: product.riskLevelLabel)
+                    detailRow(label: "Risk Level", value: product.riskLevelLabel!)
                     detailRow(label: "Expected Returns", value: calculateActualReturns())
                 }
             }

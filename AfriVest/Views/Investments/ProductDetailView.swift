@@ -210,6 +210,22 @@ struct ProductDetailView: View {
             Text("Purchase")
                 .font(AppFont.heading3())
                 .foregroundColor(Color.textPrimary)
+            // Auto-Reinvest Toggle
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("Auto-Reinvest Returns")
+                        .font(AppFont.bodyRegular())
+                        .foregroundColor(Color.textPrimary)
+                    Text("Automatically reinvest your returns")
+                        .font(AppFont.bodySmall())
+                        .foregroundColor(Color.textSecondary)
+                }
+                Spacer()
+                Toggle("", isOn: $viewModel.autoReinvest)
+                    .labelsHidden()
+                    .tint(Color.primaryGold)
+            }
+            .padding(.bottom, Spacing.sm)
             
             // Amount Input
             VStack(alignment: .leading, spacing: Spacing.xs) {
