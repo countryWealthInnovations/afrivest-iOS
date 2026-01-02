@@ -21,8 +21,17 @@ class AssetsViewModel: ObservableObject {
     private let insuranceService = InsuranceService.shared
     
     func loadData() {
+        guard !isLoading else { return }
         loadInvestments()
         loadPolicies()
+    }
+
+    func refreshData() async {
+        await MainActor.run {
+            investments.removeAll()
+            policies.removeAll()
+        }
+        loadData()
     }
     
     func loadInvestments() {
@@ -36,7 +45,6 @@ class AssetsViewModel: ObservableObject {
                 let fetchedInvestments = try await investmentService.getUserInvestments(status: nil)
                 await MainActor.run {
                     self.investments = fetchedInvestments
-                    print("✅ Loaded \(fetchedInvestments.count) investments")
                     self.isLoading = false
                 }
             } catch {
@@ -55,7 +63,13 @@ class AssetsViewModel: ObservableObject {
                 let fetchedPolicies = try await insuranceService.getInsurancePolicies(status: nil, policyType: nil)
                 await MainActor.run {
                     self.policies = fetchedPolicies
-                    print("✅ Loaded \(fetchedPolicies.count) policies")
+                }
+            } catch let decodingError as DecodingError {
+                await MainActor.run {
+                    print("❌ Decoding error: \(decodingError)")
+                    if case .keyNotFound(let key, let context) = decodingError {
+                        print("Missing key: \(key.stringValue), context: \(context.debugDescription)")
+                    }
                 }
             } catch {
                 await MainActor.run {

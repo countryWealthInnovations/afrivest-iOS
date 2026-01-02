@@ -9,19 +9,19 @@ import Foundation
 
 // MARK: - Insurance Provider
 struct InsuranceProvider: Codable, Identifiable, Sendable {
-    let id: Int
+    let id: Int?
     let name: String
     let logoUrl: String?
     let description: String?
     
     enum CodingKeys: String, CodingKey {
         case id, name, description
-        case logoUrl = "logo_url"
+        case logoUrl = "logo"
     }
     
     nonisolated init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(Int.self, forKey: .id)
+        id = try container.decodeIfPresent(Int.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
         logoUrl = try container.decodeIfPresent(String.self, forKey: .logoUrl)
         description = try container.decodeIfPresent(String.self, forKey: .description)
@@ -34,11 +34,22 @@ struct Beneficiary: Codable, Sendable {
     let relationship: String
     let percentage: Int
     
+    enum CodingKeys: String, CodingKey {
+        case name, relationship, percentage
+    }
+    
     nonisolated init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = try container.decode(String.self, forKey: .name)
         relationship = try container.decode(String.self, forKey: .relationship)
         percentage = try container.decode(Int.self, forKey: .percentage)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(name, forKey: .name)
+        try container.encode(relationship, forKey: .relationship)
+        try container.encode(percentage, forKey: .percentage)
     }
 }
 
@@ -87,7 +98,7 @@ struct InsurancePolicy: Codable, Identifiable, Sendable {
     let endDate: String
     let nextPaymentDate: String?
     let daysToExpiry: Int?
-    let beneficiaries: [Beneficiary]?
+    let beneficiaries: [Beneficiary]
     let createdAt: String?
     
     enum CodingKeys: String, CodingKey {
@@ -126,7 +137,7 @@ struct InsurancePolicy: Codable, Identifiable, Sendable {
         endDate = try container.decode(String.self, forKey: .endDate)
         nextPaymentDate = try container.decodeIfPresent(String.self, forKey: .nextPaymentDate)
         daysToExpiry = try container.decodeIfPresent(Int.self, forKey: .daysToExpiry)
-        beneficiaries = try container.decodeIfPresent([Beneficiary].self, forKey: .beneficiaries)
+        beneficiaries = try container.decodeIfPresent([Beneficiary].self, forKey: .beneficiaries) ?? []
         createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
     }
     

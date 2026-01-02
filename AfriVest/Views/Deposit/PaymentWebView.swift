@@ -116,7 +116,6 @@ struct WebView: UIViewRepresentable {
                 // Check if this is the return URL
                 if url.absoluteString.contains("/api/deposits/return") ||
                    url.absoluteString.contains("action=close_webview") {
-                    print("✅ Payment completed - detected return URL")
                     parent.onComplete()
                     decisionHandler(.cancel)
                     return

@@ -46,8 +46,6 @@ class ProductDetailViewModel: ObservableObject {
                 )
                 
                 let response = try await investmentService.purchaseInvestment(request: request)
-                print("✅ Investment purchased: \(response.investment.investmentCode)")
-                print("✅ Transaction: \(response.transaction.reference)")
                 self.purchaseSuccess = true
             } catch let apiError as APIError {
                 switch apiError {

@@ -101,7 +101,7 @@ struct InvestmentProduct: Codable, Identifiable, Sendable {
     let minInvestmentFormatted: String
     let expectedReturns: String
     let riskLevel: String
-    let riskLevelLabel: String
+    let riskLevelLabel: String?
     let durationLabel: String
     let availabilityStatus: String
     let isFeatured: Bool
@@ -141,7 +141,7 @@ struct InvestmentProduct: Codable, Identifiable, Sendable {
         minInvestmentFormatted = try container.decode(String.self, forKey: .minInvestmentFormatted)
         expectedReturns = try container.decode(String.self, forKey: .expectedReturns)
         riskLevel = try container.decode(String.self, forKey: .riskLevel)
-        riskLevelLabel = try container.decode(String.self, forKey: .riskLevelLabel)
+        riskLevelLabel = try container.decodeIfPresent(String.self, forKey: .riskLevelLabel)
         durationLabel = try container.decode(String.self, forKey: .durationLabel)
         availabilityStatus = try container.decode(String.self, forKey: .availabilityStatus)
         isFeatured = try container.decode(Bool.self, forKey: .isFeatured)
@@ -197,7 +197,7 @@ struct InvestmentProduct: Codable, Identifiable, Sendable {
     }
     
     var riskLevelText: String {
-        riskLevelLabel
+        riskLevelLabel ?? riskLevel.replacingOccurrences(of: "_", with: " ").capitalized
     }
 }
 

@@ -261,7 +261,11 @@ struct InvestmentDetailView: View {
             if let product = investment.product {
                 VStack(spacing: Spacing.sm) {
                     detailRow(label: "Category", value: product.category?.name ?? "N/A")
-                    detailRow(label: "Risk Level", value: product.riskLevelLabel!)
+                    if let riskLabel = product.riskLevelLabel {
+                        detailRow(label: "Risk Level", value: riskLabel)
+                    } else if let riskLevel = product.riskLevel {
+                        detailRow(label: "Risk Level", value: riskLevel.capitalized)
+                    }
                     detailRow(label: "Expected Returns", value: calculateActualReturns())
                 }
             }

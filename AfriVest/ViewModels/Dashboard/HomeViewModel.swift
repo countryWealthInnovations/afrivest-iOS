@@ -85,7 +85,6 @@ class HomeViewModel: ObservableObject {
                 case .success(let profileData):
                     self?.profile = profileData
                     self?.wallets = profileData.wallets
-                    print("✅ Profile loaded: \(profileData.wallets.count) wallets")
                     self!.loadFeaturedInvestments()
                 case .failure(let error):
                     // Only show error if we don't have cached data
@@ -103,7 +102,6 @@ class HomeViewModel: ObservableObject {
             do {
                 let products = try await InvestmentService.shared.getFeaturedProducts()
                 self.featuredInvestments = Array(products.prefix(3))
-                print("✅ Loaded \(products.count) featured investments")
             } catch {
                 print("❌ Failed to load featured investments: \(error)")
             }
@@ -180,7 +178,6 @@ class HomeViewModel: ObservableObject {
                 case .success(let profileData):
                     self?.profile = profileData
                     self?.wallets = profileData.wallets
-                    print("✅ Profile force refreshed")
                     
                 case .failure(let error):
                     self?.errorMessage = error.localizedDescription

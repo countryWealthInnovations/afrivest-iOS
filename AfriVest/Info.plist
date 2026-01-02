@@ -1,54 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string></string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.googleusercontent.apps.517362311917-mkh8e05h9c1nhqq2jf4k69q27nrf9trt</string>
-			</array>
-		</dict>
-	</array>
-	<key>FirebaseAppDelegateProxyEnabled</key>
-	<true/>
-	<key>FirebaseInAppMessagingAutomaticDataCollectionEnabled</key>
-	<false/>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<false/>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>afrivest.co</key>
-			<dict>
-				<key>NSIncludesSubdomains</key>
-				<true/>
-				<key>NSTemporaryExceptionAllowsInsecureHTTPLoads</key>
-				<false/>
-				<key>NSTemporaryExceptionMinimumTLSVersion</key>
-				<string>TLSv1.2</string>
-			</dict>
-		</dict>
-	</dict>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>remote-notification</string>
-	</array>
-	<key>NSContactsUsageDescription</key>
-	<string>AfriVest needs access to your contacts to help you send money to friends and family.</string>
-    <key>NSCameraUsageDescription</key>
-    <string>AfriVest needs access to your camera to take profile photos</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>AfriVest needs access to your photos to update your profile picture</string>
-    <key>NSFaceIDUsageDescription</key>
-    <string>AfriVest uses Face ID to securely and quickly log you into your account</string>
-    <key>NSUserNotificationsUsageDescription</key>
-    <string>AfriVest sends you important updates about your investments and account activity</string>
-</dict>
+    <dict>
+        <key>CFBundleURLTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleTypeRole</key>
+                <string>Editor</string>
+                <key>CFBundleURLName</key>
+                <string></string>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>com.googleusercontent.apps.517362311917-mkh8e05h9c1nhqq2jf4k69q27nrf9trt</string>
+                </array>
+            </dict>
+        </array>
+        <key>FirebaseAppDelegateProxyEnabled</key>
+        <true/>
+        <key>FirebaseInAppMessagingAutomaticDataCollectionEnabled</key>
+        <false/>
+        <key>NSAppTransportSecurity</key>
+        <dict>
+            <key>NSAllowsArbitraryLoads</key>
+            <false/>
+            <key>NSExceptionDomains</key>
+            <dict>
+                <key>afrivest.co</key>
+                <dict>
+                    <key>NSIncludesSubdomains</key>
+                    <true/>
+                    <key>NSExceptionRequiresForwardSecrecy</key>
+                    <false/>
+                    <key>NSExceptionMinimumTLSVersion</key>
+                    <string>TLSv1.2</string>
+                    <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                    <false/>
+                </dict>
+            </dict>
+        </dict>
+        <key>UIBackgroundModes</key>
+        <array>
+            <string>remote-notification</string>
+        </array>
+        <key>NSContactsUsageDescription</key>
+        <string>AfriVest needs access to your contacts to help you send money to friends and family.</string>
+        <key>NSCameraUsageDescription</key>
+        <string>AfriVest needs access to your camera to take profile photos</string>
+        <key>NSPhotoLibraryUsageDescription</key>
+        <string>AfriVest needs access to your photos to update your profile picture</string>
+        <key>NSFaceIDUsageDescription</key>
+        <string>AfriVest uses Face ID to securely and quickly log you into your account</string>
+        <key>NSUserNotificationsUsageDescription</key>
+        <string>AfriVest sends you important updates about your investments and account activity</string>
+    </dict>
 </plist>

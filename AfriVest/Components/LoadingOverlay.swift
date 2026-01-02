@@ -29,11 +29,3 @@ struct LoadingOverlay: View {
         }
     }
 }
-
-// Usage:
-// ZStack {
-//     YourContentView()
-//     if isLoading {
-//         LoadingOverlay()
-//     }
-// }

@@ -231,7 +231,8 @@ struct PolicyDetailView: View {
     
     private func formatDate(_ dateString: String) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
+        formatter.timeZone = TimeZone(identifier: "UTC")
         
         guard let date = formatter.date(from: dateString) else { return dateString }
         
@@ -319,7 +320,8 @@ struct ClaimCard: View {
     
     private func formatDate(_ dateString: String) -> String {
         let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'"
+        formatter.timeZone = TimeZone(identifier: "UTC")
         
         guard let date = formatter.date(from: dateString) else { return dateString }
         
@@ -327,3 +329,4 @@ struct ClaimCard: View {
         return formatter.string(from: date)
     }
 }
+

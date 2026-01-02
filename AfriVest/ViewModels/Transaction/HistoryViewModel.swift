@@ -64,7 +64,6 @@ class HistoryViewModel: ObservableObject {
                 isLastPage = response.isEmpty || response.count < perPage
                 isLoading = false
                 
-                print("✅ Loaded \(transactions.count) total transactions")
             } catch {
                 errorMessage = error.localizedDescription
                 isLoading = false
@@ -104,8 +103,6 @@ class HistoryViewModel: ObservableObject {
                 }
                 isLastPage = response.isEmpty || response.count < perPage
                 isLoading = false
-                
-                print("✅ Loaded more transactions: page \(currentPage) - \(response.count) new items")
             } catch {
                 currentPage -= 1
                 errorMessage = error.localizedDescription

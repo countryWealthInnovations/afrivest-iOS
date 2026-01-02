@@ -8,6 +8,7 @@
 import SwiftUI
 import Firebase
 import FirebaseMessaging
+import FirebaseCrashlytics
 
 class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
     
@@ -16,6 +17,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
         
         // Configure Firebase
         FirebaseApp.configure()
+        
+        // Configure Crashlytics
+        Crashlytics.crashlytics().setCrashlyticsCollectionEnabled(true)
         
         // Set messaging delegate
         Messaging.messaging().delegate = self
@@ -38,11 +42,14 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
     
     // MARK: - MessagingDelegate
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        print("Firebase registration token: \(fcmToken!)")
+        print("Firebase registration token: \(fcmToken ?? "nil")")
         
         if let token = fcmToken {
             // Save token
             UserDefaultsManager.shared.deviceToken = token
+            
+            // Log to Crashlytics
+            Crashlytics.crashlytics().setCustomValue(token, forKey: "fcm_token")
             
             // TODO: Send to server if user is logged in
             if KeychainManager.shared.getToken() != nil {

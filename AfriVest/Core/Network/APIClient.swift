@@ -298,6 +298,10 @@ class APIClient: @unchecked Sendable {
                 return .noInternetConnection
             case .timedOut:
                 return .timeout
+            case .cannotFindHost, .cannotConnectToHost, .dnsLookupFailed:
+                return .networkError("Cannot reach server. Please check your connection or try without VPN.")
+            case .secureConnectionFailed:
+                return .networkError("SSL connection failed. Please check your network.")
             default:
                 return .networkError(underlyingError.localizedDescription)
             }

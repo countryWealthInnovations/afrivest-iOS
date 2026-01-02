@@ -9,12 +9,7 @@ import Foundation
 
 struct APIConstants {
     // MARK: - Base URL
-#if DEBUG
     static let baseURL = "https://afrivest.co/api"
-#else
-    static let baseURL = "https://afrivest.co/api"
-#endif
-    
     
     // MARK: - Endpoints
     struct Endpoints {

@@ -17,7 +17,6 @@ class ProfileService {
     func getProfile(completion: @escaping (Result<ProfileData, Error>) -> Void) {
         // 1. Check cache first - return immediately if exists
         if let cachedProfile = UserDefaultsManager.shared.getCachedProfile() {
-            print("✅ Returning cached profile")
             completion(.success(cachedProfile))
         }
         
@@ -30,8 +29,6 @@ class ProfileService {
                 
                 // Update KYC status
                 UserDefaultsManager.shared.kycVerified = profileData.kycVerified
-                
-                print("✅ Profile fetched and cached")
                 completion(.success(profileData))
                 
             case .failure(let error):

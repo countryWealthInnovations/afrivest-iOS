@@ -34,7 +34,9 @@ struct AssetsView: View {
             }
         }
         .onAppear {
-            viewModel.loadData()
+            if viewModel.investments.isEmpty && viewModel.policies.isEmpty {
+                viewModel.loadData()
+            }
         }
         .overlay {
             if viewModel.isLoading && viewModel.investments.isEmpty && viewModel.policies.isEmpty {
@@ -136,6 +138,9 @@ struct AssetsView: View {
             .padding(.horizontal, Spacing.screenHorizontal)
             .padding(.bottom, 90)
         }
+        .refreshable {
+            await viewModel.refreshData()
+        }
     }
     
     // MARK: - Policies Tab
@@ -161,6 +166,9 @@ struct AssetsView: View {
             }
             .padding(.horizontal, Spacing.screenHorizontal)
             .padding(.bottom, 90)
+        }
+        .refreshable {
+            await viewModel.refreshData()
         }
     }
     
