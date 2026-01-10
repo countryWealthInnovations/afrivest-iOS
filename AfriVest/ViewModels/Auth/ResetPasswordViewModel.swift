@@ -5,14 +5,6 @@
 //  Created by Kato Drake Smith on 04/10/2025.
 //
 
-
-//
-//  ResetPasswordViewModel.swift
-//  AfriVest
-//
-//  Created by Kato Drake Smith on 04/10/2025.
-//
-
 import SwiftUI
 import Combine
 import Alamofire
@@ -38,6 +30,7 @@ class ResetPasswordViewModel: ObservableObject {
     @Published var showError = false
     @Published var errorMessage = ""
     @Published var shouldNavigateToLogin = false
+    @Published var showSuccessAlert = false
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -144,8 +137,8 @@ class ResetPasswordViewModel: ObservableObject {
                     "password": password,
                     "password_confirmation": confirmPassword
                 ]
-                
-                let _: MessageResponse = try await APIClient.shared.request(
+
+                let _: EmptyDataResponse = try await APIClient.shared.request(
                     APIConstants.Endpoints.resetPassword,
                     method: .post,
                     parameters: parameters,
@@ -154,7 +147,7 @@ class ResetPasswordViewModel: ObservableObject {
                 
                 await MainActor.run {
                     self.isLoading = false
-                    self.shouldNavigateToLogin = true
+                    self.showSuccessAlert = true
                 }
                 
             } catch {

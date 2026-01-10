@@ -10,8 +10,10 @@ import SwiftUI
 struct ResetPasswordView: View {
     @StateObject private var viewModel: ResetPasswordViewModel
     @Environment(\.dismiss) var dismiss
-    
-    init(email: String) {
+    let onSuccess: () -> Void
+
+    init(email: String, onSuccess: @escaping () -> Void) {
+        self.onSuccess = onSuccess
         _viewModel = StateObject(wrappedValue: ResetPasswordViewModel(email: email))
     }
     
@@ -109,10 +111,14 @@ struct ResetPasswordView: View {
         } message: {
             Text(viewModel.errorMessage)
         }
-        .alert("Success", isPresented: $viewModel.shouldNavigateToLogin) {
+        .onChange(of: viewModel.shouldNavigateToLogin) { shouldNavigate in
+            if shouldNavigate {
+                onSuccess()
+            }
+        }
+        .alert("Success", isPresented: $viewModel.showSuccessAlert) {
             Button("OK") {
-                // Navigate back to login
-                dismiss()
+                viewModel.shouldNavigateToLogin = true
             }
         } message: {
             Text("Password reset successful. Please login with your new password.")

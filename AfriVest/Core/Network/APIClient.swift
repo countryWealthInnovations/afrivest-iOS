@@ -66,7 +66,18 @@ class APIClient: @unchecked Sendable {
                 case .success(let apiResponse):
                     if apiResponse.success {
                         print("✅ Success: \(endpoint)")
-                        continuation.resume(returning: apiResponse.data)
+                        if let data = apiResponse.data {
+                            continuation.resume(returning: data)
+                        } else {
+                            // Try to create an empty instance of T if it's EmptyDataResponse
+                            if T.self == EmptyDataResponse.self {
+                                continuation.resume(returning: EmptyDataResponse() as! T)
+                            } else {
+                                // For other types without data, throw decoding error
+                                let error = APIError.decodingError
+                                continuation.resume(throwing: error)
+                            }
+                        }
                     } else {
                         print("❌ API Error: \(apiResponse.message ?? "Unknown error")")
                         
@@ -146,7 +157,18 @@ class APIClient: @unchecked Sendable {
                     case .success(let apiResponse):
                         if apiResponse.success {
                             print("✅ Success: \(endpoint)")
-                            continuation.resume(returning: apiResponse.data)
+                            if let data = apiResponse.data {
+                                continuation.resume(returning: data)
+                            } else {
+                                // Try to create an empty instance of T if it's EmptyDataResponse
+                                if T.self == EmptyDataResponse.self {
+                                    continuation.resume(returning: EmptyDataResponse() as! T)
+                                } else {
+                                    // For other types without data, throw decoding error
+                                    let error = APIError.decodingError
+                                    continuation.resume(throwing: error)
+                                }
+                            }
                         } else {
                             print("❌ API Error: \(apiResponse.message ?? "Unknown error")")
                             
@@ -238,8 +260,19 @@ class APIClient: @unchecked Sendable {
                     switch response.result {
                     case .success(let apiResponse):
                         if apiResponse.success {
-                            print("✅ Upload Success: \(endpoint)")
-                            continuation.resume(returning: apiResponse.data)
+                            print("✅ Success: \(endpoint)")
+                            if let data = apiResponse.data {
+                                continuation.resume(returning: data)
+                            } else {
+                                // Try to create an empty instance of T if it's EmptyDataResponse
+                                if T.self == EmptyDataResponse.self {
+                                    continuation.resume(returning: EmptyDataResponse() as! T)
+                                } else {
+                                    // For other types without data, throw decoding error
+                                    let error = APIError.decodingError
+                                    continuation.resume(throwing: error)
+                                }
+                            }
                         } else {
                             print("❌ Upload Error: \(apiResponse.message ?? "Upload failed")")
                             let error = APIError.serverError(apiResponse.message ?? "Upload failed")
@@ -264,6 +297,12 @@ class APIClient: @unchecked Sendable {
             print("⚠️ HTTP Status Code: \(statusCode)")
             switch statusCode {
             case APIConstants.StatusCodes.unauthorized:
+                // Extract error message from response
+                if let data = data,
+                   let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let message = json["message"] as? String {
+                    return .validationError(message)
+                }
                 NotificationCenter.default.post(name: AppConstants.Notifications.tokenExpired, object: nil)
                 return .unauthorized
             case APIConstants.StatusCodes.forbidden:
@@ -315,7 +354,7 @@ class APIClient: @unchecked Sendable {
 struct APIResponse<T: Decodable & Sendable>: Decodable, Sendable {
     let success: Bool
     let message: String?
-    let data: T
+    let data: T?
     
     enum CodingKeys: String, CodingKey {
         case success
@@ -327,20 +366,7 @@ struct APIResponse<T: Decodable & Sendable>: Decodable, Sendable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         success = try container.decode(Bool.self, forKey: .success)
         message = try container.decodeIfPresent(String.self, forKey: .message)
-        
-        // Try to decode data, if it fails return empty object
-        if let dataValue = try? container.decode(T.self, forKey: .data) {
-            data = dataValue
-        } else {
-            // For cases where data might be null/missing
-            throw DecodingError.keyNotFound(
-                CodingKeys.data,
-                DecodingError.Context(
-                    codingPath: container.codingPath,
-                    debugDescription: "Data key not found or null"
-                )
-            )
-        }
+        data = try container.decodeIfPresent(T.self, forKey: .data)
     }
 }
 

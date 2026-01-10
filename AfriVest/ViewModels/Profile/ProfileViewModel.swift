@@ -111,7 +111,7 @@ class ProfileViewModel: ObservableObject {
         
         Task {
             do {
-                let _: MessageResponse = try await APIClient.shared.request(
+                let _: EmptyDataResponse = try await APIClient.shared.request(
                     APIConstants.Endpoints.logout,
                     method: .post,
                     requiresAuth: true

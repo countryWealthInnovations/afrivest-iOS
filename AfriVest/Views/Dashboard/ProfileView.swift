@@ -394,7 +394,7 @@ struct ProfileView: View {
         Task {
             do {
                 // Call logout API
-                let _: MessageResponse = try await APIClient.shared.request(
+                let _: EmptyDataResponse = try await APIClient.shared.request(
                     APIConstants.Endpoints.logout,
                     method: .post,
                     requiresAuth: true

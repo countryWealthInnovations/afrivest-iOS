@@ -63,7 +63,7 @@ class ForgotPasswordViewModel: ObservableObject {
             do {
                 let parameters = ["email": email]
                 
-                let _: MessageResponse = try await APIClient.shared.request(
+                let _: OTPResponse = try await APIClient.shared.request(
                     APIConstants.Endpoints.forgotPassword,
                     method: .post,
                     parameters: parameters,

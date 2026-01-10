@@ -82,7 +82,11 @@ struct ForgotPasswordView: View {
             Text(viewModel.errorMessage)
         }
         .fullScreenCover(isPresented: $viewModel.shouldNavigateToResetPassword) {
-            ResetPasswordView(email: viewModel.email)
+            ResetPasswordView(email: viewModel.email) {
+                // Close both screens when password reset is successful
+                viewModel.shouldNavigateToResetPassword = false
+                dismiss()
+            }
         }
     }
 }
