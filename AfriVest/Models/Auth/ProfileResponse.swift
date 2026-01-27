@@ -22,6 +22,7 @@ struct ProfileData: Codable, Sendable {
     let investmentRiskProfile: String?
     let createdAt: String
     let wallets: [Wallet]
+    let investmentSummary: InvestmentSummary?
     
     enum CodingKeys: String, CodingKey {
         case id, name, email, role, status
@@ -34,6 +35,7 @@ struct ProfileData: Codable, Sendable {
         case investmentRiskProfile = "investment_risk_profile"
         case createdAt = "created_at"
         case wallets
+        case investmentSummary = "investment_summary"
     }
     
     nonisolated init(from decoder: Decoder) throws {
@@ -53,6 +55,32 @@ struct ProfileData: Codable, Sendable {
         self.investmentRiskProfile = try container.decodeIfPresent(String.self, forKey: .investmentRiskProfile)
         self.createdAt = try container.decode(String.self, forKey: .createdAt)
         self.wallets = try container.decode([Wallet].self, forKey: .wallets)
+        self.investmentSummary = try container.decodeIfPresent(InvestmentSummary.self, forKey: .investmentSummary)
+    }
+}
+
+struct InvestmentSummary: Codable, Sendable {
+    let totalInvested: Double
+    let currentValue: Double
+    let interestEarned: Double
+    let interestPercentage: Double
+    let activeInvestmentsCount: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case totalInvested = "total_invested"
+        case currentValue = "current_value"
+        case interestEarned = "interest_earned"
+        case interestPercentage = "interest_percentage"
+        case activeInvestmentsCount = "active_investments_count"
+    }
+    
+    nonisolated init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.totalInvested = try container.decode(Double.self, forKey: .totalInvested)
+        self.currentValue = try container.decode(Double.self, forKey: .currentValue)
+        self.interestEarned = try container.decode(Double.self, forKey: .interestEarned)
+        self.interestPercentage = try container.decode(Double.self, forKey: .interestPercentage)
+        self.activeInvestmentsCount = try container.decode(Int.self, forKey: .activeInvestmentsCount)
     }
 }
 

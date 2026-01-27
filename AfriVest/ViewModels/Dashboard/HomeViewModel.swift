@@ -51,9 +51,15 @@ class HomeViewModel: ObservableObject {
         wallets.first { $0.currency == "UGX" }
     }
     
-    // Interest wallet - always nil (unpopulated by default)
-    var interestWallet: Wallet? {
-        return nil
+    // Investment summary from profile
+    var investmentSummary: InvestmentSummary? {
+        return profile?.investmentSummary
+    }
+    
+    // Check if user has investments
+    var hasInvestments: Bool {
+        guard let summary = investmentSummary else { return false }
+        return summary.activeInvestmentsCount > 0
     }
     
     // Other currency wallets (non-UGX)

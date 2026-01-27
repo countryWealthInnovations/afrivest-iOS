@@ -18,6 +18,8 @@ struct HomeView: View {
     @State private var showInvestmentProducts = false
     @State private var showInsuranceList = false
     @State private var showGoldMarketplace = false
+    @State private var isBalanceHidden = false
+    @State private var isInvestmentHidden = false
     
     var body: some View {
         ZStack {
@@ -222,157 +224,128 @@ struct HomeView: View {
     // MARK: - Wallet Cards Section
     private var walletCardsSection: some View {
         VStack(spacing: Spacing.md) {
-            // UGX Wallet Card (Deposit only)
-            HStack(spacing: Spacing.md) {
-                if let depositWallet = viewModel.depositWallet {
-                    WalletCard(
-                        wallet: depositWallet,
-                        isAmountHidden: viewModel.isAmountHidden,
-                        walletType: .deposit,
-                        onToggleVisibility: {
-                            viewModel.toggleAmountVisibility()
-                        },
-                        onAction: {
-                            showDepositView = true
-                        }
-                    )
-                }
-                
-                // Interest Wallet - Empty/Placeholder
-                VStack(alignment: .leading, spacing: Spacing.sm) {
-                    HStack {
-                        Image(systemName: "chart.line.uptrend.xyaxis")
-                            .font(.system(size: 24))
-                            .foregroundColor(Color.primaryGold.opacity(0.5))
-                        
-                        Spacer()
-                    }
-                    
-                    Text("Interest Wallet")
-                        .font(AppFont.bodyRegular())
-                        .foregroundColor(Color.textSecondary)
-                    
-                    Spacer()
-                    
-                    Text("Coming Soon")
-                        .font(AppFont.heading3())
-                        .foregroundColor(Color.textSecondary.opacity(0.5))
-                        .padding(.vertical, Spacing.xs)
-                    
-                    Button(action: {
-                        // Placeholder action
-                    }) {
-                        HStack(spacing: Spacing.xs) {
-                            Text("Start Earning")
-                                .font(AppFont.bodySmall())
-                        }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 36)
-                        .background(Color.textSecondary.opacity(0.3))
-                        .foregroundColor(Color.textSecondary)
-                        .cornerRadius(Spacing.radiusMedium)
-                    }
-                    .disabled(true)
-                }
-                .padding(Spacing.md)
-                .frame(height: 180)
-                .background(Color.backgroundDark1.opacity(0.5))
-                .cornerRadius(Spacing.radiusMedium)
-                .overlay(
-                    RoundedRectangle(cornerRadius: Spacing.radiusMedium)
-                        .stroke(Color.borderDefault.opacity(0.5), lineWidth: 1)
-                )
-            }
-            
-            // Expand/Collapse Other Currencies Button
-            if !viewModel.otherCurrencyWallets.isEmpty {
-                Button(action: {
-                    viewModel.toggleOtherCurrencies()
-                }) {
-                    HStack {
-                        Text(viewModel.isOtherCurrenciesExpanded ? "Hide Other Currencies" : "Show Other Currencies (\(viewModel.otherCurrencyWallets.count))")
-                            .font(AppFont.bodyRegular())
-                            .foregroundColor(Color.primaryGold)
-                        
-                        Image(systemName: viewModel.isOtherCurrenciesExpanded ? "chevron.up" : "chevron.down")
-                            .font(.system(size: 14))
-                            .foregroundColor(Color.primaryGold)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 44)
-                    .background(Color.backgroundDark1)
-                    .cornerRadius(Spacing.radiusMedium)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: Spacing.radiusMedium)
-                            .stroke(Color.borderDefault, lineWidth: 1)
-                    )
-                }
-            }
-            
-            // Other Currency Wallets (Expanded)
-            if viewModel.isOtherCurrenciesExpanded {
-                ForEach(Array(stride(from: 0, to: viewModel.otherCurrencyWallets.count, by: 2)), id: \.self) { index in
-                    HStack(spacing: Spacing.md) {
-                        otherCurrencyCard(wallet: viewModel.otherCurrencyWallets[index])
-                        
-                        if index + 1 < viewModel.otherCurrencyWallets.count {
-                            otherCurrencyCard(wallet: viewModel.otherCurrencyWallets[index + 1])
-                        } else {
-                            Spacer()
-                                .frame(maxWidth: .infinity)
-                        }
-                    }
-                }
-            }
+            // Unified Wallet Card
+            unifiedWalletCard
         }
     }
     
-    // MARK: - Other Currency Card
-    private func otherCurrencyCard(wallet: Wallet) -> some View {
-        VStack(alignment: .leading, spacing: Spacing.sm) {
-            // Currency Icon
-            HStack {
-                Image(systemName: "dollarsign.circle.fill")
-                    .font(.system(size: 24))
-                    .foregroundColor(Color.primaryGold)
-                
-                Spacer()
-            }
-            
-            // Currency Name
-            Text("\(wallet.currency) Wallet")
-                .font(AppFont.bodyRegular())
-                .foregroundColor(Color.textSecondary)
-            
-            Spacer()
-            
-            // Balance
-            Text(viewModel.formatBalance(wallet.balance, currency: wallet.currency))
-                .font(AppFont.heading3())
-                .foregroundColor(Color.textPrimary)
-            
-            // View Details Button
-            Button(action: {
-                // TODO: Navigate to wallet detail
-            }) {
-                HStack(spacing: Spacing.xs) {
-                    Text("View Details")
-                        .font(AppFont.button())
+    // MARK: - Unified Wallet Card
+    private var unifiedWalletCard: some View {
+        VStack(spacing: 0) {
+            // Top Section: Balance (Dark Background)
+            VStack(alignment: .leading, spacing: Spacing.md) {
+                // Title with Eye Toggle
+                HStack(spacing: 10) {
+                    Text("My Balance")
+                        .font(AppFont.bodySmall())
+                        .foregroundColor(Color.textSecondary)
+                    
+                    Button(action: {
+                        isBalanceHidden.toggle()
+                    }) {
+                        Image(systemName: isBalanceHidden ? "eye.slash" : "eye")
+                            .font(.system(size: 15))
+                            .foregroundColor(Color.textSecondary)
+                    }
+                    
+                    Spacer()
                 }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, Spacing.md)
-                .background(Color.backgroundDark1)
-                .cornerRadius(Spacing.radiusMedium)
-                .overlay(
-                    RoundedRectangle(cornerRadius: Spacing.radiusMedium)
-                        .stroke(Color.textSecondary.opacity(0.3), lineWidth: 1)
-                )
+                
+                // Balance Amount
+                if let depositWallet = viewModel.depositWallet {
+                    Text(isBalanceHidden ? "****" : viewModel.formatBalance(depositWallet.balance, currency: "UGX"))
+                        .font(AppFont.heading2())
+                        .foregroundColor(Color.textPrimary)
+                }
+                
+                // Action Buttons
+                HStack(spacing: 8) {
+                    Button(action: {
+                        showDepositView = true
+                    }) {
+                        Text("Add Money")
+                            .font(AppFont.button())
+                            .foregroundColor(Color.backgroundDark1)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(Color.primaryGold)
+                            .cornerRadius(8)
+                    }
+                    
+                    Button(action: {
+                        showWithdrawView = true
+                    }) {
+                        Text("Withdraw")
+                            .font(AppFont.button())
+                            .foregroundColor(Color.primaryGold)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 10)
+                            .background(Color.clear)
+                            .cornerRadius(8)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.primaryGold, lineWidth: 1)
+                            )
+                    }
+                }
+            }
+            .padding(Spacing.md)
+            .background(Color.backgroundDark1)
+            
+            // Bottom Section: Investment (Gold Background)
+            if viewModel.hasInvestments, let summary = viewModel.investmentSummary {
+                HStack {
+                    // Left: Investment Amount
+                    VStack(alignment: .leading, spacing: Spacing.xs) {
+                        HStack(spacing: 10) {
+                            Text("My Investments")
+                                .font(AppFont.bodySmall())
+                                .foregroundColor(Color.backgroundDark1)
+                            
+                            Button(action: {
+                                isInvestmentHidden.toggle()
+                            }) {
+                                Image(systemName: isInvestmentHidden ? "eye.slash" : "eye")
+                                    .font(.system(size: 15))
+                                    .foregroundColor(Color.backgroundDark1)
+                            }
+                            
+                            Spacer()
+                        }
+                        
+                        Text(isInvestmentHidden ? "****" : viewModel.formatBalance(String(summary.currentValue), currency: "UGX"))
+                            .font(AppFont.heading3())
+                            .foregroundColor(Color.backgroundDark1)
+                    }
+                    
+                    Spacer()
+                    
+                    // Right: Returns
+                    VStack(alignment: .trailing, spacing: Spacing.xs) {
+                        Text("My Average Returns")
+                            .font(AppFont.bodySmall())
+                            .foregroundColor(Color.backgroundDark1)
+                        
+                        HStack(spacing: 8) {
+                            Text(isInvestmentHidden ? "**%" : "\(String(format: "%.0f", summary.interestPercentage))%")
+                                .font(AppFont.heading3())
+                                .foregroundColor(Color.backgroundDark1)
+                            
+                            Image(systemName: "arrow.right")
+                                .font(.system(size: 24))
+                                .foregroundColor(Color.backgroundDark1)
+                        }
+                    }
+                }
+                .padding(Spacing.md)
+                .background(Color.primaryGold)
             }
         }
-        .padding(Spacing.md)
-        .frame(height: 200)
-        .background(Color.backgroundDark1)
         .cornerRadius(Spacing.radiusMedium)
+        .overlay(
+            RoundedRectangle(cornerRadius: Spacing.radiusMedium)
+                .stroke(Color.primaryGold, lineWidth: 2)
+        )
     }
     
     // MARK: - Quick Actions Section
@@ -483,7 +456,7 @@ struct HomeView: View {
                         .font(AppFont.bodyRegular())
                         .foregroundColor(Color.textPrimary)
                         .lineLimit(2)
-
+                    
                     Text(product.category?.name ?? "")
                         .font(AppFont.bodySmall())
                         .foregroundColor(Color.textSecondary)

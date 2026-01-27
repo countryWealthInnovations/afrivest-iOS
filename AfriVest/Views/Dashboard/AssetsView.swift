@@ -252,9 +252,9 @@ struct InvestmentCard: View {
                         .font(AppFont.footnote())
                         .foregroundColor(Color.textSecondary)
                     
-                    Text("+\(investment.returnsEarned ?? "0")")
+                    Text(formatReturns(investment))
                         .font(AppFont.bodyLarge())
-                        .foregroundColor(Color.successGreen)
+                        .foregroundColor(returnsColor(investment))
                 }
             }
             
@@ -290,6 +290,24 @@ struct InvestmentCard: View {
             return formatter.string(from: date)
         }
         return dateString
+    }
+    
+    private func formatReturns(_ investment: UserInvestment) -> String {
+        let returnsValue = investment.computedReturnsEarned
+        let returns = Double(returnsValue) ?? 0.0
+        
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .decimal
+        formatter.maximumFractionDigits = 2
+        
+        let formatted = formatter.string(from: NSNumber(value: abs(returns))) ?? "0.00"
+        return returns >= 0 ? "+\(formatted)" : "-\(formatted)"
+    }
+    
+    private func returnsColor(_ investment: UserInvestment) -> Color {
+        let returnsValue = investment.computedReturnsEarned
+        let returns = Double(returnsValue) ?? 0.0
+        return returns >= 0 ? Color.successGreen : Color.errorRed
     }
 }
 
