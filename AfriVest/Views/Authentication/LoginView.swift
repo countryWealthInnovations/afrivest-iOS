@@ -11,6 +11,7 @@ import FirebaseMessaging
 struct LoginView: View {
     @StateObject private var viewModel = LoginViewModel()
     @Environment(\.dismiss) var dismiss
+    @State private var showRegister = false
     
     var body: some View {
         ZStack {
@@ -78,7 +79,7 @@ struct LoginView: View {
                             .font(AppFont.bodyRegular())
                             .foregroundColor(.textSecondary)
                         
-                        NavigationLink(destination: RegisterView()) {
+                        Button(action: { showRegister = true }) {
                             Text("Create an account")
                                 .font(AppFont.bodyRegular())
                                 .foregroundColor(.primaryGold)
@@ -118,6 +119,9 @@ struct LoginView: View {
             Button("OK", role: .cancel) {}
         } message: {
             Text(viewModel.errorMessage)
+        }
+        .fullScreenCover(isPresented: $showRegister) {
+            RegisterView()
         }
         .fullScreenCover(isPresented: $viewModel.showForgotPassword) {
             ForgotPasswordView()

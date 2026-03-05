@@ -83,15 +83,9 @@ struct OTPView: View {
                 LoadingOverlay()
             }
             
-            // FIXED: Hidden NavigationLink for Dashboard navigation
-            NavigationLink(
-                destination: DashboardView()
-                    .navigationBarBackButtonHidden(true),
-                isActive: $viewModel.shouldNavigateToDashboard
-            ) {
-                EmptyView()
-            }
-            .hidden()
+        }
+        .fullScreenCover(isPresented: $viewModel.shouldNavigateToDashboard) {
+            DashboardView()
         }
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK", role: .cancel) {}

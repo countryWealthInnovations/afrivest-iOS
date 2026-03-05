@@ -9,58 +9,49 @@ import SwiftUI
 
 struct DashboardView: View {
     @State private var selectedTab = 0
-    @State private var isFABExpanded = false
     
     var body: some View {
         ZStack {
             TabView(selection: $selectedTab) {
-                HomeView()
-                    .tabItem {
-                        Image(systemName: "house.fill")
-                        Text("Home")
-                    }
-                    .tag(0)
+                NavigationStack {
+                    HomeView()
+                }
+                .tabItem {
+                    Image(systemName: "house.fill")
+                    Text("Home")
+                }
+                .tag(0)
                 
-                AssetsView()
-                    .tabItem {
-                        Image(systemName: "chart.pie.fill")
-                        Text("Assets")
-                    }
-                    .tag(1)
+                NavigationStack {
+                    AssetsView()
+                }
+                .tabItem {
+                    Image(systemName: "chart.pie.fill")
+                    Text("Assets")
+                }
+                .tag(1)
                 
-                HistoryView()
-                    .tabItem {
-                        Image(systemName: "clock.fill")
-                        Text("History")
-                    }
-                    .tag(2)
+                NavigationStack {
+                    HistoryView()
+                }
+                .tabItem {
+                    Image(systemName: "clock.fill")
+                    Text("History")
+                }
+                .tag(2)
                 
-                ProfileView()
-                    .tabItem {
-                        Image(systemName: "person.fill")
-                        Text("Profile")
-                    }
-                    .tag(3)
+                NavigationStack {
+                    ProfileView()
+                }
+                .tabItem {
+                    Image(systemName: "person.fill")
+                    Text("Profile")
+                }
+                .tag(3)
             }
             .accentColor(.primaryGold)
             .onAppear {
                 setupTabBarAppearance()
-            }
-            
-            // Floating Action Button
-            if selectedTab == 0 {
-                VStack {
-                    Spacer()
-                    
-                    HStack {
-                        Spacer()
-                        
-                        FloatingActionButton(isExpanded: $isFABExpanded)
-                            .padding(.trailing, Spacing.md)
-                            .padding(.bottom, 90)
-                    }
-                }
-                .transition(.opacity)
             }
         }
         .navigationBarHidden(true)

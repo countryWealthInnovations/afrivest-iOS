@@ -283,11 +283,15 @@ struct InvestmentCard: View {
     }
     
     private func formatDate(_ dateString: String) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-        if let date = formatter.date(from: dateString) {
-            formatter.dateStyle = .medium
-            return formatter.string(from: date)
+        let inputFormatter = DateFormatter()
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "dd MMM yyyy"
+        
+        for format in ["yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd'T'HH:mm:ss.SSSSSS'Z'", "yyyy-MM-dd"] {
+            inputFormatter.dateFormat = format
+            if let date = inputFormatter.date(from: dateString) {
+                return outputFormatter.string(from: date)
+            }
         }
         return dateString
     }

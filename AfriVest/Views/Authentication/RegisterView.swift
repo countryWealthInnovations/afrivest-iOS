@@ -103,20 +103,20 @@ struct RegisterView: View {
                         
                         (Text("I agree to the ")
                             .foregroundColor(.textSecondary) +
-                        Text("Terms & Conditions")
+                         Text("Terms & Conditions")
                             .foregroundColor(.primaryGold)
                             .underline() +
-                        Text(" and ")
+                         Text(" and ")
                             .foregroundColor(.textSecondary) +
-                        Text("Privacy Policy")
+                         Text("Privacy Policy")
                             .foregroundColor(.primaryGold)
                             .underline())
-                            .font(AppFont.bodySmall())
-                            .onTapGesture {
-                                if let url = URL(string: "https://afrivest.co/terms") {
-                                    UIApplication.shared.open(url)
-                                }
+                        .font(AppFont.bodySmall())
+                        .onTapGesture {
+                            if let url = URL(string: "https://afrivest.co/terms") {
+                                UIApplication.shared.open(url)
                             }
+                        }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     
@@ -135,7 +135,7 @@ struct RegisterView: View {
                             .font(AppFont.bodyRegular())
                             .foregroundColor(.textSecondary)
                         
-                        NavigationLink(destination: LoginView()) {
+                        Button(action: { dismiss() }) {
                             Text("Login now")
                                 .font(AppFont.bodyRegular())
                                 .foregroundColor(.primaryGold)
@@ -152,14 +152,9 @@ struct RegisterView: View {
                 LoadingOverlay()
             }
             
-            // FIXED: Hidden NavigationLink that triggers when shouldNavigateToOTP is true
-            NavigationLink(
-                destination: OTPView(email: viewModel.email, from: "register"),
-                isActive: $viewModel.shouldNavigateToOTP
-            ) {
-                EmptyView()
-            }
-            .hidden()
+        }
+        .fullScreenCover(isPresented: $viewModel.shouldNavigateToOTP) {
+            OTPView(email: viewModel.email, from: "register")
         }
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK", role: .cancel) {}

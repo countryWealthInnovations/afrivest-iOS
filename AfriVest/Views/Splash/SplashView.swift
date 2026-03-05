@@ -82,15 +82,24 @@ struct SplashView: View {
                 viewModel.startAnimation()
                 viewModel.checkAuthStatus()
             }
-            .navigationDestination(isPresented: .constant(viewModel.navigateTo == .onboarding)) {
+            .navigationDestination(isPresented: Binding(
+                get: { viewModel.navigateTo == .onboarding },
+                set: { if !$0 { viewModel.navigateTo = nil } }
+            )) {
                 OnboardingView()
                     .navigationBarBackButtonHidden(true)
             }
-            .navigationDestination(isPresented: .constant(viewModel.navigateTo == .login)) {
+            .navigationDestination(isPresented: Binding(
+                get: { viewModel.navigateTo == .login },
+                set: { if !$0 { viewModel.navigateTo = nil } }
+            )) {
                 LoginView()
                     .navigationBarBackButtonHidden(true)
             }
-            .navigationDestination(isPresented: .constant(viewModel.navigateTo == .dashboard)) {
+            .navigationDestination(isPresented: Binding(
+                get: { viewModel.navigateTo == .dashboard },
+                set: { if !$0 { viewModel.navigateTo = nil } }
+            )) {
                 DashboardView()
                     .navigationBarBackButtonHidden(true)
             }

@@ -12,7 +12,6 @@ import Kingfisher
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
     @State private var showDepositView = false
-    @State private var showWithdrawView = false
     @State private var showKYCBanner = true
     @State private var showKYCAlert = false
     @State private var showInvestmentProducts = false
@@ -20,6 +19,7 @@ struct HomeView: View {
     @State private var showGoldMarketplace = false
     @State private var isBalanceHidden = false
     @State private var isInvestmentHidden = false
+    @State private var showSendMoney = false
     
     var body: some View {
         ZStack {
@@ -54,7 +54,7 @@ struct HomeView: View {
                     }
                     .padding(.horizontal, Spacing.screenHorizontal)
                     .padding(.top, Spacing.md)
-                    .padding(.bottom, 90) // Space for FAB
+                    .padding(.bottom, 90)
                 }
             }
         }
@@ -88,11 +88,6 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $showDepositView) {
             DepositView()
         }
-        .fullScreenCover(isPresented: $showWithdrawView) {
-            // WithdrawView() // To be implemented
-            Text("Withdraw View - Coming Soon")
-                .background(AppTheme.backgroundGradient.ignoresSafeArea())
-        }
         .fullScreenCover(isPresented: $showInvestmentProducts) {
             InvestmentProductsView()
         }
@@ -101,6 +96,9 @@ struct HomeView: View {
         }
         .fullScreenCover(isPresented: $showGoldMarketplace) {
             GoldMarketplaceView()
+        }
+        .fullScreenCover(isPresented: $showSendMoney) {
+            SendMoneyView()
         }
     }
     
@@ -272,9 +270,9 @@ struct HomeView: View {
                             .cornerRadius(8)
                     }
                     
-                    Button(action: {
-                        showWithdrawView = true
-                    }) {
+                    NavigationLink {
+                        WithdrawView()
+                    } label: {
                         Text("Withdraw")
                             .font(AppFont.button())
                             .foregroundColor(Color.primaryGold)
@@ -287,6 +285,7 @@ struct HomeView: View {
                                     .stroke(Color.primaryGold, lineWidth: 1)
                             )
                     }
+                    .buttonStyle(PlainButtonStyle())
                 }
             }
             .padding(Spacing.md)
@@ -378,13 +377,11 @@ struct HomeView: View {
                 }
                 
                 quickActionButton(
-                    icon: "bitcoinsign",
-                    title: "Crypto"
+                    icon: "paperplane.fill",
+                    title: "Send Money"
                 ) {
-                    // Disabled for now
+                    showSendMoney = true
                 }
-                .opacity(0.5)
-                .disabled(true)
             }
         }
     }

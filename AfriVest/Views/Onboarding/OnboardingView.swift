@@ -56,7 +56,7 @@ struct OnboardingView: View {
                 
                 OnboardingPageView(
                     imageName: "onboarding_gold",
-                    title: "Gold & Crypto Marketplace",
+                    title: "Gold & Asset Marketplace",
                     description: "Turn remittances into tangible assets that hedge against inflation and preserve long-term value.",
                     currentPage: $currentPage,
                     totalPages: 3,
