@@ -16,35 +16,43 @@ struct WithdrawView: View {
             Color.backgroundDark1.ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Header
                 headerSection
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: Spacing.lg) {
-                        // Phone Number
-                        phoneNumberSection
+                        
+                        // Payout Method
+                        payoutMethodSection
+                        
+                        // Currency Picker
+                        currencySection
+                        
+                        // Mobile Money or Bank Transfer fields
+                        if viewModel.payoutMethod == .mobileMoney {
+                            phoneNumberSection
+                            networkSection
+                        } else {
+                            bankTransferSection
+                        }
                         
                         // Amount
                         amountSection
-
-                        // Fee Display Section
+                        
+                        // Fee Display
                         if viewModel.totalAmount > 0 {
                             feeDisplaySection
                         }
-
-                        // Error Message
+                        
                         if let error = viewModel.errorMessage {
                             Text(error)
                                 .bodyRegularStyle()
                                 .foregroundColor(.errorRed)
                         }
-
-                        // Info Box
+                        
                         infoBox
                         
                         Spacer().frame(height: Spacing.xl)
                         
-                        // Withdraw Button
                         PrimaryButton(
                             title: "Withdraw",
                             action: { viewModel.initiateWithdraw() },
@@ -97,100 +105,155 @@ struct WithdrawView: View {
         .padding(.top, Spacing.md)
     }
     
-    // MARK: - Phone Number Section
-    private var phoneNumberSection: some View {
+    private var payoutMethodSection: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            Text("Phone Number")
+            Text("Payout Method")
                 .labelStyle()
-            
-            HStack(spacing: 0) {
-                // Uganda Flag and Code
-                HStack(spacing: 4) {
-                    Text("🇺🇬")
-                        .font(.system(size: 20))
-                    Text("+256")
-                        .font(AppFont.bodyLarge())
-                        .foregroundColor(.textPrimary)
-                }
-                .padding(.leading, Spacing.md)
-                .padding(.trailing, Spacing.sm)
-                
-                Divider()
-                    .frame(height: 24)
-                    .background(Color.borderDefault)
-                
-                TextField("700000001", text: $viewModel.phoneNumber)
-                    .font(AppFont.bodyLarge())
-                    .foregroundColor(.textPrimary)
-                    .keyboardType(.numberPad)
-                    .autocapitalization(.none)
-                    .disableAutocorrection(true)
-                    .padding(.leading, Spacing.sm)
-                    .onChange(of: viewModel.phoneNumber) { newValue in
-                        viewModel.phoneNumber = newValue.filter { $0.isNumber }
-                        if viewModel.phoneNumber.count > 9 {
-                            viewModel.phoneNumber = String(viewModel.phoneNumber.prefix(9))
-                        }
-                    }
-                
-                if viewModel.phoneState == .success {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.successGreen)
-                        .frame(width: Spacing.iconSize, height: Spacing.iconSize)
-                        .padding(.trailing, Spacing.md)
+            Picker("", selection: $viewModel.payoutMethod) {
+                ForEach(WithdrawViewModel.PayoutMethod.allCases, id: \.self) { method in
+                    Text(method.rawValue).tag(method)
                 }
             }
-            .frame(height: Spacing.inputHeight)
-            .background(Color.inputBackground)
-            .cornerRadius(Spacing.radiusMedium)
-            .overlay(
-                RoundedRectangle(cornerRadius: Spacing.radiusMedium)
-                    .stroke(viewModel.phoneState == .error ? Color.errorRed : Color.borderDefault, lineWidth: 1)
-            )
-            
-            if viewModel.phoneState == .error {
-                Text("Invalid phone number format")
-                    .font(.system(size: 12))
-                    .foregroundColor(.errorRed)
-            } else if viewModel.phoneNumber.count >= 2 {
-                if viewModel.selectedNetwork == "MTN" {
-                    Text("MTN detected ✓")
-                        .font(.system(size: 12))
-                        .foregroundColor(.successGreen)
-                } else if viewModel.selectedNetwork == "AIRTEL" {
-                    Text("Airtel detected ✓")
-                        .font(.system(size: 12))
-                        .foregroundColor(.successGreen)
-                } else {
-                    Text("MTN: 77, 78, 76, 79 | Airtel: 70, 74, 75")
-                        .font(.system(size: 12))
+            .pickerStyle(SegmentedPickerStyle())
+        }
+    }
+    
+    // MARK: - Currency
+    private var currencySection: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            Text("Payout Currency")
+                .labelStyle()
+            let currencies = viewModel.payoutMethod == .mobileMoney
+            ? Array(viewModel.mobileMoneyNetworks.keys).sorted()
+            : viewModel.bankCurrencies
+            Menu {
+                ForEach(currencies, id: \.self) { currency in
+                    Button(currency) { viewModel.selectedCurrency = currency }
+                }
+            } label: {
+                HStack {
+                    Text(viewModel.selectedCurrency)
+                        .font(AppFont.bodyLarge())
+                        .foregroundColor(.textPrimary)
+                    Spacer()
+                    Image(systemName: "chevron.down")
                         .foregroundColor(.textSecondary)
                 }
-            } else {
-                Text("MTN: 77, 78, 76, 79 | Airtel: 70, 74, 75")
-                    .font(.system(size: 12))
-                    .foregroundColor(.textSecondary)
+                .padding()
+                .background(Color.inputBackground)
+                .cornerRadius(Spacing.radiusMedium)
+                .overlay(RoundedRectangle(cornerRadius: Spacing.radiusMedium).stroke(Color.borderDefault, lineWidth: 1))
             }
         }
     }
     
-    // MARK: - Amount Section
+    // MARK: - Network
+    private var networkSection: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            Text("Network")
+                .labelStyle()
+            Menu {
+                ForEach(viewModel.availableNetworks, id: \.self) { network in
+                    Button(network) { viewModel.selectedNetwork = network }
+                }
+            } label: {
+                HStack {
+                    Text(viewModel.selectedNetwork)
+                        .font(AppFont.bodyLarge())
+                        .foregroundColor(.textPrimary)
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                        .foregroundColor(.textSecondary)
+                }
+                .padding()
+                .background(Color.inputBackground)
+                .cornerRadius(Spacing.radiusMedium)
+                .overlay(RoundedRectangle(cornerRadius: Spacing.radiusMedium).stroke(Color.borderDefault, lineWidth: 1))
+            }
+        }
+    }
+    
+    // MARK: - Phone Number
+    private var phoneNumberSection: some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            Text("Phone Number")
+                .labelStyle()
+            HStack(spacing: 0) {
+                TextField("Enter phone number", text: $viewModel.phoneNumber)
+                    .font(AppFont.bodyLarge())
+                    .foregroundColor(.textPrimary)
+                    .keyboardType(.phonePad)
+                    .padding()
+                if viewModel.phoneState == .success {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.successGreen)
+                        .padding(.trailing, Spacing.md)
+                }
+            }
+            .background(Color.inputBackground)
+            .cornerRadius(Spacing.radiusMedium)
+            .overlay(RoundedRectangle(cornerRadius: Spacing.radiusMedium).stroke(
+                viewModel.phoneState == .error ? Color.errorRed : Color.borderDefault, lineWidth: 1))
+            if viewModel.phoneState == .error {
+                Text("Invalid phone number")
+                    .font(.system(size: 12)).foregroundColor(.errorRed)
+            }
+        }
+    }
+    
+    // MARK: - Bank Transfer
+    private var bankTransferSection: some View {
+        VStack(alignment: .leading, spacing: Spacing.lg) {
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Text("Bank Code")
+                    .labelStyle()
+                TextField("Enter bank code", text: $viewModel.bankCode)
+                    .font(AppFont.bodyLarge())
+                    .foregroundColor(.textPrimary)
+                    .padding()
+                    .background(Color.inputBackground)
+                    .cornerRadius(Spacing.radiusMedium)
+                    .overlay(RoundedRectangle(cornerRadius: Spacing.radiusMedium).stroke(Color.borderDefault, lineWidth: 1))
+            }
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Text("Account Number")
+                    .labelStyle()
+                TextField("Enter account number", text: $viewModel.accountNumber)
+                    .font(AppFont.bodyLarge())
+                    .foregroundColor(.textPrimary)
+                    .keyboardType(.numberPad)
+                    .padding()
+                    .background(Color.inputBackground)
+                    .cornerRadius(Spacing.radiusMedium)
+                    .overlay(RoundedRectangle(cornerRadius: Spacing.radiusMedium).stroke(Color.borderDefault, lineWidth: 1))
+            }
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Text("Account Name")
+                    .labelStyle()
+                TextField("Enter account name", text: $viewModel.accountName)
+                    .font(AppFont.bodyLarge())
+                    .foregroundColor(.textPrimary)
+                    .padding()
+                    .background(Color.inputBackground)
+                    .cornerRadius(Spacing.radiusMedium)
+                    .overlay(RoundedRectangle(cornerRadius: Spacing.radiusMedium).stroke(Color.borderDefault, lineWidth: 1))
+            }
+        }
+    }
+    
+    // MARK: - Amount
     private var amountSection: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            Text("Amount (UGX)")
+            Text("Amount (\(viewModel.selectedCurrency))")
                 .labelStyle()
-            
-            TextField("Enter amount (min 10,000)", text: $viewModel.amount)
+            TextField("Enter amount", text: $viewModel.amount)
                 .keyboardType(.numberPad)
                 .font(AppFont.bodyLarge())
                 .foregroundColor(.textPrimary)
                 .padding()
                 .background(Color.inputBackground)
                 .cornerRadius(Spacing.radiusMedium)
-                .overlay(
-                    RoundedRectangle(cornerRadius: Spacing.radiusMedium)
-                        .stroke(Color.borderDefault, lineWidth: 1)
-                )
+                .overlay(RoundedRectangle(cornerRadius: Spacing.radiusMedium).stroke(Color.borderDefault, lineWidth: 1))
         }
     }
     
@@ -199,78 +262,73 @@ struct WithdrawView: View {
         HStack(spacing: Spacing.sm) {
             Image(systemName: "info.circle")
                 .foregroundColor(.textSecondary)
-            
-            Text("Funds will be sent to your mobile money account within 5 minutes")
-                .font(.system(size: 12))
-                .foregroundColor(.textSecondary)
+            Text(viewModel.payoutMethod == .mobileMoney
+                 ? "Funds will be sent to your mobile money account within 5 minutes"
+                 : "Bank transfers may take 1–3 business days")
+            .font(.system(size: 12))
+            .foregroundColor(.textSecondary)
         }
         .padding(Spacing.md)
         .background(Color.inputBackground)
         .cornerRadius(Spacing.radiusMedium)
     }
     
-    // MARK: - Fee Display Section
+    // MARK: - Fee Display
     private var feeDisplaySection: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            // Current amount
             HStack {
                 Text("Amount")
                     .bodyRegularStyle()
                     .foregroundColor(.textSecondary)
-                
                 Spacer()
-                
-                if let currentAmount = Double(viewModel.amount) {
-                    Text("UGX \(FeeCalculator.formatCurrency(currentAmount))")
+                if let val = Double(viewModel.amount) {
+                    Text("\(viewModel.selectedCurrency) \(FeeCalculator.formatCurrency(val))")
                         .bodyRegularStyle()
                         .foregroundColor(.textPrimary)
                 }
             }
-            
-            // Fee breakdown
             HStack {
-                Text("Fee")
+                Text("Transaction fee")
                     .bodyRegularStyle()
                     .foregroundColor(.textSecondary)
-                
                 Spacer()
-                
-                Text("UGX \(FeeCalculator.formatCurrency(viewModel.fee))")
+                Text("\(viewModel.selectedCurrency) \(FeeCalculator.formatCurrency(viewModel.transactionFee))")
                     .bodyRegularStyle()
                     .foregroundColor(.textPrimary)
             }
-            
-            // Total Amount
+            Divider().background(Color.borderDefault)
             HStack {
-                Text("Total Amount")
+                Text("Total Debited")
                     .bodyLargeStyle()
                     .foregroundColor(.textPrimary)
-                
                 Spacer()
-                
-                Text("UGX \(FeeCalculator.formatCurrency(viewModel.totalAmount))")
+                Text("\(viewModel.selectedCurrency) \(FeeCalculator.formatCurrency(viewModel.totalAmount))")
                     .bodyLargeStyle()
                     .foregroundColor(.primaryGold)
             }
-            
-            // Balance after withdrawal
+            if viewModel.feeConfirmedByAPI {
+                HStack(spacing: 4) {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.successGreen)
+                        .font(.system(size: 12))
+                    Text("Fees confirmed")
+                        .font(AppFont.footnote())
+                        .foregroundColor(.successGreen)
+                }
+            } else {
+                Text("* Estimated — confirmed on submit")
+                    .font(AppFont.footnote())
+                    .foregroundColor(.textSecondary)
+            }
             if viewModel.userBalance > 0 {
                 HStack {
-                    Text("Balance After Withdrawal")
+                    Text("Balance After")
                         .bodyRegularStyle()
                         .foregroundColor(.textSecondary)
-                    
                     Spacer()
-                    
-                    if viewModel.insufficientFundsWarning {
-                        Text("UGX \(FeeCalculator.formatCurrency(viewModel.balanceAfterWithdrawal))")
-                            .bodyRegularStyle()
-                            .foregroundColor(.errorRed)
-                    } else {
-                        Text("UGX \(FeeCalculator.formatCurrency(viewModel.balanceAfterWithdrawal))")
-                            .bodyRegularStyle()
-                            .foregroundColor(.successGreen)
-                    }
+                    Text("\(viewModel.walletCurrency) \(FeeCalculator.formatCurrency(viewModel.balanceAfterWithdrawal))")
+                        .bodyRegularStyle()
+                        .foregroundColor(viewModel.insufficientFundsWarning ? .errorRed : .successGreen)
                 }
             }
         }

@@ -8,6 +8,56 @@
 import Foundation
 import Contacts
 import Combine
+import Alamofire
+
+// MARK: - Contact Lookup Models
+struct LookupBody: Codable, Sendable {
+    let phones: [String]
+    let emails: [String]
+}
+
+struct LookupMatchedContact: Codable, Sendable {
+    let user_id: Int
+    let name: String
+    let phone: String?
+    let avatar_url: String?
+    
+    nonisolated init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        user_id   = try c.decode(Int.self,    forKey: .user_id)
+        name      = try c.decode(String.self, forKey: .name)
+        phone     = try c.decodeIfPresent(String.self, forKey: .phone)
+        avatar_url = try c.decodeIfPresent(String.self, forKey: .avatar_url)
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case user_id, name, phone, avatar_url
+    }
+}
+
+struct LookupData: Codable, Sendable {
+    let contacts: [LookupMatchedContact]
+    
+    nonisolated init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        contacts = try c.decode([LookupMatchedContact].self, forKey: .contacts)
+    }
+    
+    enum CodingKeys: String, CodingKey { case contacts }
+}
+
+struct LookupResponse: Codable, Sendable {
+    let success: Bool
+    let data: LookupData
+    
+    nonisolated init(from decoder: Decoder) throws {
+        let c = try decoder.container(keyedBy: CodingKeys.self)
+        success = try c.decode(Bool.self,      forKey: .success)
+        data    = try c.decode(LookupData.self, forKey: .data)
+    }
+    
+    enum CodingKeys: String, CodingKey { case success, data }
+}
 
 @MainActor
 class SendMoneyViewModel: ObservableObject {
@@ -107,35 +157,46 @@ class SendMoneyViewModel: ObservableObject {
         }
     }
     
-    // MARK: - Check Registered Users
+    // MARK: - Check Registered Users (bulk lookup)
     private func checkRegisteredUsers(_ contacts: [AppContact]) async {
-        var updatedContacts: [AppContact] = []
+        let phones = contacts.compactMap { $0.phoneNumber }
+        let emails = contacts.compactMap { $0.email }
         
-        for contact in contacts {
-            let query = contact.phoneNumber ?? contact.email ?? ""
+        guard !phones.isEmpty || !emails.isEmpty else { return }
+        
+        do {
+            let body = LookupBody(phones: phones, emails: emails)
+            let bodyDict = try JSONSerialization.jsonObject(
+                with: JSONEncoder().encode(body)
+            ) as? [String: Any] ?? [:]
+            let response: LookupResponse = try await APIClient.shared.request(
+                "/contacts/lookup",
+                method: .post,
+                parameters: bodyDict,
+                requiresAuth: true
+            )
             
-            do {
-                let response = try await transferService.searchUser(phoneOrEmail: query)
-                
-                if response.found, let user = response.user {
-                    updatedContacts.append(AppContact(
-                        id: contact.id,
-                        name: user.name,
-                        phoneNumber: contact.phoneNumber,
-                        email: contact.email,
-                        userId: user.id,
-                        isRegistered: true
-                    ))
-                } else {
-                    updatedContacts.append(contact)
-                }
-            } catch {
-                updatedContacts.append(contact)
+            // Build a quick lookup dict from phone → matched user
+            var phoneMap: [String: LookupMatchedContact] = [:]
+            for match in response.data.contacts {
+                if let p = match.phone { phoneMap[p] = match }
             }
+            
+            let registered: [AppContact] = contacts.compactMap { contact in
+                if let phone = contact.phoneNumber, let match = phoneMap[phone] {
+                    return AppContact(id: contact.id, name: match.name,
+                                      phoneNumber: phone, email: contact.email,
+                                      userId: match.user_id, isRegistered: true)
+                }
+                return nil
+            }
+            
+            self.contacts = registered
+            self.filteredContacts = registered
+            
+        } catch {
+            print("Contact lookup failed: \(error)")
         }
-        
-        self.contacts = updatedContacts
-        self.filteredContacts = updatedContacts.filter { $0.isRegistered }
     }
     
     // MARK: - Filter Contacts

@@ -11,6 +11,7 @@ import Kingfisher
 
 struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
+    @State private var showCurrencySetup = false
     @State private var showDepositView = false
     @State private var showKYCBanner = true
     @State private var showKYCAlert = false
@@ -27,7 +28,7 @@ struct HomeView: View {
                 .ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // KYC Banner
+                // KYC Banner — hidden if admin toggled it off
                 if !isKYCVerified() {
                     KYCBannerView(isVisible: $showKYCBanner) {
                         showKYCAlert = true
@@ -60,6 +61,14 @@ struct HomeView: View {
         }
         .onAppear {
             viewModel.loadDashboard()
+            // Show currency setup if not configured
+            let hasCurrency = UserDefaultsManager.shared.object(forKey: "default_currency") != nil
+            if !hasCurrency {
+                showCurrencySetup = true
+            }
+        }
+        .sheet(isPresented: $showCurrencySetup) {
+            CurrencySelectionView(isPresented: $showCurrencySetup)
         }
         .refreshable {
             viewModel.refresh()
@@ -71,14 +80,13 @@ struct HomeView: View {
                 }
             }
         )
-        .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
-            Button("OK") {
-                viewModel.errorMessage = nil
-            }
+        .alert("Error", isPresented: Binding<Bool>(
+            get: { viewModel.errorMessage != nil },
+            set: { if !$0 { viewModel.errorMessage = nil } }
+        )) {
+            Button("OK") { viewModel.errorMessage = nil }
         } message: {
-            if let error = viewModel.errorMessage {
-                Text(error)
-            }
+            Text(viewModel.errorMessage ?? "")
         }
         .alert("KYC Verification", isPresented: $showKYCAlert) {
             Button("OK", role: .cancel) { }
@@ -497,7 +505,7 @@ struct HomeView: View {
             
             // Bottom Section: Minimum Investment
             VStack(alignment: .leading, spacing: 2) {
-                Text(product.minInvestmentFormatted)
+                Text(convertedMinInvestment(product))
                     .font(AppFont.bodyLarge())
                     .foregroundColor(Color.primaryGold)
                 
@@ -576,6 +584,17 @@ struct HomeView: View {
         Contact(id: 5, name: "Kim", initials: "K", color: Color.red),
         Contact(id: 6, name: "Stella", initials: "S", color: Color.purple)
     ]
+}
+
+private func convertedMinInvestment(_ product: InvestmentProduct) -> String {
+    let userCurrency = UserDefaultsManager.shared.defaultCurrency ?? "UGX"
+    let raw = Double(product.minInvestment ?? "0") ?? 0
+    let productCurrency = product.currency ?? "UGX"
+    guard userCurrency != productCurrency, raw > 0 else {
+        return "\(productCurrency) \(FeeCalculator.formatCurrency(raw))"
+    }
+    let rate = CurrencyConverter.getRate(from: productCurrency, to: userCurrency)
+    return "\(userCurrency) \(FeeCalculator.formatCurrency(raw * rate))"
 }
 
 // MARK: - Contact Model

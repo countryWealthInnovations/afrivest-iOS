@@ -89,6 +89,16 @@ class UserDefaultsManager {
         set { set(newValue, forKey: "kyc_verified") }
     }
     
+    var defaultCurrency: String? {
+        get { string(forKey: "default_currency") }
+        set { set(newValue, forKey: "default_currency") }
+    }
+    
+    var secondaryCurrency: String? {
+        get { string(forKey: "secondary_currency") }
+        set { set(newValue, forKey: "secondary_currency") }
+    }
+    
     // MARK: - Profile Caching
     private let profileCacheKey = "cached_profile_data"
     
@@ -130,6 +140,20 @@ class UserDefaultsManager {
     func clearProfile() {
         defaults.removeObject(forKey: profileCacheKey)
         print("🗑️ Profile cache cleared")
+    }
+    
+    func clearAll() {
+        defaults.removeObject(forKey: profileCacheKey)
+        defaults.removeObject(forKey: AppConstants.StorageKeys.userEmail)
+        defaults.removeObject(forKey: AppConstants.StorageKeys.userId)
+        defaults.removeObject(forKey: "email_verified")
+        defaults.removeObject(forKey: "kyc_verified")
+        defaults.removeObject(forKey: "default_currency")
+        defaults.removeObject(forKey: "secondary_currency")
+        defaults.removeObject(forKey: "forex_rates")
+        defaults.removeObject(forKey: "kyc_banner_hidden")
+        defaults.removeObject(forKey: "requires_currency_setup")
+        print("🗑️ All user defaults cleared")
     }
 }
 

@@ -13,7 +13,7 @@ struct InvestmentProductsView: View {
     @State private var showSortSheet = false
     
     let categories = [
-        ("All", nil),
+        ("All", nil),// Minimum Investment
         ("Treasury Bonds", "treasury-bonds"),
         ("Unit Trusts", "unit-trusts"),
         ("Fixed Deposits", "fixed-deposits"),
@@ -265,7 +265,7 @@ struct ProductCard: View {
             
             // Minimum Investment
             VStack(alignment: .leading, spacing: 4) {
-                Text(product.minimumInvestment)
+                Text(convertedMinInvestment)
                     .font(AppFont.bodyLarge())
                     .foregroundColor(Color.primaryGold)
                 
@@ -283,9 +283,21 @@ struct ProductCard: View {
         )
     }
     
+    private var convertedMinInvestment: String {
+        let userCurrency = UserDefaultsManager.shared.defaultCurrency ?? "UGX"
+        let raw = Double(product.minInvestment ?? "0") ?? 0
+        let productCurrency = product.currency ?? "UGX"
+        guard userCurrency != productCurrency, raw > 0 else {
+            return "\(productCurrency) \(FeeCalculator.formatCurrency(raw))"
+        }
+        let rate = CurrencyConverter.getRate(from: productCurrency, to: userCurrency)
+        let converted = raw * rate
+        return "\(userCurrency) \(FeeCalculator.formatCurrency(converted))"
+    }
+    
     private var returnsText: String {
         if product.expectedReturns == "0.00" {
-            return "No Retuns"
+            return "No Returns"
         }
         return "\(product.expectedReturns)% p.a"
     }

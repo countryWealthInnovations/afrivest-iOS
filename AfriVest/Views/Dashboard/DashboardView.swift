@@ -10,6 +10,8 @@ import SwiftUI
 struct DashboardView: View {
     @State private var selectedTab = 0
     
+    @State private var showCurrencySetup = UserDefaultsManager.shared.bool(forKey: "requires_currency_setup")
+    
     var body: some View {
         ZStack {
             TabView(selection: $selectedTab) {
@@ -55,7 +57,13 @@ struct DashboardView: View {
             }
         }
         .navigationBarHidden(true)
+        .sheet(isPresented: $showCurrencySetup, onDismiss: {
+            UserDefaultsManager.shared.set(false, forKey: "requires_currency_setup")
+        }) {
+            CurrencySelectionView(isPresented: $showCurrencySetup)
+        }
     }
+
     
     private func setupTabBarAppearance() {
         let appearance = UITabBarAppearance()

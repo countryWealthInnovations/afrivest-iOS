@@ -100,6 +100,11 @@ struct DepositView: View {
                                 )
                         }
                         
+                        // Fee Breakdown Preview
+                        if let amountValue = Double(viewModel.amount), amountValue > 0 {
+                            depositFeePreview(amount: amountValue)
+                        }
+                        
                         // Error Message
                         if let error = viewModel.errorMessage {
                             Text(error)
@@ -161,6 +166,51 @@ struct DepositView: View {
             }
         }
     }
+    // MARK: - Fee Preview
+    private func depositFeePreview(amount: Double) -> some View {
+        let method = selectedMethod == .card ? "card" : "mobile_money"
+        let flwFee = FeeCalculator.flutterwaveCollectionFee(amount: amount, currency: viewModel.selectedCurrency, method: method)
+        let total = amount + flwFee
+        return VStack(alignment: .leading, spacing: Spacing.sm) {
+            HStack {
+                Text("Amount")
+                    .bodyRegularStyle()
+                    .foregroundColor(.textSecondary)
+                Spacer()
+                Text("\(viewModel.selectedCurrency) \(FeeCalculator.formatCurrency(amount))")
+                    .bodyRegularStyle()
+                    .foregroundColor(.textPrimary)
+            }
+            HStack {
+                Text("Transaction fee")
+                    .bodyRegularStyle()
+                    .foregroundColor(.textSecondary)
+                Spacer()
+                Text(flwFee == 0
+                     ? "Free"
+                     : "\(viewModel.selectedCurrency) \(FeeCalculator.formatCurrency(flwFee))")
+                .bodyRegularStyle()
+                .foregroundColor(flwFee == 0 ? .successGreen : .textPrimary)
+            }
+            Divider().background(Color.borderDefault)
+            HStack {
+                Text("You Pay")
+                    .bodyLargeStyle()
+                    .foregroundColor(.textPrimary)
+                Spacer()
+                Text("\(viewModel.selectedCurrency) \(FeeCalculator.formatCurrency(total))")
+                    .bodyLargeStyle()
+                    .foregroundColor(.primaryGold)
+            }
+            Text("* Your wallet will be credited \(viewModel.selectedCurrency) \(FeeCalculator.formatCurrency(amount))")
+                .font(AppFont.footnote())
+                .foregroundColor(.textSecondary)
+        }
+        .padding(Spacing.md)
+        .background(Color.inputBackground)
+        .cornerRadius(Spacing.radiusMedium)
+    }
+    
     // MARK: - Mobile Money Section
     private var mobileMoneySectionView: some View {
         VStack(alignment: .leading, spacing: Spacing.lg) {

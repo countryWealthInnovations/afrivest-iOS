@@ -53,16 +53,18 @@ struct InvestmentPartner: Codable, Sendable {
 
 // MARK: - Simplified Category (from API product listing)
 struct InvestmentCategorySimple: Codable, Sendable {
+    let id: Int?
     let name: String
     let slug: String
     let icon: String?
     
     enum CodingKeys: String, CodingKey {
-        case name, slug, icon
+        case id, name, slug, icon
     }
     
     nonisolated init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(Int.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
         slug = try container.decode(String.self, forKey: .slug)
         icon = try container.decodeIfPresent(String.self, forKey: .icon)
@@ -71,15 +73,17 @@ struct InvestmentCategorySimple: Codable, Sendable {
 
 // MARK: - Simplified Partner (from API product listing)
 struct InvestmentPartnerSimple: Codable, Sendable {
+    let id: Int?
     let name: String
     let logo: String?
     
     enum CodingKeys: String, CodingKey {
-        case name, logo
+        case id, name, logo
     }
     
     nonisolated init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decodeIfPresent(Int.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
         logo = try container.decodeIfPresent(String.self, forKey: .logo)
     }
@@ -94,38 +98,59 @@ struct InvestmentProduct: Codable, Identifiable, Sendable {
     let title: String
     let slug: String
     let shortDescription: String?
+    let description: String?
     let featuredImage: String?
     let price: String
     let currency: String
     let minInvestment: String
     let minInvestmentFormatted: String
+    let maxInvestment: String?
     let expectedReturns: String
     let riskLevel: String
     let riskLevelLabel: String?
     let durationLabel: String
+    let durationMonths: Int?
+    let maturityDate: String?
     let availabilityStatus: String
+    let totalUnits: Int?
+    let unitsAvailable: Int?
     let isFeatured: Bool
     let ratingAverage: String
     let ratingCount: Int
+    let requiresKyc: Bool?
+    let termsConditions: String?
     let category: InvestmentCategorySimple?
     let partner: InvestmentPartnerSimple?
     let features: [String]?
+    let documents: [InvestmentDocument]?
+    let reviews: [InvestmentReview]?
+    let similarProducts: [InvestmentProduct]?
+    let statistics: InvestmentStatistics?
     
     enum CodingKeys: String, CodingKey {
-        case id, title, slug, currency, price, category, partner
+        case id, title, slug, currency, price, category, partner, features, documents, reviews
+        case similarProducts = "similar_products"
+        case statistics
         case shortDescription = "short_description"
+        case description
         case featuredImage = "featured_image"
         case minInvestment = "min_investment"
         case minInvestmentFormatted = "min_investment_formatted"
+        case maxInvestment = "max_investment"
         case expectedReturns = "expected_returns"
         case riskLevel = "risk_level"
         case riskLevelLabel = "risk_level_label"
         case durationLabel = "duration_label"
+        case durationMonths = "duration_months"
+        case maturityDate = "maturity_date"
         case availabilityStatus = "availability_status"
+        case totalUnits = "total_units"
+        case unitsAvailable = "units_available"
         case isFeatured = "is_featured"
         case ratingAverage = "rating_average"
         case ratingCount = "rating_count"
-        case features
+        case requiresKyc = "requires_kyc"
+        case termsConditions = "terms_conditions"
     }
     
     nonisolated init(from decoder: Decoder) throws {
@@ -134,22 +159,47 @@ struct InvestmentProduct: Codable, Identifiable, Sendable {
         title = try container.decode(String.self, forKey: .title)
         slug = try container.decode(String.self, forKey: .slug)
         shortDescription = try container.decodeIfPresent(String.self, forKey: .shortDescription)
+        description = try container.decodeIfPresent(String.self, forKey: .description)
         featuredImage = try container.decodeIfPresent(String.self, forKey: .featuredImage)
         price = try container.decode(String.self, forKey: .price)
         currency = try container.decode(String.self, forKey: .currency)
         minInvestment = try container.decode(String.self, forKey: .minInvestment)
-        minInvestmentFormatted = try container.decode(String.self, forKey: .minInvestmentFormatted)
+        minInvestmentFormatted = (try? container.decode(String.self, forKey: .minInvestmentFormatted)) ?? minInvestment
+        maxInvestment = try container.decodeIfPresent(String.self, forKey: .maxInvestment)
         expectedReturns = try container.decode(String.self, forKey: .expectedReturns)
         riskLevel = try container.decode(String.self, forKey: .riskLevel)
         riskLevelLabel = try container.decodeIfPresent(String.self, forKey: .riskLevelLabel)
-        durationLabel = try container.decode(String.self, forKey: .durationLabel)
-        availabilityStatus = try container.decode(String.self, forKey: .availabilityStatus)
-        isFeatured = try container.decode(Bool.self, forKey: .isFeatured)
-        ratingAverage = try container.decode(String.self, forKey: .ratingAverage)
-        ratingCount = try container.decode(Int.self, forKey: .ratingCount)
+        durationLabel = (try? container.decode(String.self, forKey: .durationLabel)) ?? ""
+        if let s = try? container.decodeIfPresent(String.self, forKey: .durationMonths) {
+            durationMonths = Int(s)
+        } else {
+            durationMonths = try? container.decodeIfPresent(Int.self, forKey: .durationMonths)
+        }
+        maturityDate = try container.decodeIfPresent(String.self, forKey: .maturityDate)
+        availabilityStatus = (try? container.decode(String.self, forKey: .availabilityStatus)) ?? "available"
+        // API returns these as String or Int
+        if let s = try? container.decodeIfPresent(String.self, forKey: .totalUnits) {
+            totalUnits = Int(s)
+        } else {
+            totalUnits = try? container.decodeIfPresent(Int.self, forKey: .totalUnits)
+        }
+        if let s = try? container.decodeIfPresent(String.self, forKey: .unitsAvailable) {
+            unitsAvailable = Int(s)
+        } else {
+            unitsAvailable = try? container.decodeIfPresent(Int.self, forKey: .unitsAvailable)
+        }
+        isFeatured = (try? container.decode(Bool.self, forKey: .isFeatured)) ?? false
+        ratingAverage = (try? container.decode(String.self, forKey: .ratingAverage)) ?? "0.0"
+        ratingCount = (try? container.decode(Int.self, forKey: .ratingCount)) ?? 0
+        requiresKyc = try container.decodeIfPresent(Bool.self, forKey: .requiresKyc)
+        termsConditions = try container.decodeIfPresent(String.self, forKey: .termsConditions)
         category = try container.decodeIfPresent(InvestmentCategorySimple.self, forKey: .category)
         partner = try container.decodeIfPresent(InvestmentPartnerSimple.self, forKey: .partner)
         features = try container.decodeIfPresent([String].self, forKey: .features)
+        documents = try container.decodeIfPresent([InvestmentDocument].self, forKey: .documents)
+        reviews = try container.decodeIfPresent([InvestmentReview].self, forKey: .reviews)
+        similarProducts = try container.decodeIfPresent([InvestmentProduct].self, forKey: .similarProducts)
+        statistics = try container.decodeIfPresent(InvestmentStatistics.self, forKey: .statistics)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -178,7 +228,6 @@ struct InvestmentProduct: Codable, Identifiable, Sendable {
     
     // Computed properties for compatibility
     var name: String { title }
-    var description: String? { shortDescription }
     var imageUrl: String? { featuredImage }
     var minimumInvestment: String { minInvestmentFormatted }
     var expectedReturnMin: String { expectedReturns }
@@ -198,6 +247,92 @@ struct InvestmentProduct: Codable, Identifiable, Sendable {
     
     var riskLevelText: String {
         riskLevelLabel ?? riskLevel.replacingOccurrences(of: "_", with: " ").capitalized
+    }
+}
+
+// MARK: - Investment Statistics
+struct InvestmentStatistics: Decodable, Sendable {
+    let totalInvested: Double?
+    let investorsCount: Int?
+    let unitsSold: String?
+    let unitsAvailable: String?
+    let views: Int?
+    
+    enum CodingKeys: String, CodingKey {
+        case totalInvested = "total_invested"
+        case investorsCount = "investors_count"
+        case unitsSold = "units_sold"
+        case unitsAvailable = "units_available"
+        case views
+        case rating // ignored but must be present to not fail
+    }
+    
+    nonisolated init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        if let d = try? container.decodeIfPresent(Double.self, forKey: .totalInvested) {
+            totalInvested = d
+        } else if let i = try? container.decodeIfPresent(Int.self, forKey: .totalInvested) {
+            totalInvested = Double(i)
+        } else {
+            totalInvested = nil
+        }
+        investorsCount = try container.decodeIfPresent(Int.self, forKey: .investorsCount)
+        unitsSold = try container.decodeIfPresent(String.self, forKey: .unitsSold)
+        unitsAvailable = try container.decodeIfPresent(String.self, forKey: .unitsAvailable)
+        views = try container.decodeIfPresent(Int.self, forKey: .views)
+        // rating nested object is ignored — no property needed, just don't fail
+    }
+}
+
+// MARK: - Investment Document
+struct InvestmentDocument: Codable, Identifiable, Sendable {
+    let id: Int
+    let title: String
+    let type: String?
+    let typeLabel: String?
+    let url: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, title, type, url
+        case typeLabel = "type_label"
+    }
+    
+    nonisolated init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(Int.self, forKey: .id)
+        title = try container.decode(String.self, forKey: .title)
+        type = try container.decodeIfPresent(String.self, forKey: .type)
+        typeLabel = try container.decodeIfPresent(String.self, forKey: .typeLabel)
+        url = try container.decodeIfPresent(String.self, forKey: .url)
+    }
+}
+
+// MARK: - Investment Review
+struct InvestmentReview: Codable, Identifiable, Sendable {
+    let id: Int
+    let rating: Int
+    let title: String?
+    let review: String?
+    let userName: String?
+    let isVerifiedPurchase: Bool
+    let helpfulCount: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case id, rating, title, review
+        case userName = "user_name"
+        case isVerifiedPurchase = "is_verified_purchase"
+        case helpfulCount = "helpful_count"
+    }
+    
+    nonisolated init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(Int.self, forKey: .id)
+        rating = try container.decode(Int.self, forKey: .rating)
+        title = try container.decodeIfPresent(String.self, forKey: .title)
+        review = try container.decodeIfPresent(String.self, forKey: .review)
+        userName = try container.decodeIfPresent(String.self, forKey: .userName)
+        isVerifiedPurchase = (try? container.decode(Bool.self, forKey: .isVerifiedPurchase)) ?? false
+        helpfulCount = (try? container.decode(Int.self, forKey: .helpfulCount)) ?? 0
     }
 }
 

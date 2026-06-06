@@ -9,6 +9,7 @@ import SwiftUI
 import Firebase
 import FirebaseMessaging
 import FirebaseCrashlytics
+import Alamofire
 
 class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
     
@@ -23,6 +24,26 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
         
         // Set messaging delegate
         Messaging.messaging().delegate = self
+        
+        // Refresh forex rates on app launch
+        refreshForexRates()
+        
+        // Listen for token expiry anywhere in the app
+        NotificationCenter.default.addObserver(
+            forName: AppConstants.Notifications.tokenExpired,
+            object: nil,
+            queue: .main
+        ) { _ in
+            KeychainManager.shared.deleteToken()
+            UserDefaultsManager.shared.clearAll()
+            // Small delay to ensure views are ready
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                NotificationCenter.default.post(
+                    name: NSNotification.Name("AfriVestForceLogout"),
+                    object: nil
+                )
+            }
+        }
         
         // Register for remote notifications
         UNUserNotificationCenter.current().delegate = self
@@ -54,6 +75,38 @@ class AppDelegate: NSObject, UIApplicationDelegate, MessagingDelegate {
             // TODO: Send to server if user is logged in
             if KeychainManager.shared.getToken() != nil {
                 // Call API to update device token on server
+            }
+        }
+    }
+    
+    // MARK: - Forex Rate Refresh
+    private func refreshForexRates() {
+        guard KeychainManager.shared.getToken() != nil else { return }
+        Task {
+            do {
+                struct ForexRateItem: Codable, Sendable {
+                    let from: String
+                    let to: String
+                    let rate: String
+                }
+                let items: [ForexRateItem] = try await APIClient.shared.request(
+                    "/forex/rates",
+                    method: .get,
+                    requiresAuth: true
+                )
+                var newRates: [String: Double] = [:]
+                for item in items where item.from == "UGX" {
+                    newRates[item.to] = Double(item.rate) ?? 0
+                }
+                let stored = UserDefaultsManager.shared.object(forKey: "forex_rates") as? [String: Double] ?? [:]
+                if NSDictionary(dictionary: newRates) != NSDictionary(dictionary: stored) {
+                    UserDefaultsManager.shared.set(newRates, forKey: "forex_rates")
+                    print("✅ Forex rates updated")
+                } else {
+                    print("ℹ️ Forex rates unchanged")
+                }
+            } catch {
+                print("⚠️ Forex rate refresh failed: \(error.localizedDescription)")
             }
         }
     }

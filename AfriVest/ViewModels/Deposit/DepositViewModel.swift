@@ -32,6 +32,10 @@ class DepositViewModel: ObservableObject {
     @Published var shouldNavigateToWebView: Bool = false
     @Published var shouldNavigateToStatus: Bool = false
     
+    // Fee preview
+    @Published var estimatedServiceFee: Double = 0.0
+    @Published var estimatedTotal: Double = 0.0
+    
     private let depositService = DepositService.shared
     private var cancellables = Set<AnyCancellable>()
     
@@ -73,6 +77,20 @@ class DepositViewModel: ObservableObject {
             .sink { [weak self] phone in
                 self?.detectNetwork(from: phone)
                 self?.validatePhoneNumber(phone)
+            }
+            .store(in: &cancellables)
+        
+        // Estimate deposit fee as amount changes (deposits are free by default)
+        $amount
+            .sink { [weak self] amount in
+                guard let self, let value = Double(amount), value > 0 else {
+                    self?.estimatedServiceFee = 0
+                    self?.estimatedTotal = 0
+                    return
+                }
+                // Deposits are free — service fee is 0 unless admin configured otherwise
+                self.estimatedServiceFee = 0
+                self.estimatedTotal = value
             }
             .store(in: &cancellables)
     }

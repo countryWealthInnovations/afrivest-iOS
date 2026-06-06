@@ -229,7 +229,8 @@ class RegisterViewModel: ObservableObject {
                         "device_token": deviceToken,
                         "device_type": "ios",
                         "device_name": UIDevice.current.name,
-                        "app_version": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0"
+                        "app_version": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0.0",
+                        "device_id": UIDevice.current.identifierForVendor?.uuidString ?? ""
                     ]
                     
                     let response: AuthResponse = try await APIClient.shared.request(

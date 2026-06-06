@@ -93,7 +93,8 @@ class LoginViewModel: ObservableObject {
             let deviceToken = token ?? ""
             UserDefaultsManager.shared.deviceToken = deviceToken
             
-            Task {
+            Task { @MainActor [weak self] in
+                guard let self else { return }
                 do {
                     let parameters: [String: Any] = [
                         "email": self.email,
@@ -109,39 +110,71 @@ class LoginViewModel: ObservableObject {
                         parameters: parameters,
                         requiresAuth: false
                     )
-
-                    await MainActor.run {
-                        self.isLoading = false
-                        
-                        // Save credentials
-                        KeychainManager.shared.saveToken(response.token)
-                        UserDefaultsManager.shared.userEmail = self.email
-
-                        let user = response.user   // no need for if let
-
-                        if let id = user.id {
-                            UserDefaultsManager.shared.userId = String(id)
+                    
+                    self.isLoading = false
+                    
+                    // Save credentials
+                    KeychainManager.shared.saveToken(response.token)
+                    UserDefaultsManager.shared.userEmail = self.email
+                    
+                    let user = response.user
+                    
+                    if let id = user.id {
+                        UserDefaultsManager.shared.userId = String(id)
+                    }
+                    
+                    // Save verification status
+                    UserDefaultsManager.shared.emailVerified = user.emailVerified ?? false
+                    UserDefaultsManager.shared.kycVerified = user.kycVerified ?? false
+                    UserDefaultsManager.shared.defaultCurrency = user.defaultCurrency
+                    UserDefaultsManager.shared.secondaryCurrency = user.secondaryCurrency
+                    UserDefaultsManager.shared.set(user.kycBannerHidden ?? false, forKey: "kyc_banner_hidden")
+                    
+                    // Fetch and store forex rates for client-side conversion
+                    Task {
+                        do {
+                            struct ForexData: Codable, Sendable {
+                                let rates: [String: Double]
+                            }
+                            struct ForexResponse: Codable, Sendable {
+                                let success: Bool
+                                let data: [ForexRateItem]
+                            }
+                            struct ForexRateItem: Codable, Sendable {
+                                let from: String
+                                let to: String
+                                let rate: String
+                            }
+                            let items: [ForexRateItem] = try await APIClient.shared.request(
+                                "/forex/rates",
+                                method: .get,
+                                requiresAuth: true
+                            )
+                            var rateMap: [String: Double] = [:]
+                            for item in items where item.from == "UGX" {
+                                rateMap[item.to] = Double(item.rate) ?? 0
+                            }
+                            UserDefaultsManager.shared.set(rateMap, forKey: "forex_rates")
+                        } catch {
+                            print("⚠️ Forex rates fetch failed: \(error)")
                         }
-
-                        // Save verification status
-                        UserDefaultsManager.shared.emailVerified = user.emailVerified ?? false
-                        UserDefaultsManager.shared.kycVerified = user.kycVerified ?? false
-
-                        // Check email verification
-                        if !(user.emailVerified ?? false) {
-                            self.verificationAlertMessage = "Please verify your email to unlock all features. A verification code will be sent to your email."
-                            self.showEmailVerificationAlert = true
-                        } else {
-                            self.shouldNavigateToDashboard = true
-                        }
-
+                    }
+                    
+                    // Check email verification
+                    if !(user.emailVerified ?? false) {
+                        self.verificationAlertMessage = "Please verify your email to unlock all features. A verification code will be sent to your email."
+                        self.showEmailVerificationAlert = true
+                    } else {
+                        self.shouldNavigateToDashboard = true
+                    }
+                    
+                    if user.requiresCurrencySetup == true {
+                        UserDefaultsManager.shared.set(true, forKey: "requires_currency_setup")
                     }
                     
                 } catch {
-                    await MainActor.run {
-                        self.isLoading = false
-                        self.showError(message: error.localizedDescription)
-                    }
+                    self.isLoading = false
+                    self.showError(message: error.localizedDescription)
                 }
             }
         }

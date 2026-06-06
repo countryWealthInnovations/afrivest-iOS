@@ -33,16 +33,25 @@ struct GoldProductDetailView: View {
                         .background(Color.borderDefault)
                     
                     // Description
-                    if let description = viewModel.product.shortDescription {
-                        descriptionSection(description)
+                    if let short = viewModel.product.shortDescription {
+                        descriptionSection(short)
                     }
-                    
-                    // Features
+                    if let full = viewModel.product.description,
+                       full != viewModel.product.shortDescription {
+                        VStack(alignment: .leading, spacing: Spacing.sm) {
+                            Text("Full Description").font(AppFont.heading3()).foregroundColor(Color.textPrimary)
+                            Text(stripHTML(full)).font(AppFont.bodyRegular()).foregroundColor(Color.textSecondary)
+                        }
+                    }
                     if let features = viewModel.product.features {
                         featuresSection(features)
                     }
-                    
-                    // Purchase Section
+                    if let terms = viewModel.product.termsConditions {
+                        VStack(alignment: .leading, spacing: Spacing.sm) {
+                            Text("Terms & Conditions").font(AppFont.heading3()).foregroundColor(Color.textPrimary)
+                            Text(terms).font(AppFont.bodyRegular()).foregroundColor(Color.textSecondary)
+                        }
+                    }
                     purchaseSection
                 }
                 .padding(Spacing.screenHorizontal)
@@ -103,35 +112,26 @@ struct GoldProductDetailView: View {
         }
     }
     
+    private let userCurrency: String = UserDefaultsManager.shared.defaultCurrency ?? "UGX"
+    
     // MARK: - Stats Grid
     private var statsGrid: some View {
-        VStack(spacing: Spacing.md) {
+        let raw = Double(viewModel.product.minInvestment) ?? 0
+        let rate = CurrencyConverter.getRate(from: viewModel.product.currency, to: userCurrency)
+        let convertedPerGram = raw * rate
+        
+        return VStack(spacing: Spacing.md) {
             HStack(spacing: Spacing.md) {
-                statCard(
-                    title: "Price Per Gram",
-                    value: viewModel.product.minInvestmentFormatted,
-                    color: Color.primaryGold
-                )
-                
-                statCard(
-                    title: "Expected Returns",
-                    value: returnsText,
-                    color: Color.successGreen
-                )
+                statCard(title: "Price/gram (\(viewModel.product.currency))", value: viewModel.product.minInvestmentFormatted, color: Color.primaryGold)
+                statCard(title: "Price/gram (\(userCurrency))", value: "\(userCurrency) \(FeeCalculator.formatCurrency(convertedPerGram))", color: Color.successGreen)
             }
-            
             HStack(spacing: Spacing.md) {
-                statCard(
-                    title: "Minimum Purchase",
-                    value: formatAmount(viewModel.product.minInvestment),
-                    color: Color.primaryGold
-                )
-                
-                statCard(
-                    title: "Storage",
-                    value: "Secure Vault",
-                    color: Color.textPrimary
-                )
+                statCard(title: "Expected Returns", value: returnsText, color: Color.successGreen)
+                statCard(title: "Storage", value: "Secure Vault", color: Color.textPrimary)
+            }
+            HStack(spacing: Spacing.md) {
+                statCard(title: "Availability", value: viewModel.product.availabilityStatus.capitalized, color: Color.textPrimary)
+                statCard(title: "Rating", value: "\(viewModel.product.ratingAverage) (\(viewModel.product.ratingCount))", color: Color.primaryGold)
             }
         }
     }
@@ -162,11 +162,22 @@ struct GoldProductDetailView: View {
             Text("About Gold Investment")
                 .font(AppFont.heading3())
                 .foregroundColor(Color.textPrimary)
-            
-            Text(description)
+            Text(stripHTML(description))
                 .font(AppFont.bodyRegular())
                 .foregroundColor(Color.textSecondary)
         }
+    }
+    
+    private func stripHTML(_ html: String) -> String {
+        var result = html
+        result = result.replacingOccurrences(of: "<li>", with: "\n• ", options: .caseInsensitive)
+        result = result.replacingOccurrences(of: "</li>", with: "", options: .caseInsensitive)
+        result = result.replacingOccurrences(of: "<br>", with: "\n", options: .caseInsensitive)
+        result = result.replacingOccurrences(of: "<br/>", with: "\n", options: .caseInsensitive)
+        result = result.replacingOccurrences(of: "<p>", with: "", options: .caseInsensitive)
+        result = result.replacingOccurrences(of: "</p>", with: "\n", options: .caseInsensitive)
+        result = result.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
+        return result.trimmingCharacters(in: .whitespacesAndNewlines)
     }
     
     // MARK: - Features
@@ -225,16 +236,24 @@ struct GoldProductDetailView: View {
             // Total Cost
             if let grams = Double(viewModel.amount), grams > 0,
                let pricePerGram = Double(viewModel.product.minInvestment) {
-                HStack {
-                    Text("Total Cost:")
-                        .font(AppFont.bodyRegular())
-                        .foregroundColor(Color.textSecondary)
-                    
-                    Spacer()
-                    
-                    Text("\(formatAmount(String(grams * pricePerGram))) \(viewModel.product.currency)")
-                        .font(AppFont.bodyLarge())
-                        .foregroundColor(Color.primaryGold)
+                let totalBase = grams * pricePerGram
+                let rate = CurrencyConverter.getRate(from: viewModel.product.currency, to: userCurrency)
+                let totalConverted = totalBase * rate
+                VStack(spacing: Spacing.xs) {
+                    HStack {
+                        Text("Total (\(viewModel.product.currency)):")
+                            .font(AppFont.bodyRegular()).foregroundColor(Color.textSecondary)
+                        Spacer()
+                        Text("\(viewModel.product.currency) \(formatAmount(String(totalBase)))")
+                            .font(AppFont.bodyLarge()).foregroundColor(Color.primaryGold)
+                    }
+                    HStack {
+                        Text("Total (\(userCurrency)):")
+                            .font(AppFont.bodyRegular()).foregroundColor(Color.textSecondary)
+                        Spacer()
+                        Text("\(userCurrency) \(FeeCalculator.formatCurrency(totalConverted))")
+                            .font(AppFont.bodyLarge()).foregroundColor(Color.successGreen)
+                    }
                 }
                 .padding(.vertical, Spacing.sm)
             }

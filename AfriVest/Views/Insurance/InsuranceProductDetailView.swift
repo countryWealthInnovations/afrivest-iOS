@@ -32,16 +32,22 @@ struct InsuranceProductDetailView: View {
                         .background(Color.borderDefault)
                     
                     // Description
-                    if let description = viewModel.product.shortDescription {
-                        descriptionSection(description)
+                    if let short = viewModel.product.shortDescription {
+                        descriptionSection(title: "About This Policy", text: short)
                     }
-                    
-                    // Coverage Details
+                    if let full = viewModel.product.description,
+                       full != viewModel.product.shortDescription {
+                        descriptionSection(title: "Policy Details", text: full)
+                    }
                     if let features = viewModel.product.features {
                         coverageSection(features)
                     }
-                    
-                    // Purchase Section
+                    if let terms = viewModel.product.termsConditions {
+                        descriptionSection(title: "Terms & Conditions", text: terms)
+                    }
+                    if let docs = viewModel.product.documents, !docs.isEmpty {
+                        documentsSection(docs)
+                    }
                     purchaseSection
                 }
                 .padding(Spacing.screenHorizontal)
@@ -106,35 +112,26 @@ struct InsuranceProductDetailView: View {
         }
     }
     
+    private let userCurrency: String = UserDefaultsManager.shared.defaultCurrency ?? "UGX"
+    
     // MARK: - Stats Grid
     private var statsGrid: some View {
-        VStack(spacing: Spacing.md) {
+        let raw = Double(viewModel.product.minInvestment) ?? 0
+        let rate = CurrencyConverter.getRate(from: viewModel.product.currency, to: userCurrency)
+        let converted = raw * rate
+        
+        return VStack(spacing: Spacing.md) {
             HStack(spacing: Spacing.md) {
-                statCard(
-                    title: "Premium",
-                    value: viewModel.product.minInvestmentFormatted,
-                    color: Color.primaryGold
-                )
-                
-                statCard(
-                    title: "Policy Period",
-                    value: viewModel.product.durationLabel,
-                    color: Color.textPrimary
-                )
+                statCard(title: "Premium (\(viewModel.product.currency))", value: viewModel.product.minInvestmentFormatted, color: Color.primaryGold)
+                statCard(title: "Premium (\(userCurrency))", value: "\(userCurrency) \(FeeCalculator.formatCurrency(converted))", color: Color.successGreen)
             }
-            
             HStack(spacing: Spacing.md) {
-                statCard(
-                    title: "Coverage",
-                    value: formatAmount(viewModel.product.price),
-                    color: Color.primaryGold
-                )
-                
-                statCard(
-                    title: "Currency",
-                    value: viewModel.product.currency,
-                    color: Color.textPrimary
-                )
+                statCard(title: "Policy Period", value: viewModel.product.durationLabel, color: Color.textPrimary)
+                statCard(title: "Coverage", value: "\(viewModel.product.currency) \(formatAmount(viewModel.product.price))", color: Color.primaryGold)
+            }
+            HStack(spacing: Spacing.md) {
+                statCard(title: "Availability", value: viewModel.product.availabilityStatus.capitalized, color: Color.textPrimary)
+                statCard(title: "Rating", value: "\(viewModel.product.ratingAverage) (\(viewModel.product.ratingCount))", color: Color.primaryGold)
             }
         }
     }
@@ -160,15 +157,32 @@ struct InsuranceProductDetailView: View {
     }
     
     // MARK: - Description
-    private func descriptionSection(_ description: String) -> some View {
+    private func descriptionSection(title: String, text: String) -> some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            Text("About This Policy")
-                .font(AppFont.heading3())
-                .foregroundColor(Color.textPrimary)
-            
-            Text(description)
-                .font(AppFont.bodyRegular())
-                .foregroundColor(Color.textSecondary)
+            Text(title).font(AppFont.heading3()).foregroundColor(Color.textPrimary)
+            Text(text.strippedHTML)
+                .font(AppFont.bodyRegular()).foregroundColor(Color.textSecondary)
+        }
+    }
+    
+    private func documentsSection(_ docs: [InvestmentDocument]) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.sm) {
+            Text("Documents").font(AppFont.heading3()).foregroundColor(Color.textPrimary)
+            ForEach(docs) { doc in
+                HStack(spacing: Spacing.sm) {
+                    Image(systemName: "doc.fill").foregroundColor(Color.primaryGold)
+                    Text(doc.title).font(AppFont.bodyRegular()).foregroundColor(Color.textPrimary)
+                    Spacer()
+                    if let url = doc.url, let link = URL(string: url) {
+                        Link(destination: link) {
+                            Image(systemName: "arrow.down.circle").foregroundColor(Color.primaryGold)
+                        }
+                    }
+                }
+                .padding(Spacing.sm)
+                .background(Color.inputBackground)
+                .cornerRadius(Spacing.radiusSmall)
+            }
         }
     }
     
@@ -223,6 +237,11 @@ struct InsuranceProductDetailView: View {
                 Text("Minimum: \(viewModel.product.minInvestmentFormatted)")
                     .font(AppFont.footnote())
                     .foregroundColor(Color.textSecondary)
+                if let amt = Double(viewModel.amount), amt > 0 {
+                    let rate = CurrencyConverter.getRate(from: viewModel.product.currency, to: userCurrency)
+                    Text("≈ \(userCurrency) \(FeeCalculator.formatCurrency(amt * rate))")
+                        .font(AppFont.footnote()).foregroundColor(Color.primaryGold)
+                }
             }
             
             // Purchase Button
@@ -255,5 +274,18 @@ struct InsuranceProductDetailView: View {
         formatter.numberStyle = .decimal
         formatter.maximumFractionDigits = 0
         return formatter.string(from: NSNumber(value: value)) ?? amount
+    }
+}
+
+private extension String {
+    var strippedHTML: String {
+        var result = self
+        result = result.replacingOccurrences(of: "<li>", with: "\n• ")
+        result = result.replacingOccurrences(of: "<[^>]+>", with: "", options: .regularExpression)
+        result = result.replacingOccurrences(of: "&amp;", with: "&")
+        result = result.replacingOccurrences(of: "&lt;", with: "<")
+        result = result.replacingOccurrences(of: "&gt;", with: ">")
+        result = result.trimmingCharacters(in: .whitespacesAndNewlines)
+        return result
     }
 }

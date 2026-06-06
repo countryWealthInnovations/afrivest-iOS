@@ -46,9 +46,12 @@ class HomeViewModel: ObservableObject {
         wallets
     }
     
-    // UGX wallet for deposit
+    // Primary currency wallet — falls back to UGX
     var depositWallet: Wallet? {
-        wallets.first { $0.currency == "UGX" }
+        let preferred = UserDefaultsManager.shared.defaultCurrency ?? "UGX"
+        return wallets.first { $0.currency == preferred }
+        ?? wallets.first { $0.currency == "UGX" }
+        ?? wallets.first
     }
     
     // Investment summary from profile
@@ -152,17 +155,18 @@ class HomeViewModel: ObservableObject {
             return "0.00 \(currency)"
         }
         
+        let preferredCurrency = UserDefaultsManager.shared.defaultCurrency ?? "UGX"
+        let rate = CurrencyConverter.getRate(from: currency, to: preferredCurrency)
+        let converted = amount * rate
+        
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
         formatter.minimumFractionDigits = 2
         formatter.maximumFractionDigits = 2
         formatter.groupingSeparator = ","
         
-        if let formatted = formatter.string(from: NSNumber(value: amount)) {
-            return "\(formatted) \(currency)"
-        }
-        
-        return "\(balance) \(currency)"
+        let formatted = formatter.string(from: NSNumber(value: converted)) ?? String(format: "%.2f", converted)
+        return "\(formatted) \(preferredCurrency)"
     }
     
     // MARK: - Refresh Data

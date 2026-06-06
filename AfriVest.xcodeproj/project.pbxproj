@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AB18CFF62FBCE417000D00EB /* CurrencySelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB18CFF52FBCE417000D00EB /* CurrencySelectionView.swift */; };
+		AB18CFF82FBCE435000D00EB /* CurrencySelectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB18CFF72FBCE435000D00EB /* CurrencySelectionViewModel.swift */; };
 		AB1C782E2EFAD81B00347335 /* InsuranceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB1C782D2EFAD81B00347335 /* InsuranceViewModel.swift */; };
 		AB21F6512E9AC17300E32329 /* DepositProcessingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB21F6502E9AC17300E32329 /* DepositProcessingView.swift */; };
 		AB21F6532E9ADAA300E32329 /* TransactionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB21F6522E9ADAA100E32329 /* TransactionService.swift */; };
@@ -34,6 +36,7 @@
 		AB30ED022E95D64F00EEB7ED /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = AB30ED012E95D64F00EEB7ED /* FirebaseMessaging */; };
 		AB30ED052E95D67800EEB7ED /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = AB30ED042E95D67800EEB7ED /* Kingfisher */; };
 		AB30ED082E95D6A300EEB7ED /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = AB30ED072E95D6A300EEB7ED /* Lottie */; };
+		AB3BD5C92FBE1A000024E4F1 /* NotifSettingsData.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB3BD5C82FBE1A000024E4F1 /* NotifSettingsData.swift */; };
 		AB4C8FAD2E96333D00F2701C /* ProfileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4C8FAC2E96333D00F2701C /* ProfileService.swift */; };
 		AB4C8FAF2E96338200F2701C /* ProfileResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB4C8FAE2E96337D00F2701C /* ProfileResponse.swift */; };
 		AB5CCAA42E995E6800EE5B95 /* DepositResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5CCAA32E995E6800EE5B95 /* DepositResponse.swift */; };
@@ -41,6 +44,7 @@
 		AB5CCAA82E995F2F00EE5B95 /* DepositViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5CCAA72E995F2F00EE5B95 /* DepositViewModel.swift */; };
 		AB5CCAAA2E995F6A00EE5B95 /* PaymentWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5CCAA92E995F6A00EE5B95 /* PaymentWebView.swift */; };
 		AB5CCAAC2E995FA900EE5B95 /* DepositStatusView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB5CCAAB2E995FA900EE5B95 /* DepositStatusView.swift */; };
+		AB73B9FB2FBE631500E72886 /* SecureStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB73B9FA2FBE631500E72886 /* SecureStorage.swift */; };
 		AB74DAAF2E9D11810068C633 /* TransferModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB74DAAE2E9D117E0068C633 /* TransferModels.swift */; };
 		AB74DAB12E9D119B0068C633 /* TransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB74DAB02E9D119B0068C633 /* TransferService.swift */; };
 		AB74DAB32E9D11B80068C633 /* SendMoneyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB74DAB22E9D11B80068C633 /* SendMoneyView.swift */; };
@@ -59,6 +63,7 @@
 		AB7BB5172EFF3C7E00CEDA48 /* ChangePasswordView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7BB5162EFF3C7E00CEDA48 /* ChangePasswordView.swift */; };
 		AB7BB51A2EFF3CA800CEDA48 /* ChangePasswordViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7BB5192EFF3CA800CEDA48 /* ChangePasswordViewModel.swift */; };
 		AB7BB51C2EFF3CEF00CEDA48 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB7BB51B2EFF3CEF00CEDA48 /* ProfileViewModel.swift */; };
+		ABAA93D92FC5AA1900E3CBF2 /* CurrencyConverter.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABAA93D82FC5AA1900E3CBF2 /* CurrencyConverter.swift */; };
 		ABCD8F962F007B0C00F75DF7 /* EditProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABCD8F952F007B0C00F75DF7 /* EditProfileView.swift */; };
 		ABCD8F982F007B2200F75DF7 /* EditProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABCD8F972F007B2200F75DF7 /* EditProfileViewModel.swift */; };
 		ABCD8F9A2F007B3C00F75DF7 /* NotificationSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABCD8F992F007B3C00F75DF7 /* NotificationSettingsView.swift */; };
@@ -79,7 +84,6 @@
 		ABF8E4872E93F3CE00B4A771 /* AppConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4252E93F3CE00B4A771 /* AppConstants.swift */; };
 		ABF8E4882E93F3CE00B4A771 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4272E93F3CE00B4A771 /* APIClient.swift */; };
 		ABF8E48C2E93F3CE00B4A771 /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E42C2E93F3CE00B4A771 /* KeychainManager.swift */; };
-		ABF8E48D2E93F3CE00B4A771 /* SecureStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E42D2E93F3CE00B4A771 /* SecureStorage.swift */; };
 		ABF8E48E2E93F3CE00B4A771 /* UserDefaultsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E42E2E93F3CE00B4A771 /* UserDefaultsManager.swift */; };
 		ABF8E48F2E93F3CE00B4A771 /* AuthResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4352E93F3CE00B4A771 /* AuthResponse.swift */; };
 		ABF8E4902E93F3CE00B4A771 /* OTPResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABF8E4362E93F3CE00B4A771 /* OTPResponse.swift */; };
@@ -125,6 +129,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		AB18CFF52FBCE417000D00EB /* CurrencySelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencySelectionView.swift; sourceTree = "<group>"; };
+		AB18CFF72FBCE435000D00EB /* CurrencySelectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencySelectionViewModel.swift; sourceTree = "<group>"; };
 		AB1C782D2EFAD81B00347335 /* InsuranceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsuranceViewModel.swift; sourceTree = "<group>"; };
 		AB21F6502E9AC17300E32329 /* DepositProcessingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepositProcessingView.swift; sourceTree = "<group>"; };
 		AB21F6522E9ADAA100E32329 /* TransactionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionService.swift; sourceTree = "<group>"; };
@@ -143,6 +149,7 @@
 		AB3066F62EFEEE4600F9110C /* ProductDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailViewModel.swift; sourceTree = "<group>"; };
 		AB3066F82EFEEE5600F9110C /* ProductDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProductDetailView.swift; sourceTree = "<group>"; };
 		AB3066FD2EFEF28600F9110C /* AssetsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetsViewModel.swift; sourceTree = "<group>"; };
+		AB3BD5C82FBE1A000024E4F1 /* NotifSettingsData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotifSettingsData.swift; sourceTree = "<group>"; };
 		AB4C8FAC2E96333D00F2701C /* ProfileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileService.swift; sourceTree = "<group>"; };
 		AB4C8FAE2E96337D00F2701C /* ProfileResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileResponse.swift; sourceTree = "<group>"; };
 		AB5CCAA32E995E6800EE5B95 /* DepositResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepositResponse.swift; sourceTree = "<group>"; };
@@ -150,6 +157,7 @@
 		AB5CCAA72E995F2F00EE5B95 /* DepositViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepositViewModel.swift; sourceTree = "<group>"; };
 		AB5CCAA92E995F6A00EE5B95 /* PaymentWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaymentWebView.swift; sourceTree = "<group>"; };
 		AB5CCAAB2E995FA900EE5B95 /* DepositStatusView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepositStatusView.swift; sourceTree = "<group>"; };
+		AB73B9FA2FBE631500E72886 /* SecureStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureStorage.swift; sourceTree = "<group>"; };
 		AB74DAAE2E9D117E0068C633 /* TransferModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferModels.swift; sourceTree = "<group>"; };
 		AB74DAB02E9D119B0068C633 /* TransferService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransferService.swift; sourceTree = "<group>"; };
 		AB74DAB22E9D11B80068C633 /* SendMoneyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendMoneyView.swift; sourceTree = "<group>"; };
@@ -168,6 +176,7 @@
 		AB7BB5162EFF3C7E00CEDA48 /* ChangePasswordView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordView.swift; sourceTree = "<group>"; };
 		AB7BB5192EFF3CA800CEDA48 /* ChangePasswordViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePasswordViewModel.swift; sourceTree = "<group>"; };
 		AB7BB51B2EFF3CEF00CEDA48 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
+		ABAA93D82FC5AA1900E3CBF2 /* CurrencyConverter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencyConverter.swift; sourceTree = "<group>"; };
 		ABCD8F952F007B0C00F75DF7 /* EditProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileView.swift; sourceTree = "<group>"; };
 		ABCD8F972F007B2200F75DF7 /* EditProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditProfileViewModel.swift; sourceTree = "<group>"; };
 		ABCD8F992F007B3C00F75DF7 /* NotificationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationSettingsView.swift; sourceTree = "<group>"; };
@@ -187,7 +196,6 @@
 		ABF8E4252E93F3CE00B4A771 /* AppConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppConstants.swift; sourceTree = "<group>"; };
 		ABF8E4272E93F3CE00B4A771 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		ABF8E42C2E93F3CE00B4A771 /* KeychainManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
-		ABF8E42D2E93F3CE00B4A771 /* SecureStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SecureStorage.swift; sourceTree = "<group>"; };
 		ABF8E42E2E93F3CE00B4A771 /* UserDefaultsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsManager.swift; sourceTree = "<group>"; };
 		ABF8E4352E93F3CE00B4A771 /* AuthResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthResponse.swift; sourceTree = "<group>"; };
 		ABF8E4362E93F3CE00B4A771 /* OTPResponse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OTPResponse.swift; sourceTree = "<group>"; };
@@ -445,8 +453,8 @@
 			isa = PBXGroup;
 			children = (
 				ABF8E42C2E93F3CE00B4A771 /* KeychainManager.swift */,
-				ABF8E42D2E93F3CE00B4A771 /* SecureStorage.swift */,
 				ABF8E42E2E93F3CE00B4A771 /* UserDefaultsManager.swift */,
+				AB73B9FA2FBE631500E72886 /* SecureStorage.swift */,
 			);
 			path = Storage;
 			sourceTree = "<group>";
@@ -472,6 +480,7 @@
 		ABF8E4322E93F3CE00B4A771 /* Validators */ = {
 			isa = PBXGroup;
 			children = (
+				ABAA93D82FC5AA1900E3CBF2 /* CurrencyConverter.swift */,
 				AB74DABF2E9D3FA40068C633 /* FeeCalculator.swift */,
 				ABF8E4432E93F3CE00B4A771 /* Validators.swift */,
 			);
@@ -514,6 +523,7 @@
 			children = (
 				ABF8E4372E93F3CE00B4A771 /* Auth */,
 				AB269AC62EFAB9F300F53C4A /* InsuranceModels.swift */,
+				AB3BD5C82FBE1A000024E4F1 /* NotifSettingsData.swift */,
 				AB269AC42EFAB8D900F53C4A /* GoldModels.swift */,
 				AB269AC22EFAB8BC00F53C4A /* InvestmentModels.swift */,
 				AB74DAB72E9D14C00068C633 /* WithdrawModels.swift */,
@@ -555,6 +565,7 @@
 		ABF8E44E2E93F3CE00B4A771 /* Auth */ = {
 			isa = PBXGroup;
 			children = (
+				AB18CFF72FBCE435000D00EB /* CurrencySelectionViewModel.swift */,
 				ABF8E4492E93F3CE00B4A771 /* ForgotPasswordViewModel.swift */,
 				ABF8E44A2E93F3CE00B4A771 /* LoginViewModel.swift */,
 				ABF8E44B2E93F3CE00B4A771 /* OTPViewModel.swift */,
@@ -642,6 +653,7 @@
 		ABF8E4642E93F3CE00B4A771 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				AB18CFF52FBCE417000D00EB /* CurrencySelectionView.swift */,
 				ABF8E4622E93F3CE00B4A771 /* OnboardingView.swift */,
 				ABF8E4632E93F3CE00B4A771 /* OnboardingViewModel.swift */,
 			);
@@ -809,6 +821,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB73B9FB2FBE631500E72886 /* SecureStorage.swift in Sources */,
 				ABF8E47C2E93F3CE00B4A771 /* AppDelegate.swift in Sources */,
 				ABF8E47D2E93F3CE00B4A771 /* BiometricButton.swift in Sources */,
 				AB74DABE2E9D15210068C633 /* WithdrawSuccessView.swift in Sources */,
@@ -840,7 +853,7 @@
 				AB7BB51C2EFF3CEF00CEDA48 /* ProfileViewModel.swift in Sources */,
 				ABF8E48C2E93F3CE00B4A771 /* KeychainManager.swift in Sources */,
 				AB269AC52EFAB8DD00F53C4A /* GoldModels.swift in Sources */,
-				ABF8E48D2E93F3CE00B4A771 /* SecureStorage.swift in Sources */,
+				ABAA93D92FC5AA1900E3CBF2 /* CurrencyConverter.swift in Sources */,
 				ABF8E48E2E93F3CE00B4A771 /* UserDefaultsManager.swift in Sources */,
 				AB74DAB82E9D14C30068C633 /* WithdrawModels.swift in Sources */,
 				AB269AAD2EFA946100F53C4A /* InvestmentProductsView.swift in Sources */,
@@ -850,6 +863,7 @@
 				ABCD8F982F007B2200F75DF7 /* EditProfileViewModel.swift in Sources */,
 				AB7BB5102EFF0C9B00CEDA48 /* PolicyDetailView.swift in Sources */,
 				ABF8E4902E93F3CE00B4A771 /* OTPResponse.swift in Sources */,
+				AB18CFF82FBCE435000D00EB /* CurrencySelectionViewModel.swift in Sources */,
 				ABF8E4912E93F3CE00B4A771 /* Transaction.swift in Sources */,
 				ABF8E4922E93F3CE00B4A771 /* User.swift in Sources */,
 				ABCD8F9C2F007B4900F75DF7 /* NotificationSettingsViewModel.swift in Sources */,
@@ -891,6 +905,7 @@
 				AB74DAB62E9D121E0068C633 /* SendMoneyViewModel.swift in Sources */,
 				AB269AC72EFAB9F500F53C4A /* InsuranceModels.swift in Sources */,
 				ABF8E4AC2E93F3CE00B4A771 /* OnboardingView.swift in Sources */,
+				AB18CFF62FBCE417000D00EB /* CurrencySelectionView.swift in Sources */,
 				ABF8E4AD2E93F3CE00B4A771 /* OnboardingViewModel.swift in Sources */,
 				AB74DAB32E9D11B80068C633 /* SendMoneyView.swift in Sources */,
 				AB5CCAA82E995F2F00EE5B95 /* DepositViewModel.swift in Sources */,
@@ -904,6 +919,7 @@
 				AB74DAB12E9D119B0068C633 /* TransferService.swift in Sources */,
 				ABF8E4B02E93F3CE00B4A771 /* TransactionDetailView.swift in Sources */,
 				ABF8E4B22E93F3CE00B4A771 /* DepositView.swift in Sources */,
+				AB3BD5C92FBE1A000024E4F1 /* NotifSettingsData.swift in Sources */,
 				ABF8E4B42E93F3CE00B4A771 /* WithdrawView.swift in Sources */,
 				ABF8E4B52E93F3CE00B4A771 /* WalletDetailView.swift in Sources */,
 				ABF9B50E2E942AE500867A55 /* WalletService.swift in Sources */,
@@ -1045,7 +1061,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AfriVest/AfriVest.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 10;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = DXA5M4234Y;
@@ -1075,7 +1091,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.afrivest.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -1101,7 +1117,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = AfriVest/AfriVest.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 7;
+				CURRENT_PROJECT_VERSION = 10;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = DXA5M4234Y;
 				ENABLE_APP_SANDBOX = YES;
@@ -1130,7 +1146,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.afrivest.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;

@@ -11,14 +11,18 @@ struct DepositResponse: Codable, Sendable {
     let transactionId: Int
     let reference: String
     let amount: String
+    let serviceFee: Double?
+    let total: Double?
     let currency: String
-    let status: String?  // ← CHANGED: Made optional
+    let status: String?
     let network: String?
     let paymentData: PaymentData
     
     enum CodingKeys: String, CodingKey {
         case transactionId = "transaction_id"
         case reference, amount, currency, status, network
+        case serviceFee = "service_fee"
+        case total
         case paymentData = "payment_data"
     }
     
@@ -27,8 +31,10 @@ struct DepositResponse: Codable, Sendable {
         transactionId = try container.decode(Int.self, forKey: .transactionId)
         reference = try container.decode(String.self, forKey: .reference)
         amount = try container.decode(String.self, forKey: .amount)
+        serviceFee = try container.decodeIfPresent(Double.self, forKey: .serviceFee)
+        total = try container.decodeIfPresent(Double.self, forKey: .total)
         currency = try container.decode(String.self, forKey: .currency)
-        status = try container.decodeIfPresent(String.self, forKey: .status)  // ← CHANGED
+        status = try container.decodeIfPresent(String.self, forKey: .status)
         network = try container.decodeIfPresent(String.self, forKey: .network)
         paymentData = try container.decode(PaymentData.self, forKey: .paymentData)
     }

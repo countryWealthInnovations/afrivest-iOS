@@ -16,6 +16,10 @@ struct User: Codable, Identifiable, Sendable {
     let avatarUrl: String?
     let emailVerified: Bool?
     let kycVerified: Bool?
+    let defaultCurrency: String?
+    let secondaryCurrency: String?
+    let requiresCurrencySetup: Bool?
+    let kycBannerHidden: Bool?
     let createdAt: String?
     let updatedAt: String?
     
@@ -25,6 +29,10 @@ struct User: Codable, Identifiable, Sendable {
         case avatarUrl = "avatar_url"
         case emailVerified = "email_verified"
         case kycVerified = "kyc_verified"
+        case defaultCurrency = "default_currency"
+        case secondaryCurrency = "secondary_currency"
+        case requiresCurrencySetup = "requires_currency_setup"
+        case kycBannerHidden = "kyc_banner_hidden"
         case createdAt = "created_at"
         case updatedAt = "updated_at"
     }
@@ -40,6 +48,10 @@ struct User: Codable, Identifiable, Sendable {
         avatarUrl: String? = nil,
         emailVerified: Bool? = nil,
         kycVerified: Bool? = nil,
+        defaultCurrency: String? = nil,
+        secondaryCurrency: String? = nil,
+        requiresCurrencySetup: Bool? = nil,
+        kycBannerHidden: Bool? = nil,
         createdAt: String? = nil,
         updatedAt: String? = nil
     ) {
@@ -52,6 +64,10 @@ struct User: Codable, Identifiable, Sendable {
         self.avatarUrl = avatarUrl
         self.emailVerified = emailVerified
         self.kycVerified = kycVerified
+        self.defaultCurrency = defaultCurrency
+        self.secondaryCurrency = secondaryCurrency
+        self.requiresCurrencySetup = requiresCurrencySetup
+        self.kycBannerHidden = kycBannerHidden
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
@@ -69,6 +85,10 @@ struct User: Codable, Identifiable, Sendable {
         self.avatarUrl = try container.decodeIfPresent(String.self, forKey: .avatarUrl)
         self.emailVerified = try container.decodeIfPresent(Bool.self, forKey: .emailVerified)
         self.kycVerified = try container.decodeIfPresent(Bool.self, forKey: .kycVerified)
+        self.defaultCurrency = try container.decodeIfPresent(String.self, forKey: .defaultCurrency)
+        self.secondaryCurrency = try container.decodeIfPresent(String.self, forKey: .secondaryCurrency)
+        self.requiresCurrencySetup = try container.decodeIfPresent(Bool.self, forKey: .requiresCurrencySetup)
+        self.kycBannerHidden = try container.decodeIfPresent(Bool.self, forKey: .kycBannerHidden)
         self.createdAt = try container.decodeIfPresent(String.self, forKey: .createdAt)
         self.updatedAt = try container.decodeIfPresent(String.self, forKey: .updatedAt)
     }

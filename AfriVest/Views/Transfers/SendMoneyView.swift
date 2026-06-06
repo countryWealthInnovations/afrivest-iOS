@@ -23,17 +23,14 @@ struct SendMoneyView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: Spacing.lg) {
                         // Search Bar
-                        //searchSection
+                        searchSection
                         
-                        // Always show manual entry (contacts hidden for now)
-                        manualEntrySection
-                        
-//                        // Contacts List or Manual Entry
-//                        if viewModel.showManualEntry {
-//                            manualEntrySection
-//                        } else {
-//                            contactsSection
-//                        }
+                        // Contacts List or Manual Entry
+                        if viewModel.showManualEntry || viewModel.filteredContacts.isEmpty {
+                            manualEntrySection
+                        } else {
+                            contactsSection
+                        }
                         
                         // Transfer Form (shows when recipient selected)
                         if viewModel.selectedContact != nil {
@@ -51,8 +48,7 @@ struct SendMoneyView: View {
         }
         .navigationBarHidden(true)
         .onAppear {
-            // loadContacts() commented out - not using phone contacts for now
-            viewModel.showManualEntry = true // Show manual entry by default
+            viewModel.loadContacts()
         }
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK", role: .cancel) {}

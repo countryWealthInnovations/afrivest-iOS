@@ -15,6 +15,9 @@ struct ProfileView: View {
     @State private var showLogoutConfirmation = false
     @State private var showDeleteConfirmation = false
     @State private var showChangePassword = false
+    @State private var showCurrencySettings = false
+    @AppStorage("default_currency") private var storedCurrency: String = "Not set"
+    @AppStorage("secondary_currency") private var storedSecondaryCurrency: String = ""
     @Environment(\.dismiss) var dismiss
     
     var body: some View {
@@ -52,6 +55,9 @@ struct ProfileView: View {
         }
         .sheet(isPresented: $showChangePassword) {
             ChangePasswordView()
+        }
+        .sheet(isPresented: $showCurrencySettings) {
+            CurrencySelectionView(isPresented: $showCurrencySettings)
         }
         .sheet(isPresented: $showHelpSheet) {
             HelpCenterSheet(
@@ -169,6 +175,18 @@ struct ProfileView: View {
                     title: "Notifications",
                     subtitle: "Push, Email, SMS preferences"
                 )
+            }
+            
+            Divider()
+                .background(Color.borderDefault)
+                .padding(.leading, 50)
+            
+            SettingsRow(
+                icon: "dollarsign.circle.fill",
+                title: "Currency",
+                subtitle: storedSecondaryCurrency.isEmpty ? storedCurrency : "\(storedCurrency) · \(storedSecondaryCurrency)"
+            ) {
+                showCurrencySettings = true
             }
         }
         .background(Color.backgroundDark1)

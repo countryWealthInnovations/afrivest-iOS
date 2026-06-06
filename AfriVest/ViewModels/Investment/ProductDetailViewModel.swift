@@ -23,6 +23,19 @@ class ProductDetailViewModel: ObservableObject {
     init(product: InvestmentProduct) {
         self.product = product
         self.amount = product.minInvestment
+        fetchFullProduct()
+    }
+    
+    private func fetchFullProduct() {
+        Task {
+            do {
+                let full = try await InvestmentService.shared.getInvestmentProduct(slug: product.slug)
+                print("✅ Full product loaded: description=\(full.description ?? "nil"), terms=\(full.termsConditions ?? "nil")")
+                self.product = full
+            } catch {
+                print("❌ Could not fetch full product: \(error)")
+            }
+        }
     }
     
     func purchaseProduct() {
