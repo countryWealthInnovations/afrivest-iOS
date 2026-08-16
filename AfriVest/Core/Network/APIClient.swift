@@ -105,6 +105,32 @@ class APIClient: @unchecked Sendable {
                     if let statusCode = response.response?.statusCode {
                         print("📍 Status Code: \(statusCode)")
                     }
+                    
+                    // Try to extract error message from response body before generic handling
+                    if let data = response.data,
+                       let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                        
+                        // Handle {"success":false,"error":{"message":"..."}} format
+                        if let errorObj = json["error"] as? [String: Any],
+                           let message = errorObj["message"] as? String {
+                            continuation.resume(throwing: APIError.validationError(message))
+                            return
+                        }
+                        
+                        // Handle {"success":false,"message":"..."} format
+                        if let message = json["message"] as? String {
+                            continuation.resume(throwing: APIError.validationError(message))
+                            return
+                        }
+                        
+                        // Handle {"success":false,"errors":{"field":["message"]}} format
+                        if let errors = json["errors"] as? [String: [String]],
+                           let firstError = errors.values.first?.first {
+                            continuation.resume(throwing: APIError.validationError(firstError))
+                            return
+                        }
+                    }
+                    
                     continuation.resume(throwing: self.handleError(error, response: response.response, data: response.data))
                 }
             }

@@ -41,7 +41,7 @@ class HistoryViewModel: ObservableObject {
                 ]
                 
                 if let filter = selectedFilter {
-                    queryParams["status"] = filter
+                    queryParams["type"] = filter
                 }
                 
                 let response: [Transaction] = try await APIClient.shared.requestWithURLParameters(
@@ -52,8 +52,8 @@ class HistoryViewModel: ObservableObject {
                 
                 transactions = response
                 
-                // Load investment purchases on first page
-                if currentPage == 1 {
+                // Merge local investment purchases only on the All tab
+                if currentPage == 1 && selectedFilter == nil {
                     await loadInvestmentPurchases()
                 }
                 
@@ -88,7 +88,7 @@ class HistoryViewModel: ObservableObject {
                 ]
                 
                 if let filter = selectedFilter {
-                    queryParams["status"] = filter
+                    queryParams["type"] = filter
                 }
                 
                 let response: [Transaction] = try await APIClient.shared.requestWithURLParameters(

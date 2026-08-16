@@ -14,13 +14,18 @@ struct HomeView: View {
     @State private var showCurrencySetup = false
     @State private var showDepositView = false
     @State private var showKYCBanner = true
-    @State private var showKYCAlert = false
+    @State private var showKYC = false
     @State private var showInvestmentProducts = false
     @State private var showInsuranceList = false
     @State private var showGoldMarketplace = false
     @State private var isBalanceHidden = false
     @State private var isInvestmentHidden = false
     @State private var showSendMoney = false
+    @State private var showLoans = false
+    @State private var showMyQr = false
+    @State private var preselectedContact: AppContact?
+    @State private var showAdvisors = false
+    
     
     var body: some View {
         ZStack {
@@ -31,7 +36,7 @@ struct HomeView: View {
                 // KYC Banner — hidden if admin toggled it off
                 if !isKYCVerified() {
                     KYCBannerView(isVisible: $showKYCBanner) {
-                        showKYCAlert = true
+                        showKYC = true
                     }
                     .padding(.top, Spacing.md)
                 }
@@ -50,8 +55,8 @@ struct HomeView: View {
                         // Hot Investment Opportunities
                         investmentOpportunitiesSection
                         
-                        // Quick Send or Receive Money
-                        //quickSendReceiveSection
+                        // Send to Contacts
+                        contactsSection
                     }
                     .padding(.horizontal, Spacing.screenHorizontal)
                     .padding(.top, Spacing.md)
@@ -61,6 +66,7 @@ struct HomeView: View {
         }
         .onAppear {
             viewModel.loadDashboard()
+            viewModel.loadContactsIfAuthorized()
             // Show currency setup if not configured
             let hasCurrency = UserDefaultsManager.shared.object(forKey: "default_currency") != nil
             if !hasCurrency {
@@ -88,10 +94,8 @@ struct HomeView: View {
         } message: {
             Text(viewModel.errorMessage ?? "")
         }
-        .alert("KYC Verification", isPresented: $showKYCAlert) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text("KYC verification screen coming soon!")
+        .fullScreenCover(isPresented: $showKYC, onDismiss: { viewModel.loadDashboard() }) {
+            KycView()
         }
         .fullScreenCover(isPresented: $showDepositView) {
             DepositView()
@@ -105,14 +109,46 @@ struct HomeView: View {
         .fullScreenCover(isPresented: $showGoldMarketplace) {
             GoldMarketplaceView()
         }
-        .fullScreenCover(isPresented: $showSendMoney) {
-            SendMoneyView()
+        .fullScreenCover(isPresented: $showSendMoney, onDismiss: { preselectedContact = nil }) {
+            SendMoneyView(preselectedContact: preselectedContact)
+        }
+        .fullScreenCover(isPresented: $showLoans) {
+            LoansView()
+        }
+        .sheet(isPresented: $showMyQr) {
+            MyQrView()
+        }
+        .fullScreenCover(isPresented: $showAdvisors) {
+            AdvisorsView()
+        }
+        .overlay(alignment: .bottomTrailing) {
+            // Advisors see their dashboard, not the browse-advisors button
+            if !isAdvisor() {
+                Button(action: { showAdvisors = true }) {
+                    HStack(spacing: 6) {
+                        Image(systemName: "person.2.fill")
+                        Text("Advisors").font(AppFont.button())
+                    }
+                    .foregroundColor(Color.backgroundDark1)
+                    .padding(.horizontal, Spacing.md).padding(.vertical, 12)
+                    .background(Color.primaryGold)
+                    .clipShape(Capsule())
+                    .shadow(radius: 4)
+                }
+                .padding(.trailing, Spacing.screenHorizontal)
+                .padding(.bottom, 24)
+            }
         }
     }
     
     // MARK: - KYC Helper
     private func isKYCVerified() -> Bool {
         return UserDefaultsManager.shared.kycVerified
+    }
+    
+    // MARK: - Role Helper
+    private func isAdvisor() -> Bool {
+        return viewModel.user?.role == "advisor"
     }
     
     // MARK: - User Avatar
@@ -198,13 +234,13 @@ struct HomeView: View {
             HStack(spacing: Spacing.md) {
                 // Bookmark Icon
                 Button(action: {
-                    print("📌 Bookmark tapped")
+                    showMyQr = true
                 }) {
                     Circle()
                         .stroke(Color.textSecondary.opacity(0.3), lineWidth: 1)
                         .frame(width: 44, height: 44)
                         .overlay(
-                            Image(systemName: "bookmark")
+                            Image(systemName: "qrcode")
                                 .font(.system(size: 18))
                                 .foregroundColor(Color.textSecondary)
                         )
@@ -259,7 +295,7 @@ struct HomeView: View {
                 
                 // Balance Amount
                 if let depositWallet = viewModel.depositWallet {
-                    Text(isBalanceHidden ? "****" : viewModel.formatBalance(depositWallet.balance, currency: "UGX"))
+                    Text(isBalanceHidden ? "****" : viewModel.formatBalance(depositWallet.balance, currency: depositWallet.currency))
                         .font(AppFont.heading2())
                         .foregroundColor(Color.textPrimary)
                 }
@@ -320,7 +356,7 @@ struct HomeView: View {
                             Spacer()
                         }
                         
-                        Text(isInvestmentHidden ? "****" : viewModel.formatBalance(String(summary.currentValue), currency: "UGX"))
+                        Text(isInvestmentHidden ? "****" : viewModel.formatInvestmentValue(summary.currentValue))
                             .font(AppFont.heading3())
                             .foregroundColor(Color.backgroundDark1)
                     }
@@ -334,7 +370,7 @@ struct HomeView: View {
                             .foregroundColor(Color.backgroundDark1)
                         
                         HStack(spacing: 8) {
-                            Text(isInvestmentHidden ? "**%" : "\(String(format: "%.0f", summary.interestPercentage))%")
+                            Text(isInvestmentHidden ? "**%" : "\(String(format: "%.2f", summary.interestPercentage))%")
                                 .font(AppFont.heading3())
                                 .foregroundColor(Color.backgroundDark1)
                             
@@ -371,17 +407,17 @@ struct HomeView: View {
                 }
                 
                 quickActionButton(
+                    icon: "banknote",
+                    title: "Loans"
+                ) {
+                    showLoans = true
+                }
+                
+                quickActionButton(
                     icon: "staroflife.shield",
                     title: "Insurance"
                 ) {
                     showInsuranceList = true
-                }
-                
-                quickActionButton(
-                    icon: "bag",
-                    title: "Marketplace"
-                ) {
-                    showGoldMarketplace = true
                 }
                 
                 quickActionButton(
@@ -525,76 +561,104 @@ struct HomeView: View {
         )
     }
     
-    // MARK: - Quick Send or Receive Section
-    private var quickSendReceiveSection: some View {
+    // MARK: - Send to Contacts Section
+    private var contactsSection: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
-            Text("Quick Send or Receive Money")
+            Text("Send to Contacts")
                 .font(AppFont.bodyLarge())
                 .foregroundColor(Color.textPrimary)
             
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: Spacing.md) {
-                    // Show only 4 contacts initially
-                    ForEach(mockContacts.prefix(4), id: \.id) { contact in
-                        contactAvatar(contact: contact)
+            if viewModel.contactsPermissionDenied {
+                Button(action: { viewModel.requestContactsPermission() }) {
+                    HStack(spacing: Spacing.sm) {
+                        Image(systemName: "person.crop.circle.badge.plus")
+                        Text("Find friends on AfriVest")
+                            .font(AppFont.button())
                     }
-                    
-                    // Show more if scrolling
-                    ForEach(mockContacts.dropFirst(4), id: \.id) { contact in
-                        contactAvatar(contact: contact)
+                    .foregroundColor(Color.primaryGold)
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, Spacing.md)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .stroke(Color.primaryGold, lineWidth: 1)
+                    )
+                }
+            } else if !viewModel.matchedContacts.isEmpty {
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: Spacing.md) {
+                        ForEach(viewModel.matchedContacts, id: \.id) { contact in
+                            contactAvatar(contact: contact)
+                        }
                     }
                 }
             }
         }
     }
     
+    private func contactColor(_ name: String) -> Color {
+        let palette: [Color] = [.blue, .orange, .green, .pink, .red, .purple]
+        return palette[abs(name.hashValue) % palette.count]
+    }
+    
+    private func initials(_ name: String) -> String {
+        let parts = name.split(separator: " ")
+        if parts.count >= 2 { return "\(parts[0].prefix(1))\(parts[1].prefix(1))".uppercased() }
+        return String(name.prefix(1)).uppercased()
+    }
+    
     // MARK: - Contact Avatar
-    private func contactAvatar(contact: Contact) -> some View {
-        Button(action: {
-            // TODO: Navigate to transfer with pre-filled recipient
+    private func contactAvatar(contact: AppContact) -> some View {
+        let color = contactColor(contact.name)
+        return Button(action: {
+            preselectedContact = contact
+            showSendMoney = true
         }) {
             VStack(spacing: Spacing.sm) {
                 Circle()
-                    .fill(contact.color.opacity(0.3))
+                    .fill(color.opacity(0.3))
                     .frame(width: 60, height: 60)
+                    .overlay(Circle().stroke(color, lineWidth: 2))
                     .overlay(
-                        Circle()
-                            .stroke(contact.color, lineWidth: 2)
-                    )
-                    .overlay(
-                        Text(contact.initials)
+                        Text(initials(contact.name))
                             .font(AppFont.bodyLarge())
-                            .foregroundColor(contact.color)
+                            .foregroundColor(color)
                     )
-                
                 Text(contact.name)
                     .font(AppFont.bodySmall())
                     .foregroundColor(Color.textPrimary)
+                    .lineLimit(1)
             }
             .padding(.top, Spacing.sm)
         }
     }
-    
-    // MARK: - Mock Data
-    private let mockContacts = [
-        Contact(id: 1, name: "Jo N", initials: "JN", color: Color.blue),
-        Contact(id: 2, name: "Eric", initials: "E", color: Color.orange),
-        Contact(id: 3, name: "John", initials: "J", color: Color.green),
-        Contact(id: 4, name: "Doe", initials: "D", color: Color.pink),
-        Contact(id: 5, name: "Kim", initials: "K", color: Color.red),
-        Contact(id: 6, name: "Stella", initials: "S", color: Color.purple)
-    ]
 }
 
 private func convertedMinInvestment(_ product: InvestmentProduct) -> String {
     let userCurrency = UserDefaultsManager.shared.defaultCurrency ?? "UGX"
-    let raw = Double(product.minInvestment ?? "0") ?? 0
-    let productCurrency = product.currency ?? "UGX"
-    guard userCurrency != productCurrency, raw > 0 else {
-        return "\(productCurrency) \(FeeCalculator.formatCurrency(raw))"
+    let raw = Double(product.minInvestment) ?? 0
+    let productCurrency = product.currency
+    
+    let amount: Double
+    let displayCurrency: String
+    
+    if userCurrency != productCurrency, raw > 0 {
+        let rate = CurrencyConverter.getRate(from: productCurrency, to: userCurrency)
+        amount = raw * rate
+        displayCurrency = userCurrency
+    } else {
+        amount = raw
+        displayCurrency = productCurrency
     }
-    let rate = CurrencyConverter.getRate(from: productCurrency, to: userCurrency)
-    return "\(userCurrency) \(FeeCalculator.formatCurrency(raw * rate))"
+    
+    // Use more decimals for small amounts
+    let formatted: String
+    if amount < 10 {
+        formatted = String(format: "%.2f", amount)
+    } else {
+        formatted = FeeCalculator.formatCurrency(amount)
+    }
+    
+    return "\(displayCurrency) \(formatted)"
 }
 
 // MARK: - Contact Model

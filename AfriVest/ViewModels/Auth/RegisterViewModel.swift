@@ -215,8 +215,19 @@ class RegisterViewModel: ObservableObject {
             // Save token locally
             UserDefaultsManager.shared.deviceToken = deviceToken
             
-            // Prepare phone number
-            let fullPhone = self.selectedCountry.dialCode.replacingOccurrences(of: "+", with: "") + self.phoneNumber
+            // Prepare phone number — clean and normalize
+            var cleanPhone = self.phoneNumber
+                .replacingOccurrences(of: "+", with: "")
+                .replacingOccurrences(of: " ", with: "")
+                .replacingOccurrences(of: "-", with: "")
+            let dialDigits = self.selectedCountry.dialCode.replacingOccurrences(of: "+", with: "")
+            if cleanPhone.hasPrefix(dialDigits) {
+                cleanPhone = String(cleanPhone.dropFirst(dialDigits.count))
+            }
+            if cleanPhone.hasPrefix("0") {
+                cleanPhone = String(cleanPhone.dropFirst())
+            }
+            let fullPhone = dialDigits + cleanPhone
             
             Task {
                 do {

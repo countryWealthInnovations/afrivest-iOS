@@ -78,17 +78,55 @@ class SendMoneyViewModel: ObservableObject {
     @Published var errorMessage: String = ""
     
     @Published var completedTransaction: TransferTransaction?
+    @Published var scannedUuid: String?
     
     private let transferService = TransferService.shared
     private var cancellables = Set<AnyCancellable>()
     
+    var senderCurrency: String {
+        UserDefaultsManager.shared.defaultCurrency ?? "UGX"
+    }
+    
+    var minimumAmount: Double {
+        switch senderCurrency {
+        case "UGX": return 5000
+        case "KES": return 50
+        case "NGN": return 500
+        default: return 1
+        }
+    }
+    
     var isFormValid: Bool {
-        guard selectedContact != nil,
+        let hasRecipient = selectedContact?.userId != nil || scannedUuid != nil
+        guard hasRecipient,
               let amountValue = Double(amount),
-              amountValue >= 5000 else {
+              amountValue >= minimumAmount else {
             return false
         }
         return true
+    }
+    
+    func selectScannedUuid(_ uuid: String) {
+        scannedUuid = uuid
+        selectedContact = AppContact(
+            id: UUID().uuidString, name: "Loading...",
+            phoneNumber: nil, email: nil, userId: nil, isRegistered: true
+        )
+        Task {
+            do {
+                let response = try await transferService.lookupByUuid(uuid)
+                if response.found, let user = response.user {
+                    selectedContact = AppContact(
+                        id: UUID().uuidString, name: user.name,
+                        phoneNumber: user.phoneNumber, email: user.email ?? "",
+                        userId: user.id, isRegistered: true
+                    )
+                }
+            } catch {
+                errorMessage = "Could not load recipient details"
+                showError = true
+            }
+        }
     }
     
     // MARK: - Load Contacts
@@ -169,7 +207,7 @@ class SendMoneyViewModel: ObservableObject {
             let bodyDict = try JSONSerialization.jsonObject(
                 with: JSONEncoder().encode(body)
             ) as? [String: Any] ?? [:]
-            let response: LookupResponse = try await APIClient.shared.request(
+            let response: LookupData = try await APIClient.shared.request(
                 "/contacts/lookup",
                 method: .post,
                 parameters: bodyDict,
@@ -178,7 +216,7 @@ class SendMoneyViewModel: ObservableObject {
             
             // Build a quick lookup dict from phone → matched user
             var phoneMap: [String: LookupMatchedContact] = [:]
-            for match in response.data.contacts {
+            for match in response.contacts {
                 if let p = match.phone { phoneMap[p] = match }
             }
             
@@ -254,20 +292,22 @@ class SendMoneyViewModel: ObservableObject {
     
     // MARK: - Initiate Transfer
     func initiateTransfer() {
-        guard let contact = selectedContact,
-              let userId = contact.userId,
+        guard selectedContact != nil,
               let amountValue = Double(amount) else {
             return
         }
+        let userId = selectedContact?.userId ?? 0
         
         Task {
             isLoading = true
             
             do {
+                let userCurrency = UserDefaultsManager.shared.defaultCurrency ?? "UGX"
                 let response = try await transferService.transferP2P(
-                    recipientId: userId,
+                    recipientId: scannedUuid == nil ? userId : nil,
+                    recipientUuid: scannedUuid,
                     amount: amountValue,
-                    currency: "UGX",
+                    currency: userCurrency,
                     description: description.isEmpty ? nil : description
                 )
                 

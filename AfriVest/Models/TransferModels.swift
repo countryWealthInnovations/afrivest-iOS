@@ -9,13 +9,23 @@ import Foundation
 
 // MARK: - P2P Transfer Request
 struct P2PTransferRequest: Codable {
-    let recipientId: Int
+    let recipientId: Int?
+    let recipientUuid: String?
     let amount: Double
     let currency: String
     let description: String?
     
+    init(recipientId: Int? = nil, recipientUuid: String? = nil, amount: Double, currency: String, description: String? = nil) {
+        self.recipientId = recipientId
+        self.recipientUuid = recipientUuid
+        self.amount = amount
+        self.currency = currency
+        self.description = description
+    }
+    
     enum CodingKeys: String, CodingKey {
         case recipientId = "recipient_id"
+        case recipientUuid = "recipient_uuid"
         case amount, currency, description
     }
 }
@@ -103,20 +113,22 @@ struct UserSearchResponse: Codable, Sendable {
 
 struct SearchedUser: Codable, Sendable {
     let id: Int
+    let uuid: String?
     let name: String
-    let email: String
+    let email: String?
     let phoneNumber: String?
     
     enum CodingKeys: String, CodingKey {
-        case id, name, email
+        case id, uuid, name, email
         case phoneNumber = "phone_number"
     }
     
     nonisolated init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(Int.self, forKey: .id)
+        uuid = try container.decodeIfPresent(String.self, forKey: .uuid)
         name = try container.decode(String.self, forKey: .name)
-        email = try container.decode(String.self, forKey: .email)
+        email = try container.decodeIfPresent(String.self, forKey: .email)
         phoneNumber = try container.decodeIfPresent(String.self, forKey: .phoneNumber)
     }
 }

@@ -16,6 +16,13 @@ struct ProfileView: View {
     @State private var showDeleteConfirmation = false
     @State private var showChangePassword = false
     @State private var showCurrencySettings = false
+    @State private var showPhoneVerify = false
+    @State private var showKYC = false
+    @State private var showAllocation = false
+    @State private var showAdvisorDashboard = false
+    @State private var showNextOfKin = false
+    @State private var borrowedTotal: Double = 0
+    @State private var borrowedCurrency: String = ""
     @AppStorage("default_currency") private var storedCurrency: String = "Not set"
     @AppStorage("secondary_currency") private var storedSecondaryCurrency: String = ""
     @Environment(\.dismiss) var dismiss
@@ -29,6 +36,17 @@ struct ProfileView: View {
                 VStack(spacing: Spacing.lg) {
                     // Profile Header
                     profileHeader
+                    
+                    // Summary (wallet / portfolio / loans)
+                    summaryCard
+                    
+                    // Account Status
+                    statusCard
+                    
+                    // Advisor section (advisors only)
+                    if viewModel.user?.role == "advisor" {
+                        advisorCard
+                    }
                     
                     // Settings Sections
                     VStack(spacing: Spacing.md) {
@@ -52,12 +70,28 @@ struct ProfileView: View {
         .navigationBarHidden(true)
         .onAppear {
             viewModel.loadProfile()
+            loadBorrowed()
         }
         .sheet(isPresented: $showChangePassword) {
             ChangePasswordView()
         }
         .sheet(isPresented: $showCurrencySettings) {
             CurrencySelectionView(isPresented: $showCurrencySettings)
+        }
+        .sheet(isPresented: $showAllocation) {
+            AllocationSettingsView()
+        }
+        .sheet(isPresented: $showNextOfKin) {
+            NextOfKinView()
+        }
+        .sheet(isPresented: $showAdvisorDashboard) {
+            AdvisorDashboardView()
+        }
+        .fullScreenCover(isPresented: $showPhoneVerify, onDismiss: { viewModel.loadProfile() }) {
+            PhoneOTPView(phone: viewModel.user?.phoneNumber ?? "")
+        }
+        .fullScreenCover(isPresented: $showKYC, onDismiss: { viewModel.loadProfile() }) {
+            KycView()
         }
         .sheet(isPresented: $showHelpSheet) {
             HelpCenterSheet(
@@ -152,6 +186,130 @@ struct ProfileView: View {
         }
     }
     
+    private var phoneVerified: Bool {
+        UserDefaultsManager.shared.bool(forKey: "phone_verified")
+    }
+    
+    private func loadBorrowed() {
+        Task {
+            do {
+                let my: MyLoansMini = try await APIClient.shared.request(
+                    "/loans/my", method: .get, parameters: nil, requiresAuth: true)
+                let userCurrency = UserDefaultsManager.shared.defaultCurrency ?? "UGX"
+                let active = my.borrowed.filter { ["active", "funded", "overdue"].contains($0.status) }
+                borrowedTotal = active.reduce(0) { sum, loan in
+                    let rate = CurrencyConverter.getRate(from: loan.currency, to: userCurrency)
+                    return sum + loan.outstanding * (rate > 0 ? rate : 1)
+                }
+                borrowedCurrency = userCurrency
+            } catch {
+                borrowedTotal = 0
+            }
+        }
+    }
+    
+    private var summaryCard: some View {
+        let currency = UserDefaultsManager.shared.defaultCurrency ?? "UGX"
+        let wallet = viewModel.user?.wallets.first(where: { $0.currency == currency }) ?? viewModel.user?.wallets.first
+        let portfolio = viewModel.user?.investmentSummary?.currentValue ?? 0
+        return HStack {
+            summaryCell(title: "Wallet", value: "\(wallet?.currency ?? currency) \(wallet?.balance ?? "0")", color: Color.primaryGold)
+            summaryCell(title: "Portfolio", value: FeeCalculator.formatCurrency(portfolio), color: .green)
+            summaryCell(title: "Loans", value: borrowedTotal > 0 ? "\(borrowedCurrency) \(FeeCalculator.formatCurrency(borrowedTotal))" : "None", color: Color.textPrimary)
+        }
+        .padding(Spacing.md)
+        .background(Color.backgroundDark1)
+        .cornerRadius(Spacing.radiusMedium)
+    }
+    
+    private func summaryCell(title: String, value: String, color: Color) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title).font(AppFont.bodySmall()).foregroundColor(Color.textSecondary)
+            Text(value).font(AppFont.bodyRegular()).foregroundColor(color).bold()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    private var advisorCard: some View {
+        VStack(spacing: 0) {
+            SectionHeader(title: "Advisor")
+            SettingsRow(icon: "calendar.badge.clock", title: "Availability & Bookings", subtitle: "Manage your advisory schedule") {
+                showAdvisorDashboard = true
+            }
+        }
+        .background(Color.backgroundDark1)
+        .cornerRadius(Spacing.radiusMedium)
+    }
+    
+    // MARK: - Account Status
+    private var statusCard: some View {
+        VStack(spacing: 0) {
+            SectionHeader(title: "Account Status")
+            
+            statusRow(label: "Email",
+                      ok: viewModel.user?.emailVerified ?? false,
+                      okText: "Verified", pendingText: "Not verified",
+                      tappable: false) {}
+            
+            Divider().background(Color.borderDefault).padding(.leading, 44)
+            
+            statusRow(label: "Phone",
+                      ok: phoneVerified,
+                      okText: "Verified", pendingText: "Verify now",
+                      tappable: !phoneVerified) {
+                showPhoneVerify = true
+            }
+            
+            Divider().background(Color.borderDefault).padding(.leading, 44)
+            
+            statusRow(label: "Identity (KYC)",
+                      ok: viewModel.user?.kycVerified ?? false,
+                      okText: "Verified", pendingText: "Verify now",
+                      tappable: !(viewModel.user?.kycVerified ?? false)) {
+                showKYC = true
+            }
+            
+            Divider().background(Color.borderDefault).padding(.leading, 44)
+            
+            statusRow(label: "Account",
+                      ok: (viewModel.user?.status ?? "") == "active",
+                      okText: "Active",
+                      pendingText: (viewModel.user?.status ?? "Pending").capitalized,
+                      tappable: false) {}
+        }
+        .background(Color.backgroundDark1)
+        .cornerRadius(Spacing.radiusMedium)
+    }
+    
+    private func statusRow(label: String, ok: Bool, okText: String, pendingText: String,
+                           tappable: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: { if tappable { action() } }) {
+            HStack(spacing: Spacing.md) {
+                Image(systemName: ok ? "checkmark.seal.fill" : "exclamationmark.shield.fill")
+                    .foregroundColor(ok ? .green : Color.primaryGold)
+                    .font(.system(size: 18))
+                
+                Text(label)
+                    .font(AppFont.bodyRegular())
+                    .foregroundColor(Color.textPrimary)
+                
+                Spacer()
+                
+                Text(ok ? okText : pendingText)
+                    .font(AppFont.bodySmall())
+                    .foregroundColor(ok ? .green : Color.primaryGold)
+                
+                if tappable {
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(Color.textSecondary)
+                        .font(.system(size: 12))
+                }
+            }
+            .padding(Spacing.md)
+        }
+        .disabled(!tappable)
+    }
+    
     // MARK: - Account Section
     private var accountSection: some View {
         VStack(spacing: 0) {
@@ -187,6 +345,30 @@ struct ProfileView: View {
                 subtitle: storedSecondaryCurrency.isEmpty ? storedCurrency : "\(storedCurrency) · \(storedSecondaryCurrency)"
             ) {
                 showCurrencySettings = true
+            }
+            
+            Divider()
+                .background(Color.borderDefault)
+                .padding(.leading, 50)
+            
+            SettingsRow(
+                icon: "chart.pie.fill",
+                title: "Deposit Allocation",
+                subtitle: "Split each deposit across wallet, savings, investment"
+            ) {
+                showAllocation = true
+            }
+            
+            Divider()
+                .background(Color.borderDefault)
+                .padding(.leading, 50)
+            
+            SettingsRow(
+                icon: "person.2.fill",
+                title: "Next of Kin",
+                subtitle: "Who to contact in an emergency"
+            ) {
+                showNextOfKin = true
             }
         }
         .background(Color.backgroundDark1)
@@ -443,6 +625,30 @@ struct ProfileView: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Loans summary decoder
+struct MyLoansMini: Decodable, Sendable {
+    struct Item: Decodable, Sendable {
+        let outstanding: Double
+        let status: String
+        let currency: String
+        enum CodingKeys: String, CodingKey { case outstanding, status, currency }
+        nonisolated init(from d: Decoder) throws {
+            let c = try d.container(keyedBy: CodingKeys.self)
+            if let dd = try? c.decode(Double.self, forKey: .outstanding) { outstanding = dd }
+            else if let s = try? c.decode(String.self, forKey: .outstanding), let dd = Double(s) { outstanding = dd }
+            else { outstanding = 0 }
+            status = (try? c.decode(String.self, forKey: .status)) ?? ""
+            currency = (try? c.decode(String.self, forKey: .currency)) ?? ""
+        }
+    }
+    let borrowed: [Item]
+    enum CodingKeys: String, CodingKey { case borrowed }
+    nonisolated init(from d: Decoder) throws {
+        let c = try d.container(keyedBy: CodingKeys.self)
+        borrowed = (try? c.decode([Item].self, forKey: .borrowed)) ?? []
     }
 }
 

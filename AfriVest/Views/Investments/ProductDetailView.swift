@@ -61,6 +61,14 @@ struct ProductDetailView: View {
         .alert("Success", isPresented: $viewModel.purchaseSuccess) {
             Button("OK") { dismiss() }
         } message: { Text("Your purchase was successful!") }
+            .sheet(item: $viewModel.agreementToShow) { agreement in
+                InvestmentAgreementSheet(
+                    title: agreement.title,
+                    bodyText: agreement.body,
+                    onAccept: { viewModel.acceptAgreementAndContinue() },
+                    onCancel: { viewModel.agreementToShow = nil }
+                )
+            }
             .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
                 Button("OK") { viewModel.errorMessage = nil }
             } message: {
@@ -393,3 +401,4 @@ struct ProductDetailView: View {
         }
     }
 }
+

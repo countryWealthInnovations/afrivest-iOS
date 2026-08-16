@@ -43,9 +43,9 @@
             <string>remote-notification</string>
         </array>
         <key>NSContactsUsageDescription</key>
-        <string>AfriVest needs access to your contacts to help you send money to friends and family.</string>
+        <string>AfriVest uses your contacts to show which of your friends are on AfriVest so you can send them money.</string>
         <key>NSCameraUsageDescription</key>
-        <string>AfriVest needs access to your camera to take profile photos</string>
+        <string>AfriVest uses the camera to scan a recipient's QR code so you can send them money.</string>
         <key>NSPhotoLibraryUsageDescription</key>
         <string>AfriVest needs access to your photos to update your profile picture</string>
         <key>NSFaceIDUsageDescription</key>

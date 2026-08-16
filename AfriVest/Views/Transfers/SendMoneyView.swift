@@ -5,37 +5,33 @@
 //  Created by Kato Drake Smith on 13/10/2025.
 //
 
+
 import SwiftUI
 import Contacts
 
 struct SendMoneyView: View {
     @Environment(\.dismiss) var dismiss
     @StateObject private var viewModel = SendMoneyViewModel()
+    @State private var showScanner = false
+    
+    var preselectedContact: AppContact? = nil
     
     var body: some View {
         ZStack {
             Color.backgroundDark1.ignoresSafeArea()
             
             VStack(spacing: 0) {
-                // Header
                 headerSection
                 
                 ScrollView {
                     VStack(alignment: .leading, spacing: Spacing.lg) {
-                        // Search Bar
-                        searchSection
+                        recipientSearchSection
                         
-                        // Contacts List or Manual Entry
-                        if viewModel.showManualEntry || viewModel.filteredContacts.isEmpty {
-                            manualEntrySection
-                        } else {
-                            contactsSection
-                        }
-                        
-                        // Transfer Form (shows when recipient selected)
                         if viewModel.selectedContact != nil {
                             transferFormSection
                         }
+                        
+                        manualEntrySection
                     }
                     .padding(.horizontal, Spacing.screenHorizontal)
                     .padding(.top, Spacing.md)
@@ -49,6 +45,14 @@ struct SendMoneyView: View {
         .navigationBarHidden(true)
         .onAppear {
             viewModel.loadContacts()
+            if let contact = preselectedContact, contact.userId != nil {
+                viewModel.selectContact(contact)
+            }
+        }
+        .sheet(isPresented: $showScanner) {
+            ScanQrView { uuid in
+                viewModel.selectScannedUuid(uuid)
+            }
         }
         .alert("Error", isPresented: $viewModel.showError) {
             Button("OK", role: .cancel) {}
@@ -56,9 +60,7 @@ struct SendMoneyView: View {
             Text(viewModel.errorMessage)
         }
         .alert("Success", isPresented: $viewModel.showSuccess) {
-            Button("Done") {
-                dismiss()
-            }
+            Button("Done") { dismiss() }
         } message: {
             if let transaction = viewModel.completedTransaction {
                 Text("Sent \(transaction.amount) \(transaction.currency) to \(transaction.recipient)")
@@ -75,156 +77,168 @@ struct SendMoneyView: View {
                     .foregroundColor(.textPrimary)
                     .frame(width: 40, height: 40)
             }
-            
             Spacer()
-            
-            Text("Send Money")
-                .h2Style()
-            
+            Text("Send Money").h2Style()
             Spacer()
-            
-            Color.clear.frame(width: 40, height: 40)
+            Button(action: { showScanner = true }) {
+                Image(systemName: "qrcode.viewfinder")
+                    .font(.system(size: 20, weight: .semibold))
+                    .foregroundColor(.primaryGold)
+                    .frame(width: 40, height: 40)
+            }
         }
         .padding(.horizontal, Spacing.screenHorizontal)
         .padding(.top, Spacing.md)
     }
     
-    // MARK: - Search Section
-    private var searchSection: some View {
+    // MARK: - Recipient Search with inline dropdown
+    private var recipientSearchSection: some View {
         VStack(alignment: .leading, spacing: Spacing.sm) {
-            Text("Search Recipient")
-                .labelStyle()
+            Text("Recipient").labelStyle()
             
-            HStack {
-                Image(systemName: "magnifyingglass")
-                    .foregroundColor(.textSecondary)
-                
-                TextField("Phone or Email", text: $viewModel.searchQuery)
-                    .font(AppFont.bodyRegular())
-                    .foregroundColor(.textPrimary)
-                    .autocapitalization(.none)
-                    // Removed auto-filter - not using contacts anymore
-                    // .onChange(of: viewModel.searchQuery) { _ in
-                    //     viewModel.filterContacts()
-                    // }
-                
-                if !viewModel.searchQuery.isEmpty {
-                    Button(action: { viewModel.searchQuery = "" }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.textSecondary)
-                    }
-                }
-            }
-            .padding()
-            .background(Color.inputBackground)
-            .cornerRadius(Spacing.radiusMedium)
-            .overlay(
-                RoundedRectangle(cornerRadius: Spacing.radiusMedium)
-                    .stroke(Color.borderDefault, lineWidth: 1)
-            )
-            
-            // Manual Entry Toggle
-            Button(action: { viewModel.showManualEntry.toggle() }) {
+            VStack(spacing: 0) {
                 HStack {
-                    Image(systemName: viewModel.showManualEntry ? "person.crop.circle.fill" : "person.crop.circle.badge.plus")
-                        .foregroundColor(.primaryGold)
-                    Text(viewModel.showManualEntry ? "Back to Contacts" : "Enter Manually")
-                        .font(AppFont.bodyRegular())
-                        .foregroundColor(.primaryGold)
-                }
-            }
-        }
-    }
-    
-    // MARK: - Contacts Section
-    private var contactsSection: some View {
-        VStack(alignment: .leading, spacing: Spacing.md) {
-            Text("Select Recipient")
-                .labelStyle()
-            
-            if viewModel.filteredContacts.isEmpty {
-                emptyStateView
-            } else {
-                ForEach(viewModel.filteredContacts, id: \.id) { contact in
-                    contactRow(contact: contact)
-                }
-            }
-        }
-    }
-    
-    // MARK: - Contact Row
-    private func contactRow(contact: AppContact) -> some View {
-        Button(action: { viewModel.selectContact(contact) }) {
-            HStack(spacing: Spacing.md) {
-                // Avatar
-                Circle()
-                    .fill(contact.isRegistered ? Color.primaryGold.opacity(0.3) : Color.textSecondary.opacity(0.3))
-                    .frame(width: 50, height: 50)
-                    .overlay(
-                        Text(contact.name.prefix(1).uppercased())
-                            .font(AppFont.heading3())
-                            .foregroundColor(contact.isRegistered ? .primaryGold : .textSecondary)
-                    )
-                
-                // Info
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(contact.name)
-                        .font(AppFont.bodyLarge())
-                        .foregroundColor(.textPrimary)
-                    
-                    Text(contact.displayIdentifier)
-                        .font(AppFont.bodySmall())
+                    Image(systemName: "magnifyingglass")
                         .foregroundColor(.textSecondary)
                     
-                    if contact.isRegistered {
-                        Text("✓ Registered")
-                            .font(AppFont.bodySmall())
-                            .foregroundColor(.successGreen)
-                    } else {
-                        Text("Not on AfriVest")
-                            .font(AppFont.bodySmall())
+                    TextField("Search by name, phone or email", text: $viewModel.searchQuery)
+                        .font(AppFont.bodyRegular())
+                        .foregroundColor(.textPrimary)
+                        .autocapitalization(.none)
+                        .onChange(of: viewModel.searchQuery) { _ in
+                            if viewModel.selectedContact == nil {
+                                viewModel.filterContacts()
+                            }
+                        }
+                    
+                    if !viewModel.searchQuery.isEmpty {
+                        Button(action: {
+                            viewModel.searchQuery = ""
+                            viewModel.filteredContacts = []
+                            viewModel.selectedContact = nil
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.textSecondary)
+                        }
+                    }
+                }
+                .padding()
+                .background(Color.inputBackground)
+                .cornerRadius(Spacing.radiusMedium)
+                .overlay(
+                    RoundedRectangle(cornerRadius: Spacing.radiusMedium)
+                        .stroke(Color.borderDefault, lineWidth: 1)
+                )
+                
+                // Dropdown — only when typing and no contact selected yet
+                if !viewModel.searchQuery.isEmpty && viewModel.selectedContact == nil {
+                    VStack(spacing: 0) {
+                        if viewModel.filteredContacts.isEmpty {
+                            Text("No users found on AfriVest")
+                                .font(AppFont.bodySmall())
+                                .foregroundColor(.textSecondary)
+                                .padding()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .background(Color.inputBackground)
+                        } else {
+                            ForEach(viewModel.filteredContacts.prefix(5), id: \.id) { contact in
+                                Button(action: {
+                                    viewModel.selectContact(contact)
+                                    viewModel.searchQuery = contact.name
+                                    viewModel.filteredContacts = []
+                                }) {
+                                    HStack(spacing: Spacing.sm) {
+                                        Circle()
+                                            .fill(Color.primaryGold.opacity(0.3))
+                                            .frame(width: 36, height: 36)
+                                            .overlay(
+                                                Text(contact.name.prefix(1).uppercased())
+                                                    .font(AppFont.bodyLarge())
+                                                    .foregroundColor(.primaryGold)
+                                            )
+                                        
+                                        VStack(alignment: .leading, spacing: 2) {
+                                            Text(contact.name)
+                                                .font(AppFont.bodyRegular())
+                                                .foregroundColor(.textPrimary)
+                                            Text(contact.displayIdentifier)
+                                                .font(AppFont.bodySmall())
+                                                .foregroundColor(.textSecondary)
+                                        }
+                                        Spacer()
+                                        Image(systemName: "checkmark.circle.fill")
+                                            .foregroundColor(.successGreen)
+                                            .font(.system(size: 14))
+                                    }
+                                    .padding(.horizontal, Spacing.md)
+                                    .padding(.vertical, Spacing.sm)
+                                }
+                                Divider().background(Color.borderDefault)
+                            }
+                        }
+                    }
+                    .background(Color.inputBackground)
+                    .cornerRadius(Spacing.radiusMedium)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: Spacing.radiusMedium)
+                            .stroke(Color.borderDefault, lineWidth: 1)
+                    )
+                    .shadow(color: Color.black.opacity(0.15), radius: 8, y: 4)
+                }
+            }
+            
+            // Selected contact pill
+            if let contact = viewModel.selectedContact {
+                HStack {
+                    Text("To: \(contact.name)")
+                        .font(AppFont.bodySmall())
+                        .foregroundColor(.primaryGold)
+                    Spacer()
+                    Button(action: {
+                        viewModel.selectedContact = nil
+                        viewModel.searchQuery = ""
+                    }) {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 12))
                             .foregroundColor(.textSecondary)
                     }
                 }
-                
-                Spacer()
-                
-                if viewModel.selectedContact?.id == contact.id {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.primaryGold)
-                }
+                .padding(.horizontal, Spacing.md)
+                .padding(.vertical, Spacing.sm)
+                .background(Color.primaryGold.opacity(0.1))
+                .cornerRadius(Spacing.radiusMedium)
             }
-            .padding(Spacing.md)
-            .background(viewModel.selectedContact?.id == contact.id ? Color.primaryGold.opacity(0.1) : Color.inputBackground)
-            .cornerRadius(Spacing.radiusMedium)
-            .overlay(
-                RoundedRectangle(cornerRadius: Spacing.radiusMedium)
-                    .stroke(viewModel.selectedContact?.id == contact.id ? Color.primaryGold : Color.borderDefault, lineWidth: 1)
-            )
         }
-        .disabled(!contact.isRegistered)
-        .opacity(contact.isRegistered ? 1.0 : 0.5)
     }
     
     // MARK: - Manual Entry Section
     private var manualEntrySection: some View {
         VStack(alignment: .leading, spacing: Spacing.md) {
-            Text("Enter Recipient Details")
-                .labelStyle()
+            Button(action: { viewModel.showManualEntry.toggle() }) {
+                HStack {
+                    Image(systemName: viewModel.showManualEntry ? "chevron.up" : "person.crop.circle.badge.plus")
+                        .foregroundColor(.primaryGold)
+                    Text(viewModel.showManualEntry ? "Hide manual entry" : "Enter phone/email manually")
+                        .font(AppFont.bodyRegular())
+                        .foregroundColor(.primaryGold)
+                }
+            }
             
-            AppTextField(
-                label: "Phone Number or Email",
-                placeholder: "+256700000000 or email@example.com",
-                text: $viewModel.manualRecipient,
-                keyboardType: .emailAddress
-            )
-            
-            PrimaryButton(
-                title: "Search User",
-                action: { viewModel.searchManualRecipient() },
-                isLoading: viewModel.isSearching,
-                isEnabled: !viewModel.manualRecipient.isEmpty
-            )
+            if viewModel.showManualEntry {
+                AppTextField(
+                    label: "Phone Number or Email",
+                    placeholder: "+256700000000 or email@example.com",
+                    text: $viewModel.manualRecipient,
+                    keyboardType: .emailAddress
+                )
+                
+                PrimaryButton(
+                    title: "Search User",
+                    action: { viewModel.searchManualRecipient() },
+                    isLoading: viewModel.isSearching,
+                    isEnabled: !viewModel.manualRecipient.isEmpty
+                )
+            }
         }
     }
     
@@ -237,18 +251,15 @@ struct SendMoneyView: View {
                 .font(AppFont.heading3())
                 .foregroundColor(.textPrimary)
             
-            // Amount
             AppTextField(
-                label: "Amount (UGX)",
-                placeholder: "Enter amount (min 5,000)",
+                label: "Amount (\(viewModel.senderCurrency))",
+                placeholder: "Enter amount",
                 text: $viewModel.amount,
                 keyboardType: .decimalPad
             )
             
-            // Description
             VStack(alignment: .leading, spacing: Spacing.sm) {
-                Text("Description (Optional)")
-                    .labelStyle()
+                Text("Description (Optional)").labelStyle()
                 
                 TextField("What's this for?", text: $viewModel.description)
                     .font(AppFont.bodyLarge())
@@ -262,19 +273,18 @@ struct SendMoneyView: View {
                     )
             }
             
-            // Summary
             VStack(spacing: Spacing.sm) {
                 summaryRow(label: "Recipient", value: viewModel.selectedContact?.name ?? "")
-                summaryRow(label: "Amount", value: "\(viewModel.amount) UGX")
-                summaryRow(label: "Fee", value: "0.00 UGX")
+                summaryRow(label: "You Send", value: "\(viewModel.amount) \(viewModel.senderCurrency)")
+                summaryRow(label: "Fee", value: "0.00 \(viewModel.senderCurrency)")
                 Divider().background(Color.borderDefault)
-                summaryRow(label: "Total", value: "\(viewModel.amount) UGX", isTotal: true)
+                summaryRow(label: "Total", value: "\(viewModel.amount) \(viewModel.senderCurrency)", isTotal: true)
+                // Recipient conversion shown after transfer completes
             }
             .padding(Spacing.md)
             .background(Color.inputBackground)
             .cornerRadius(Spacing.radiusMedium)
             
-            // Send Button
             PrimaryButton(
                 title: "Send Money",
                 action: { viewModel.initiateTransfer() },
@@ -290,31 +300,10 @@ struct SendMoneyView: View {
             Text(label)
                 .font(isTotal ? AppFont.bodyLarge() : AppFont.bodyRegular())
                 .foregroundColor(isTotal ? .textPrimary : .textSecondary)
-            
             Spacer()
-            
             Text(value)
                 .font(isTotal ? AppFont.heading3() : AppFont.bodyRegular())
                 .foregroundColor(isTotal ? .primaryGold : .textPrimary)
         }
-    }
-    
-    // MARK: - Empty State
-    private var emptyStateView: some View {
-        VStack(spacing: Spacing.md) {
-            Image(systemName: "person.2.slash")
-                .font(.system(size: 50))
-                .foregroundColor(.textSecondary)
-            
-            Text("No contacts found")
-                .font(AppFont.bodyLarge())
-                .foregroundColor(.textSecondary)
-            
-            Text("Try searching or entering manually")
-                .font(AppFont.bodySmall())
-                .foregroundColor(.textSecondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, Spacing.xl)
     }
 }

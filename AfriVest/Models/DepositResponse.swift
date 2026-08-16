@@ -10,9 +10,12 @@ import Foundation
 struct DepositResponse: Codable, Sendable {
     let transactionId: Int
     let reference: String
-    let amount: String
+    let amount: Double
+    let flutterwaveFee: Double?
     let serviceFee: Double?
-    let total: Double?
+    let totalFee: Double?
+    let userPays: Double?
+    let userReceives: Double?
     let currency: String
     let status: String?
     let network: String?
@@ -21,8 +24,11 @@ struct DepositResponse: Codable, Sendable {
     enum CodingKeys: String, CodingKey {
         case transactionId = "transaction_id"
         case reference, amount, currency, status, network
+        case flutterwaveFee = "flutterwave_fee"
         case serviceFee = "service_fee"
-        case total
+        case totalFee = "total_fee"
+        case userPays = "user_pays"
+        case userReceives = "user_receives"
         case paymentData = "payment_data"
     }
     
@@ -30,13 +36,48 @@ struct DepositResponse: Codable, Sendable {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         transactionId = try container.decode(Int.self, forKey: .transactionId)
         reference = try container.decode(String.self, forKey: .reference)
-        amount = try container.decode(String.self, forKey: .amount)
+        if let intAmount = try? container.decode(Int.self, forKey: .amount) {
+            amount = Double(intAmount)
+        } else {
+            amount = try container.decode(Double.self, forKey: .amount)
+        }
+        flutterwaveFee = try container.decodeIfPresent(Double.self, forKey: .flutterwaveFee)
         serviceFee = try container.decodeIfPresent(Double.self, forKey: .serviceFee)
-        total = try container.decodeIfPresent(Double.self, forKey: .total)
+        totalFee = try container.decodeIfPresent(Double.self, forKey: .totalFee)
+        userPays = try container.decodeIfPresent(Double.self, forKey: .userPays)
+        userReceives = try container.decodeIfPresent(Double.self, forKey: .userReceives)
         currency = try container.decode(String.self, forKey: .currency)
         status = try container.decodeIfPresent(String.self, forKey: .status)
         network = try container.decodeIfPresent(String.self, forKey: .network)
         paymentData = try container.decode(PaymentData.self, forKey: .paymentData)
+    }
+    
+    init(
+        transactionId: Int,
+        amount: Double,
+        flutterwaveFee: Double?,
+        serviceFee: Double?,
+        totalFee: Double?,
+        userPays: Double?,
+        userReceives: Double?,
+        currency: String,
+        status: String?,
+        network: String?,
+        reference: String,
+        paymentData: PaymentData
+    ) {
+        self.transactionId = transactionId
+        self.amount = amount
+        self.flutterwaveFee = flutterwaveFee
+        self.serviceFee = serviceFee
+        self.totalFee = totalFee
+        self.userPays = userPays
+        self.userReceives = userReceives
+        self.currency = currency
+        self.status = status
+        self.network = network
+        self.reference = reference
+        self.paymentData = paymentData
     }
 }
 
@@ -66,6 +107,20 @@ struct PaymentData: Codable, Sendable {
         authorizationUrl = try container.decodeIfPresent(String.self, forKey: .authorizationUrl)
         redirectUrl = try container.decodeIfPresent(String.self, forKey: .redirectUrl)
         flutterwaveTransactionId = try container.decodeIfPresent(String.self, forKey: .flutterwaveTransactionId)
+    }
+    
+    init(
+        mode: String,
+        url: String?,
+        authorizationUrl: String?,
+        redirectUrl: String?,
+        flutterwaveTransactionId: String?
+    ) {
+        self.mode = mode
+        self.url = url
+        self.authorizationUrl = authorizationUrl
+        self.redirectUrl = redirectUrl
+        self.flutterwaveTransactionId = flutterwaveTransactionId
     }
 }
 
@@ -129,5 +184,62 @@ struct ErrorDetails: Codable, Sendable {
         action = try container.decodeIfPresent(String.self, forKey: .action)
         canRetry = try container.decode(Bool.self, forKey: .canRetry)
         severity = try container.decode(String.self, forKey: .severity)
+    }
+}
+
+struct BankDepositResponse: Codable, Sendable {
+    let transactionId: Int
+    let reference: String
+    let amount: Double
+    let currency: String
+    let status: String?
+    let paymentData: BankPaymentData
+    
+    enum CodingKeys: String, CodingKey {
+        case transactionId = "transaction_id"
+        case reference, amount, currency, status
+        case paymentData = "payment_data"
+    }
+    
+    nonisolated init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        transactionId = try container.decode(Int.self, forKey: .transactionId)
+        reference = try container.decode(String.self, forKey: .reference)
+        if let intAmount = try? container.decode(Int.self, forKey: .amount) {
+            amount = Double(intAmount)
+        } else {
+            amount = try container.decode(Double.self, forKey: .amount)
+        }
+        currency = try container.decode(String.self, forKey: .currency)
+        status = try container.decodeIfPresent(String.self, forKey: .status)
+        paymentData = try container.decode(BankPaymentData.self, forKey: .paymentData)
+    }
+}
+
+struct BankPaymentData: Codable, Sendable {
+    let mode: String?
+    let redirectUrl: String?
+    let authorizationUrl: String?
+    let transferAccount: String?
+    let transferBank: String?
+    let transferReference: String?
+    let transferNote: String?
+    let transferAmount: String?
+    let accountExpiration: String?
+    let sortCode: String?
+    let accountNumber: String?
+    
+    enum CodingKeys: String, CodingKey {
+        case mode
+        case redirectUrl = "redirect_url"
+        case authorizationUrl = "authorization_url"
+        case transferAccount = "transfer_account"
+        case transferBank = "transfer_bank"
+        case transferReference = "transfer_reference"
+        case transferNote = "transfer_note"
+        case transferAmount = "transfer_amount"
+        case accountExpiration = "account_expiration"
+        case sortCode = "sort_code"
+        case accountNumber = "account_number"
     }
 }

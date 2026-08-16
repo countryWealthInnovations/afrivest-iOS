@@ -12,9 +12,7 @@ struct KYCBannerView: View {
     let onTap: () -> Void
     
     var body: some View {
-        let kycHidden = UserDefaultsManager.shared.bool(forKey: "kyc_banner_hidden")
-        
-        if isVisible && !kycHidden {
+        if isVisible {
             HStack(spacing: Spacing.sm) {
                 Image(systemName: "person.badge.shield.checkmark")
                     .foregroundColor(.warningYellow)

@@ -125,20 +125,23 @@ struct Transaction: Codable, Identifiable, Sendable {
 
 struct Recipient: Codable, Sendable {
     let name: String
-    let email: String
+    let email: String?
+    let uuid: String?
     
-    init(name: String, email: String) {
+    init(name: String, email: String? = nil, uuid: String? = nil) {
         self.name = name
         self.email = email
+        self.uuid = uuid
     }
     
     nonisolated init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = try container.decode(String.self, forKey: .name)
-        email = try container.decode(String.self, forKey: .email)
+        email = try container.decodeIfPresent(String.self, forKey: .email)
+        uuid = try container.decodeIfPresent(String.self, forKey: .uuid)
     }
     
     enum CodingKeys: String, CodingKey {
-        case name, email
+        case name, email, uuid
     }
 }

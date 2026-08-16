@@ -65,40 +65,29 @@ struct HistoryView: View {
         }
     }
     
-    // MARK: - Filter Chips
+    // MARK: - Filter Chips (by type)
+    private var typeFilters: [(title: String, value: String?)] {
+        [
+            ("All", nil),
+            ("Deposits", "deposit"),
+            ("Withdrawals", "withdrawal"),
+            ("Sent", "transfer"),
+            ("Investments", "investment"),
+            ("Loans", "loan_repayment")
+        ]
+    }
+    
     private var filterChips: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: Spacing.sm) {
-                FilterChip(
-                    title: "All",
-                    isSelected: viewModel.selectedFilter == nil,
-                    color: Color.primaryGold
-                ) {
-                    viewModel.filterTransactions(nil)
-                }
-                
-                FilterChip(
-                    title: "Success",
-                    isSelected: viewModel.selectedFilter == "success",
-                    color: Color.successGreen
-                ) {
-                    viewModel.filterTransactions("success")
-                }
-                
-                FilterChip(
-                    title: "Pending",
-                    isSelected: viewModel.selectedFilter == "pending",
-                    color: Color.warningYellow
-                ) {
-                    viewModel.filterTransactions("pending")
-                }
-                
-                FilterChip(
-                    title: "Failed",
-                    isSelected: viewModel.selectedFilter == "failed",
-                    color: Color.errorRed
-                ) {
-                    viewModel.filterTransactions("failed")
+                ForEach(typeFilters, id: \.title) { filter in
+                    FilterChip(
+                        title: filter.title,
+                        isSelected: viewModel.selectedFilter == filter.value,
+                        color: Color.primaryGold
+                    ) {
+                        viewModel.filterTransactions(filter.value)
+                    }
                 }
             }
         }

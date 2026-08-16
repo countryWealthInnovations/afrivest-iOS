@@ -136,7 +136,7 @@ struct TransactionDetailView: View {
             
             DetailRow(label: "Name", value: otherParty.name)
             Divider().background(Color.borderDefault)
-            DetailRow(label: "Email", value: otherParty.email, isMultiline: true)
+            DetailRow(label: "Email", value: otherParty.email ?? "", isMultiline: true)
         }
         .padding(Spacing.md)
         .background(Color.backgroundDark1)

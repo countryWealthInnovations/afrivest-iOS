@@ -8,6 +8,7 @@ import Foundation
 
 struct User: Codable, Identifiable, Sendable {
     let id: Int?
+    let uuid: String?
     let name: String
     let email: String
     let phoneNumber: String?
@@ -15,6 +16,7 @@ struct User: Codable, Identifiable, Sendable {
     let status: String
     let avatarUrl: String?
     let emailVerified: Bool?
+    let phoneVerified: Bool?
     let kycVerified: Bool?
     let defaultCurrency: String?
     let secondaryCurrency: String?
@@ -24,10 +26,11 @@ struct User: Codable, Identifiable, Sendable {
     let updatedAt: String?
     
     enum CodingKeys: String, CodingKey {
-        case id, name, email, role, status
+        case id, uuid, name, email, role, status
         case phoneNumber = "phone_number"
         case avatarUrl = "avatar_url"
         case emailVerified = "email_verified"
+        case phoneVerified = "phone_verified"
         case kycVerified = "kyc_verified"
         case defaultCurrency = "default_currency"
         case secondaryCurrency = "secondary_currency"
@@ -40,6 +43,7 @@ struct User: Codable, Identifiable, Sendable {
     // Custom memberwise initializer
     init(
         id: Int?,
+        uuid: String? = nil,
         name: String,
         email: String,
         phoneNumber: String? = nil,
@@ -47,6 +51,7 @@ struct User: Codable, Identifiable, Sendable {
         status: String,
         avatarUrl: String? = nil,
         emailVerified: Bool? = nil,
+        phoneVerified: Bool? = nil,
         kycVerified: Bool? = nil,
         defaultCurrency: String? = nil,
         secondaryCurrency: String? = nil,
@@ -56,6 +61,7 @@ struct User: Codable, Identifiable, Sendable {
         updatedAt: String? = nil
     ) {
         self.id = id
+        self.uuid = uuid
         self.name = name
         self.email = email
         self.phoneNumber = phoneNumber
@@ -63,6 +69,7 @@ struct User: Codable, Identifiable, Sendable {
         self.status = status
         self.avatarUrl = avatarUrl
         self.emailVerified = emailVerified
+        self.phoneVerified = phoneVerified
         self.kycVerified = kycVerified
         self.defaultCurrency = defaultCurrency
         self.secondaryCurrency = secondaryCurrency
@@ -77,6 +84,7 @@ struct User: Codable, Identifiable, Sendable {
         
         // Dashboard response doesn't include id, phone_number, role, etc.
         self.id = try container.decodeIfPresent(Int.self, forKey: .id)
+        self.uuid = try container.decodeIfPresent(String.self, forKey: .uuid)
         self.name = try container.decode(String.self, forKey: .name)
         self.email = try container.decode(String.self, forKey: .email)
         self.phoneNumber = try container.decodeIfPresent(String.self, forKey: .phoneNumber)
@@ -84,6 +92,7 @@ struct User: Codable, Identifiable, Sendable {
         self.status = try container.decode(String.self, forKey: .status)
         self.avatarUrl = try container.decodeIfPresent(String.self, forKey: .avatarUrl)
         self.emailVerified = try container.decodeIfPresent(Bool.self, forKey: .emailVerified)
+        self.phoneVerified = try container.decodeIfPresent(Bool.self, forKey: .phoneVerified)
         self.kycVerified = try container.decodeIfPresent(Bool.self, forKey: .kycVerified)
         self.defaultCurrency = try container.decodeIfPresent(String.self, forKey: .defaultCurrency)
         self.secondaryCurrency = try container.decodeIfPresent(String.self, forKey: .secondaryCurrency)
@@ -99,5 +108,13 @@ struct User: Codable, Identifiable, Sendable {
     
     var isVerified: Bool {
         return emailVerified ?? false
+    }
+    
+    var isPhoneVerified: Bool {
+        return phoneVerified ?? false
+    }
+    
+    var isKycVerified: Bool {
+        return kycVerified ?? false
     }
 }

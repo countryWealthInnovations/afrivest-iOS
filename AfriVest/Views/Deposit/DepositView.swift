@@ -23,6 +23,7 @@ struct DepositView: View {
     enum DepositMethod: String, CaseIterable {
         case mobileMoney = "Mobile Money"
         case card = "Card Deposit"
+        case bank = "Bank"
     }
     
     @State private var selectedMethod: DepositMethod = .mobileMoney
@@ -65,11 +66,18 @@ struct DepositView: View {
                                 .labelStyle()
                             
                             Picker("", selection: $selectedMethod) {
-                                ForEach(DepositMethod.allCases, id: \.self) { method in
+                                // Card deposit temporarily disabled
+                                ForEach(DepositMethod.allCases.filter { $0 != .card }, id: \.self) { method in
                                     Text(method.rawValue).tag(method)
                                 }
                             }
                             .pickerStyle(SegmentedPickerStyle())
+                            .onChange(of: selectedMethod) { newValue in
+                                viewModel.amount = ""
+                                if newValue == .bank {
+                                    viewModel.setBankSubMethod("virtual_account")
+                                }
+                            }
                         }
                         
                         // Mobile Money Fields
@@ -82,12 +90,17 @@ struct DepositView: View {
                             cardSectionView
                         }
                         
+                        // Bank Fields (Virtual Account + Internet Banking merged)
+                        if selectedMethod == .bank {
+                            bankSectionView
+                        }
+                        
                         // Amount
                         VStack(alignment: .leading, spacing: Spacing.sm) {
-                            Text("Amount (UGX)")
+                            Text("Amount (\(selectedMethod == .bank ? viewModel.selectedBankCurrency : viewModel.selectedCurrency))")
                                 .labelStyle()
                             
-                            TextField("Enter amount (min 5,000)", text: $viewModel.amount)
+                            TextField("Enter amount", text: $viewModel.amount)
                                 .keyboardType(.numberPad)
                                 .font(AppFont.bodyLarge())
                                 .foregroundColor(.textPrimary)
@@ -98,6 +111,11 @@ struct DepositView: View {
                                     RoundedRectangle(cornerRadius: Spacing.radiusMedium)
                                         .stroke(Color.borderDefault, lineWidth: 1)
                                 )
+                            
+                            // Inline minimum-amount hint — always visible, updates per currency/method
+                            Text("Minimum: \(minimumHintCurrency) \(FeeCalculator.formatCurrency(minimumHintAmount))")
+                                .font(.system(size: 12))
+                                .foregroundColor(.textSecondary)
                         }
                         
                         // Fee Breakdown Preview
@@ -117,7 +135,7 @@ struct DepositView: View {
                             Image(systemName: "info.circle")
                                 .foregroundColor(.textSecondary)
                             
-                            Text("You will receive a prompt on your phone to approve the payment")
+                            Text(infoBoxText)
                                 .font(.system(size: 12))
                                 .foregroundColor(.textSecondary)
                         }
@@ -133,12 +151,18 @@ struct DepositView: View {
                             action: {
                                 if selectedMethod == .mobileMoney {
                                     viewModel.initiateDeposit()
-                                } else {
+                                } else if selectedMethod == .card {
                                     viewModel.initiateCardDeposit()
+                                } else if selectedMethod == .bank {
+                                    viewModel.initiateBankDeposit()
                                 }
                             },
                             isLoading: viewModel.isLoading,
-                            isEnabled: selectedMethod == .mobileMoney ? viewModel.isFormValid : viewModel.isCardFormValid
+                            isEnabled: selectedMethod == .mobileMoney
+                            ? viewModel.isFormValid
+                            : selectedMethod == .card
+                            ? viewModel.isCardFormValid
+                            : viewModel.isBankFormValid
                         )
                     }
                     .padding(Spacing.screenHorizontal)
@@ -151,7 +175,29 @@ struct DepositView: View {
                 LoadingOverlay()
             }
         }
+        .contentShape(Rectangle())
+        .onTapGesture {
+            hideKeyboard()
+        }
         .navigationBarHidden(true)
+        .fullScreenCover(isPresented: $viewModel.shouldNavigateToBankConfirmation) {
+            if let details = viewModel.bankConfirmationDetails {
+                BankTransferConfirmationView(details: details)
+            }
+        }
+        .alert("Payment Initiated", isPresented: $viewModel.showPushNotificationMessage) {
+            Button("OK") { presentationMode.wrappedValue.dismiss() }
+        } message: {
+            Text("Please approve the payment prompt on your phone.\nReference: \(viewModel.pushNotificationReference)")
+        }
+        .alert("Deposit Failed", isPresented: Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { if !$0 { viewModel.errorMessage = nil } }
+        )) {
+            Button("OK", role: .cancel) { viewModel.errorMessage = nil }
+        } message: {
+            Text(viewModel.errorMessage ?? "")
+        }
         .fullScreenCover(isPresented: $viewModel.shouldNavigateToWebView) {
             if let response = viewModel.depositResponse,
                let paymentUrl = response.paymentData.paymentUrl {
@@ -159,25 +205,58 @@ struct DepositView: View {
                     paymentUrl: paymentUrl,
                     transactionId: response.transactionId,
                     reference: response.reference,
-                    amount: response.amount,
+                    amount: String(response.amount),
                     currency: response.currency,
                     network: response.network ?? "MTN"
                 )
             }
         }
     }
+    
+    // MARK: - Inline hint helpers
+    private var minimumHintCurrency: String {
+        selectedMethod == .bank ? viewModel.selectedBankCurrency : viewModel.selectedCurrency
+    }
+    
+    private var minimumHintAmount: Double {
+        switch selectedMethod {
+        case .bank: return viewModel.bankMinimumAmount
+        case .card: return 4999
+        case .mobileMoney: return viewModel.minimumAmount
+        }
+    }
+    
+    private var infoBoxText: String {
+        if selectedMethod == .bank {
+            return viewModel.bankSubMethod == "internet_banking"
+            ? "You will be redirected to your bank to complete this payment."
+            : "A virtual bank account will be generated for you to transfer into."
+        }
+        return "You will receive a prompt on your phone to approve the payment"
+    }
+    
     // MARK: - Fee Preview
     private func depositFeePreview(amount: Double) -> some View {
+        let isBankFlow = selectedMethod == .bank
         let method = selectedMethod == .card ? "card" : "mobile_money"
-        let flwFee = FeeCalculator.flutterwaveCollectionFee(amount: amount, currency: viewModel.selectedCurrency, method: method)
+        let currency = isBankFlow ? viewModel.selectedBankCurrency : viewModel.selectedCurrency
+        let flwFee = FeeCalculator.flutterwaveCollectionFee(amount: amount, currency: currency, method: method)
         let total = amount + flwFee
+        let minAmount = isBankFlow ? viewModel.bankMinimumAmount : viewModel.minimumAmount
+        let isBelowMin = amount < minAmount
+        
         return VStack(alignment: .leading, spacing: Spacing.sm) {
+            if isBelowMin {
+                Text("Minimum amount is \(currency) \(FeeCalculator.formatCurrency(minAmount))")
+                    .font(AppFont.bodySmall())
+                    .foregroundColor(.errorRed)
+            }
             HStack {
                 Text("Amount")
                     .bodyRegularStyle()
                     .foregroundColor(.textSecondary)
                 Spacer()
-                Text("\(viewModel.selectedCurrency) \(FeeCalculator.formatCurrency(amount))")
+                Text("\(currency) \(FeeCalculator.formatCurrency(amount))")
                     .bodyRegularStyle()
                     .foregroundColor(.textPrimary)
             }
@@ -188,7 +267,7 @@ struct DepositView: View {
                 Spacer()
                 Text(flwFee == 0
                      ? "Free"
-                     : "\(viewModel.selectedCurrency) \(FeeCalculator.formatCurrency(flwFee))")
+                     : "\(currency) \(FeeCalculator.formatCurrency(flwFee))")
                 .bodyRegularStyle()
                 .foregroundColor(flwFee == 0 ? .successGreen : .textPrimary)
             }
@@ -198,11 +277,11 @@ struct DepositView: View {
                     .bodyLargeStyle()
                     .foregroundColor(.textPrimary)
                 Spacer()
-                Text("\(viewModel.selectedCurrency) \(FeeCalculator.formatCurrency(total))")
+                Text("\(currency) \(FeeCalculator.formatCurrency(total))")
                     .bodyLargeStyle()
                     .foregroundColor(.primaryGold)
             }
-            Text("* Your wallet will be credited \(viewModel.selectedCurrency) \(FeeCalculator.formatCurrency(amount))")
+            Text("* Your wallet will be credited \(currency) \(FeeCalculator.formatCurrency(amount))")
                 .font(AppFont.footnote())
                 .foregroundColor(.textSecondary)
         }
@@ -214,28 +293,74 @@ struct DepositView: View {
     // MARK: - Mobile Money Section
     private var mobileMoneySectionView: some View {
         VStack(alignment: .leading, spacing: Spacing.lg) {
+            
+            // Currency Picker
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Text("Deposit Currency")
+                    .labelStyle()
+                Menu {
+                    ForEach(viewModel.availableCurrencies, id: \.self) { currency in
+                        Button(currency) { viewModel.selectedCurrency = currency }
+                    }
+                } label: {
+                    HStack {
+                        Text(viewModel.selectedCurrency)
+                            .font(AppFont.bodyLarge())
+                            .foregroundColor(.textPrimary)
+                        Spacer()
+                        Image(systemName: "chevron.down")
+                            .foregroundColor(.textSecondary)
+                    }
+                    .padding()
+                    .background(Color.inputBackground)
+                    .cornerRadius(Spacing.radiusMedium)
+                    .overlay(RoundedRectangle(cornerRadius: Spacing.radiusMedium).stroke(Color.borderDefault, lineWidth: 1))
+                }
+            }
+            
+            // Network Picker
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Text("Network")
+                    .labelStyle()
+                Menu {
+                    ForEach(viewModel.availableNetworks, id: \.self) { network in
+                        Button(network) { viewModel.selectedNetwork = network }
+                    }
+                } label: {
+                    HStack {
+                        Text(viewModel.selectedNetwork)
+                            .font(AppFont.bodyLarge())
+                            .foregroundColor(.textPrimary)
+                        Spacer()
+                        Image(systemName: "chevron.down")
+                            .foregroundColor(.textSecondary)
+                    }
+                    .padding()
+                    .background(Color.inputBackground)
+                    .cornerRadius(Spacing.radiusMedium)
+                    .overlay(RoundedRectangle(cornerRadius: Spacing.radiusMedium).stroke(Color.borderDefault, lineWidth: 1))
+                }
+            }
+            
             // Phone Number
             VStack(alignment: .leading, spacing: Spacing.sm) {
                 Text("Phone Number")
                     .labelStyle()
                 
                 HStack(spacing: 0) {
-                    // Uganda Flag and Code (hardcoded)
-                    HStack(spacing: 4) {
-                        Text("🇺🇬")
-                            .font(.system(size: 20))
-                        Text("+256")
+                    if !viewModel.dialCode.isEmpty {
+                        Text(viewModel.dialCode)
                             .font(AppFont.bodyLarge())
                             .foregroundColor(.textPrimary)
+                            .padding(.leading, Spacing.md)
+                            .padding(.trailing, Spacing.sm)
+                        
+                        Divider()
+                            .frame(height: 24)
+                            .background(Color.borderDefault)
                     }
-                    .padding(.leading, Spacing.md)
-                    .padding(.trailing, Spacing.sm)
                     
-                    Divider()
-                        .frame(height: 24)
-                        .background(Color.borderDefault)
-                    
-                    TextField("700000001", text: $viewModel.phoneNumber)
+                    TextField("Enter phone number", text: $viewModel.phoneNumber)
                         .font(AppFont.bodyLarge())
                         .foregroundColor(.textPrimary)
                         .keyboardType(.numberPad)
@@ -244,9 +369,6 @@ struct DepositView: View {
                         .padding(.leading, Spacing.sm)
                         .onChange(of: viewModel.phoneNumber) { newValue in
                             viewModel.phoneNumber = newValue.filter { $0.isNumber }
-                            if viewModel.phoneNumber.count > 9 {
-                                viewModel.phoneNumber = String(viewModel.phoneNumber.prefix(9))
-                            }
                         }
                     
                     if viewModel.phoneState == .success {
@@ -265,27 +387,9 @@ struct DepositView: View {
                 )
                 
                 if viewModel.phoneState == .error {
-                    Text("Invalid phone number format")
+                    Text("Invalid phone number")
                         .font(.system(size: 12))
                         .foregroundColor(.errorRed)
-                } else if viewModel.phoneNumber.count >= 2 {
-                    if viewModel.selectedNetwork == "MTN" {
-                        Text("MTN detected ✓")
-                            .font(.system(size: 12))
-                            .foregroundColor(.successGreen)
-                    } else if viewModel.selectedNetwork == "AIRTEL" {
-                        Text("Airtel detected ✓")
-                            .font(.system(size: 12))
-                            .foregroundColor(.successGreen)
-                    } else {
-                        Text("MTN: 77, 78, 76, 79 | Airtel: 70, 74, 75")
-                            .font(.system(size: 12))
-                            .foregroundColor(.textSecondary)
-                    }
-                } else {
-                    Text("MTN: 77, 78, 76, 79 | Airtel: 70, 74, 75")
-                        .font(.system(size: 12))
-                        .foregroundColor(.textSecondary)
                 }
             }
         }
@@ -294,6 +398,31 @@ struct DepositView: View {
     // MARK: - Card Section
     private var cardSectionView: some View {
         VStack(alignment: .leading, spacing: Spacing.lg) {
+            
+            // Card Currency Picker
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Text("Card Currency")
+                    .labelStyle()
+                Menu {
+                    ForEach(["UGX", "USD", "EUR", "GBP", "KES", "NGN", "ZAR", "CAD", "AED"], id: \.self) { currency in
+                        Button(currency) { viewModel.selectedCurrency = currency }
+                    }
+                } label: {
+                    HStack {
+                        Text(viewModel.selectedCurrency)
+                            .font(AppFont.bodyLarge())
+                            .foregroundColor(.textPrimary)
+                        Spacer()
+                        Image(systemName: "chevron.down")
+                            .foregroundColor(.textSecondary)
+                    }
+                    .padding()
+                    .background(Color.inputBackground)
+                    .cornerRadius(Spacing.radiusMedium)
+                    .overlay(RoundedRectangle(cornerRadius: Spacing.radiusMedium).stroke(Color.borderDefault, lineWidth: 1))
+                }
+            }
+            
             // Card Number
             VStack(alignment: .leading, spacing: Spacing.sm) {
                 Text("Card Number")
@@ -311,7 +440,6 @@ struct DepositView: View {
                             .stroke(Color.borderDefault, lineWidth: 1)
                     )
                     .onChange(of: viewModel.cardNumber) { newValue in
-                        // Format card number with spaces
                         let filtered = newValue.filter { $0.isNumber }
                         if filtered.count > 16 {
                             viewModel.cardNumber = String(filtered.prefix(16))
@@ -330,7 +458,6 @@ struct DepositView: View {
             
             // CVV and Expiry Row
             HStack(spacing: Spacing.md) {
-                // Expiry Month
                 VStack(alignment: .leading, spacing: Spacing.sm) {
                     Text("Expiry Month")
                         .labelStyle()
@@ -361,7 +488,6 @@ struct DepositView: View {
                         }
                 }
                 
-                // Expiry Year
                 VStack(alignment: .leading, spacing: Spacing.sm) {
                     Text("Expiry Year")
                         .labelStyle()
@@ -392,7 +518,6 @@ struct DepositView: View {
                         }
                 }
                 
-                // CVV
                 VStack(alignment: .leading, spacing: Spacing.sm) {
                     Text("CVV")
                         .labelStyle()
@@ -420,5 +545,83 @@ struct DepositView: View {
                 }
             }
         }
+    }
+    
+    // MARK: - Bank Section (merged: Virtual Account + Internet Banking)
+    private var bankSectionView: some View {
+        VStack(alignment: .leading, spacing: Spacing.lg) {
+            
+            // Sub-method toggle
+            VStack(alignment: .leading, spacing: Spacing.sm) {
+                Text("Method")
+                    .labelStyle()
+                Picker("", selection: Binding(
+                    get: { viewModel.bankSubMethod },
+                    set: { viewModel.setBankSubMethod($0) }
+                )) {
+                    Text("Virtual Account").tag("virtual_account")
+                    Text("Internet Banking").tag("internet_banking")
+                }
+                .pickerStyle(SegmentedPickerStyle())
+            }
+            
+            if viewModel.bankSubMethod == "virtual_account" {
+                VStack(alignment: .leading, spacing: Spacing.sm) {
+                    Text("Currency")
+                        .labelStyle()
+                    Menu {
+                        ForEach(["NGN", "GHS"], id: \.self) { currency in
+                            Button(currency) { viewModel.setVirtualAccountCurrency(currency) }
+                        }
+                    } label: {
+                        HStack {
+                            Text(viewModel.selectedBankCurrency)
+                                .font(AppFont.bodyLarge())
+                                .foregroundColor(.textPrimary)
+                            Spacer()
+                            Image(systemName: "chevron.down")
+                                .foregroundColor(.textSecondary)
+                        }
+                        .padding()
+                        .background(Color.inputBackground)
+                        .cornerRadius(Spacing.radiusMedium)
+                        .overlay(RoundedRectangle(cornerRadius: Spacing.radiusMedium).stroke(Color.borderDefault, lineWidth: 1))
+                    }
+                }
+            } else {
+                VStack(alignment: .leading, spacing: Spacing.sm) {
+                    Text("Country")
+                        .labelStyle()
+                    Menu {
+                        ForEach(["NG", "UK", "EU"], id: \.self) { country in
+                            Button(country) {
+                                viewModel.selectedPayWithBankCountry = country
+                                viewModel.applyPayWithBankCountry()
+                            }
+                        }
+                    } label: {
+                        HStack {
+                            Text(viewModel.selectedPayWithBankCountry)
+                                .font(AppFont.bodyLarge())
+                                .foregroundColor(.textPrimary)
+                            Spacer()
+                            Image(systemName: "chevron.down")
+                                .foregroundColor(.textSecondary)
+                        }
+                        .padding()
+                        .background(Color.inputBackground)
+                        .cornerRadius(Spacing.radiusMedium)
+                        .overlay(RoundedRectangle(cornerRadius: Spacing.radiusMedium).stroke(Color.borderDefault, lineWidth: 1))
+                    }
+                }
+            }
+        }
+    }
+}
+
+// MARK: - Keyboard dismissal helper
+extension View {
+    func hideKeyboard() {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }

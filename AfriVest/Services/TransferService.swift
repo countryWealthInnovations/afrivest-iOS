@@ -16,17 +16,22 @@ class TransferService {
     
     // MARK: - P2P Transfer
     func transferP2P(
-        recipientId: Int,
+        recipientId: Int? = nil,
+        recipientUuid: String? = nil,
         amount: Double,
         currency: String,
         description: String?
     ) async throws -> P2PTransferResponse {
-        let parameters: [String: Any] = [
-            "recipient_id": recipientId,
+        var parameters: [String: Any] = [
             "amount": amount,
             "currency": currency,
             "description": description ?? ""
         ]
+        if let recipientUuid = recipientUuid {
+            parameters["recipient_uuid"] = recipientUuid
+        } else if let recipientId = recipientId {
+            parameters["recipient_id"] = recipientId
+        }
         
         return try await apiClient.request(
             APIConstants.Endpoints.p2pTransfer,
@@ -45,6 +50,15 @@ class TransferService {
         return try await apiClient.requestWithURLParameters(
             "/users/search",
             parameters: parameters,
+            requiresAuth: true
+        )
+    }
+    
+    // MARK: - Lookup User by Uuid (from scanned QR)
+    func lookupByUuid(_ uuid: String) async throws -> UserSearchResponse {
+        return try await apiClient.requestWithURLParameters(
+            "/users/lookup-by-uuid/\(uuid)",
+            parameters: [String: String](),
             requiresAuth: true
         )
     }

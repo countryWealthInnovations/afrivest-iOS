@@ -17,8 +17,10 @@ class ProductDetailViewModel: ObservableObject {
     @Published var purchaseSuccess = false
     @Published var walletBalance: Double = 0.0
     @Published var autoReinvest: Bool = false
+    @Published var agreementToShow: InvestmentAgreementData?
     
     private let investmentService = InvestmentService.shared
+    private let agreementService = AgreementService.shared
     
     init(product: InvestmentProduct) {
         self.product = product
@@ -30,7 +32,6 @@ class ProductDetailViewModel: ObservableObject {
         Task {
             do {
                 let full = try await InvestmentService.shared.getInvestmentProduct(slug: product.slug)
-                print("✅ Full product loaded: description=\(full.description ?? "nil"), terms=\(full.termsConditions ?? "nil")")
                 self.product = full
             } catch {
                 print("❌ Could not fetch full product: \(error)")
@@ -40,7 +41,7 @@ class ProductDetailViewModel: ObservableObject {
     
     func purchaseProduct() {
         guard let amountValue = Double(amount.replacingOccurrences(of: ",", with: "")),
-              amountValue >= Double(product.minInvestment) ?? 0 else {
+              amountValue >= (Double(product.minInvestment) ?? 0) else {
             errorMessage = "Please enter a valid amount (minimum: \(product.minInvestmentFormatted))"
             return
         }
@@ -49,31 +50,52 @@ class ProductDetailViewModel: ObservableObject {
         errorMessage = nil
         
         Task {
+            // Gate: require agreement acceptance before the first investment
+            if let agreement = try? await agreementService.getAgreement(), !agreement.accepted {
+                self.isLoading = false
+                self.agreementToShow = agreement
+                return
+            }
+            await performPurchase(amountValue)
+        }
+    }
+    
+    func acceptAgreementAndContinue() {
+        isLoading = true
+        agreementToShow = nil
+        Task {
             do {
-                let request = PurchaseInvestmentRequest(
-                    productId: product.id,
-                    amount: amountValue,
-                    currency: product.currency,
-                    payoutFrequency: "monthly",
-                    autoReinvest: autoReinvest
-                )
-                
-                let response = try await investmentService.purchaseInvestment(request: request)
-                self.purchaseSuccess = true
-            } catch let apiError as APIError {
-                switch apiError {
-                case .validationError(let message):
-                    self.errorMessage = message
-                case .serverError(let message):
-                    self.errorMessage = message
-                default:
-                    self.errorMessage = apiError.localizedDescription
-                }
+                try await agreementService.accept()
+                let amountValue = Double(amount.replacingOccurrences(of: ",", with: "")) ?? 0
+                await performPurchase(amountValue)
             } catch {
+                self.isLoading = false
                 self.errorMessage = error.localizedDescription
             }
-            self.isLoading = false
         }
+    }
+    
+    private func performPurchase(_ amountValue: Double) async {
+        do {
+            let request = PurchaseInvestmentRequest(
+                productId: product.id,
+                amount: amountValue,
+                currency: product.currency,
+                payoutFrequency: "monthly",
+                autoReinvest: autoReinvest
+            )
+            _ = try await investmentService.purchaseInvestment(request: request)
+            self.purchaseSuccess = true
+        } catch let apiError as APIError {
+            switch apiError {
+            case .validationError(let message): self.errorMessage = message
+            case .serverError(let message): self.errorMessage = message
+            default: self.errorMessage = apiError.localizedDescription
+            }
+        } catch {
+            self.errorMessage = error.localizedDescription
+        }
+        self.isLoading = false
     }
     
     var isAmountValid: Bool {
